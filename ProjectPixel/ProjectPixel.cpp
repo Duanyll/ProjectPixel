@@ -2,12 +2,34 @@
 //
 
 #include "pch.h"
-#include <iostream>
+
+#include "utils/window.h"
 
 int main()
-{
-    std::cout << "Hello World!\n";
+{ 
+    Window::init_glfw();
+    auto window = Window::create(1920, 1080, "ProjectPixel"); 
+
+    while (!glfwWindowShouldClose(window)) {
+        Window::process_keys(window);
+
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    Window::stop_glfw();
 }
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
+void cursor_move_callback(GLFWwindow* window, double xpos, double ypos) {}
+void cursor_enter_callback(GLFWwindow* window, int in) {}
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {}
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
 // 调试程序: F5 或调试 >“开始调试”菜单

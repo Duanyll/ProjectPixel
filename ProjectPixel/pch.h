@@ -8,5 +8,24 @@
 #define PCH_H
 
 // 添加要在此处预编译的标头
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
+#include <stb_image.h>
+
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
+#include <string>
+#include <iostream>
+#include <functional>
+#include <memory>
 
 #endif //PCH_H
