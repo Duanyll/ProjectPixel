@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "window.h"
+#include "Window.h"
 
 #include <map>
 

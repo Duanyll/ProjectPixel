@@ -21,7 +21,10 @@
     <ClCompile Include="pch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="utils\window.cpp">
+    <ClCompile Include="utils\Window.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\FrameTimer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,7 +32,13 @@
     <ClInclude Include="pch.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="utils\window.h">
+    <ClInclude Include="utils\Window.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\pch.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\FrameTimer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

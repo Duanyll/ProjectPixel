@@ -27,5 +27,6 @@
 #include <iostream>
 #include <functional>
 #include <memory>
+#include <queue>
 
 #endif //PCH_H

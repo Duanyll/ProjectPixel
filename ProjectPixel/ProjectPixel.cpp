@@ -3,13 +3,15 @@
 
 #include "pch.h"
 
-#include "utils/window.h"
+#include "utils/Window.h"
+#include "utils/FrameTimer.h"
 
 int main()
 { 
     Window::init_glfw();
     auto window = Window::create(1920, 1080, "ProjectPixel"); 
 
+    FrameTimer::begin_frame_stats();
     while (!glfwWindowShouldClose(window)) {
         Window::process_keys(window);
 
@@ -18,6 +20,8 @@ int main()
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        FrameTimer::tick_frame();
     }
 
     Window::stop_glfw();
