@@ -27,6 +27,18 @@
     <ClCompile Include="utils\FrameTimer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="renderer\ShaderProgram.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\Texture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\VAO.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\Camera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -41,8 +53,33 @@
     <ClInclude Include="utils\FrameTimer.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="utils\Threading.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\Debug.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\pch.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\ShaderProgram.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\Utils.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\Texture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\VAO.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\Camera.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

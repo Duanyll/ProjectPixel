@@ -28,5 +28,8 @@
 #include <functional>
 #include <memory>
 #include <queue>
+#include <vector>
+#include <initializer_list>
+#include <cassert>
 
 #endif //PCH_H

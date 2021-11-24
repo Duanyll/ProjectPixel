@@ -11,6 +11,9 @@ int main()
     Window::init_glfw();
     auto window = Window::create(1920, 1080, "ProjectPixel"); 
 
+    Window::register_key(GLFW_KEY_ESCAPE, Window::KeyMode::KeyDown,
+                         [&]() -> void { glfwSetWindowShouldClose(window, true); });
+
     FrameTimer::begin_frame_stats();
     while (!glfwWindowShouldClose(window)) {
         Window::process_keys(window);
