@@ -10,6 +10,7 @@ std::unordered_map<std::string, pCubeTexture> skyboxStore;
 
 void AssetsHub::load_all() {
     register_shader<QuadShader>();
+    register_shader<TextShader>();
 
     vaoStore["quad"] = load_quad_vao();
 

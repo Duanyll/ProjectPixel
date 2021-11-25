@@ -127,11 +127,35 @@ void ShaderProgram::bind_texture(const std::string& name, int slot,
     glBindTexture(texture->get_type(), texture->id);
 }
 
+void ShaderProgram::bind_texture(GLint location, int slot, pTexture texture) {
+    use();
+    glUniform1i(location, slot);
+    glActiveTexture(GL_TEXTURE0 + slot);
+    glBindTexture(texture->get_type(), texture->id);
+}
+
 QuadShader::QuadShader() {
     compile_from_file("shaders/quad.vert", "shaders/quad.frag");
+    use();
+    screenTexture_pos = glGetUniformLocation(id, "screenTexture");
 }
 
 void QuadShader::configure(pTexture texture) {
     use();
-    bind_texture("screenTexture", 0, texture);
+    bind_texture(screenTexture_pos, 0, texture);
+}
+
+TextShader::TextShader() {
+    compile_from_file("shaders/text.vert", "shaders/text.frag");
+    use();
+    projection_pos = glGetUniformLocation(id, "projection");
+    textColor_pos = glGetUniformLocation(id, "textColor");
+    text_pos = glGetUniformLocation(id, "text");
+}
+
+void TextShader::configure(glm::mat4 projection, glm::vec3 textColor) { 
+    use(); 
+    glUniformMatrix4fv(projection_pos, 1, false, glm::value_ptr(projection));
+    glUniform3fv(textColor_pos, 1, glm::value_ptr(textColor));
+    glUniform1i(text_pos, 0);
 }

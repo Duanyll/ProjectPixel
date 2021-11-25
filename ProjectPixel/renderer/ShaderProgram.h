@@ -21,7 +21,9 @@ class ShaderProgram {
 
    protected:
     inline ShaderProgram() {}
-    void compile_from_file(const std::string& vertFile, const std::string& fragFile);
+    void compile_from_file(const std::string& vertFile,
+                           const std::string& fragFile);
+    void bind_texture(GLint location, int slot, pTexture texture);
 };
 
 typedef std::shared_ptr<ShaderProgram> pShaderProgram;
@@ -33,4 +35,20 @@ class QuadShader : public ShaderProgram {
     void configure(pTexture texture);
 
     const static int storeId = 1;
+
+   private:
+    GLint screenTexture_pos;
+};
+
+class TextShader : public ShaderProgram {
+   public:
+    TextShader();
+    void configure(glm::mat4 projection, glm::vec3 textColor);
+
+    const static int storeId = 2;
+
+   private:
+    GLint projection_pos;
+    GLint textColor_pos;
+    GLint text_pos;
 };

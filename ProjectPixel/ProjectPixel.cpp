@@ -7,6 +7,7 @@
 #include "utils/FrameTimer.h"
 
 #include "renderer/AssetsHub.h"
+#include "utils/Text.h"
 
 int main()
 { 
@@ -17,10 +18,13 @@ int main()
                          [&]() -> void { glfwSetWindowShouldClose(window, true); });
 
     AssetsHub::load_all();
+    Logger::init();
 
     auto shader = AssetsHub::get_shader<QuadShader>();
     auto vao = AssetsHub::get_vao("quad");
     auto texture = AssetsHub::get_texture_2d("default");
+
+    Logger::info("hello");
 
     FrameTimer::begin_frame_stats();
     while (!glfwWindowShouldClose(window)) {
@@ -31,6 +35,8 @@ int main()
 
         shader->configure(texture);
         vao->draw();
+
+        Logger::flush();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

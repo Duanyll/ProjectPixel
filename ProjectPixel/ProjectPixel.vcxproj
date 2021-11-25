@@ -164,6 +164,7 @@
     <ClCompile Include="renderer\Texture.cpp" />
     <ClCompile Include="renderer\VAO.cpp" />
     <ClCompile Include="utils\FrameTimer.cpp" />
+    <ClCompile Include="utils\Text.cpp" />
     <ClCompile Include="utils\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +179,7 @@
     <ClInclude Include="utils\Debug.h" />
     <ClInclude Include="utils\FrameTimer.h" />
     <ClInclude Include="utils\pch.h" />
+    <ClInclude Include="utils\Text.h" />
     <ClInclude Include="utils\Threading.h" />
     <ClInclude Include="utils\Utils.h" />
     <ClInclude Include="utils\Window.h" />
