@@ -20,7 +20,7 @@ typedef std::shared_ptr<Texture> pTexture;
 
 class CubeTexture : public Texture {
    public:
-    CubeTexture(const std::vector<std::string&> facesPath);
+    CubeTexture(const std::vector<std::string>& facesPath);
     inline virtual GLenum get_type() { return GL_TEXTURE_CUBE_MAP; }
 };
 

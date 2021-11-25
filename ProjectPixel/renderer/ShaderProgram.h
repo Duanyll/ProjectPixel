@@ -25,3 +25,12 @@ class ShaderProgram {
 };
 
 typedef std::shared_ptr<ShaderProgram> pShaderProgram;
+
+// 将一个矩形材质绘制到全屏
+class QuadShader : public ShaderProgram {
+   public:
+    QuadShader();
+    void configure(pTexture texture);
+
+    const static int storeId = 1;
+};

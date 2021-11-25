@@ -41,7 +41,7 @@ Texture::Texture(const std::string& filePath, bool flipped) {
 
 Texture::~Texture() { glDeleteTextures(1, &id); }
 
-CubeTexture::CubeTexture(const std::vector<std::string&> facesPath) {
+CubeTexture::CubeTexture(const std::vector<std::string>& facesPath) {
     stbi_set_flip_vertically_on_load(false);
 
     glGenTextures(1, &id);

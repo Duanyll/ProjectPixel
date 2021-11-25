@@ -31,5 +31,7 @@
 #include <vector>
 #include <initializer_list>
 #include <cassert>
+#include <unordered_map>
+#include <unordered_set>
 
 #endif //PCH_H

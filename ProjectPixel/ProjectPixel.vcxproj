@@ -157,7 +157,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ProjectPixel.cpp" />
+    <ClCompile Include="renderer\AssetsHub.cpp" />
     <ClCompile Include="renderer\Camera.cpp" />
+    <ClCompile Include="renderer\EmbbedAssets.cpp" />
     <ClCompile Include="renderer\ShaderProgram.cpp" />
     <ClCompile Include="renderer\Texture.cpp" />
     <ClCompile Include="renderer\VAO.cpp" />
@@ -166,7 +168,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="renderer\AssetsHub.h" />
     <ClInclude Include="renderer\Camera.h" />
+    <ClInclude Include="renderer\EmbbedAssets.h" />
     <ClInclude Include="renderer\pch.h" />
     <ClInclude Include="renderer\ShaderProgram.h" />
     <ClInclude Include="renderer\Texture.h" />

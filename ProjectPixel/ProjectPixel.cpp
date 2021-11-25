@@ -6,6 +6,8 @@
 #include "utils/Window.h"
 #include "utils/FrameTimer.h"
 
+#include "renderer/AssetsHub.h"
+
 int main()
 { 
     Window::init_glfw();
@@ -14,12 +16,21 @@ int main()
     Window::register_key(GLFW_KEY_ESCAPE, Window::KeyMode::KeyDown,
                          [&]() -> void { glfwSetWindowShouldClose(window, true); });
 
+    AssetsHub::load_all();
+
+    auto shader = AssetsHub::get_shader<QuadShader>();
+    auto vao = AssetsHub::get_vao("quad");
+    auto texture = AssetsHub::get_texture_2d("default");
+
     FrameTimer::begin_frame_stats();
     while (!glfwWindowShouldClose(window)) {
         Window::process_keys(window);
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        shader->configure(texture);
+        vao->draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

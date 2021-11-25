@@ -126,3 +126,12 @@ void ShaderProgram::bind_texture(const std::string& name, int slot,
     glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(texture->get_type(), texture->id);
 }
+
+QuadShader::QuadShader() {
+    compile_from_file("shaders/quad.vert", "shaders/quad.frag");
+}
+
+void QuadShader::configure(pTexture texture) {
+    use();
+    bind_texture("screenTexture", 0, texture);
+}
