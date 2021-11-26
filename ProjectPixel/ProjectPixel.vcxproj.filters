@@ -48,6 +48,12 @@
     <ClCompile Include="utils\Text.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="renderer\RenderMethods.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\Uniform.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -93,6 +99,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="utils\Text.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\RenderMethods.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\Uniform.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -52,3 +52,14 @@ class TextShader : public ShaderProgram {
     GLint textColor_pos;
     GLint text_pos;
 };
+
+class SkyboxShader : public ShaderProgram {
+   public:
+    SkyboxShader();
+    void configure(pCubeTexture texture);
+
+    const static int storeId = 3;
+
+   private:
+    GLint skybox_pos;
+};

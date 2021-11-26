@@ -7,7 +7,12 @@
 #include "utils/FrameTimer.h"
 
 #include "renderer/AssetsHub.h"
+#include "renderer/RenderMethods.h"
+#include "renderer/Camera.h"
+#include "renderer/Uniform.h"
 #include "utils/Text.h"
+
+FreeCamera camera(1920, 1080);
 
 int main()
 { 
@@ -20,21 +25,19 @@ int main()
     AssetsHub::load_all();
     Logger::init();
 
-    auto shader = AssetsHub::get_shader<QuadShader>();
-    auto vao = AssetsHub::get_vao("quad");
-    auto texture = AssetsHub::get_texture_2d("default");
-
     Logger::info("hello");
 
     FrameTimer::begin_frame_stats();
     while (!glfwWindowShouldClose(window)) {
         Window::process_keys(window);
 
+        Uniform::set_data("Camera", "view", camera.get_view());
+        Uniform::set_data("Camera", "projection", camera.get_projection());
+
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        shader->configure(texture);
-        vao->draw();
+        RenderMethods::skybox();
 
         Logger::flush();
 
@@ -49,11 +52,18 @@ int main()
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
+    camera.change_screen_size(width, height);
 }
 
-void cursor_move_callback(GLFWwindow* window, double xpos, double ypos) {}
-void cursor_enter_callback(GLFWwindow* window, int in) {}
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {}
+void cursor_move_callback(GLFWwindow* window, double xpos, double ypos) {
+    camera.on_cursor_move(xpos, ypos);
+}
+void cursor_enter_callback(GLFWwindow* window, int in) {
+    camera.on_cursor_enter(in);
+}
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    camera.on_scroll(yoffset);
+}
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
 // 调试程序: F5 或调试 >“开始调试”菜单

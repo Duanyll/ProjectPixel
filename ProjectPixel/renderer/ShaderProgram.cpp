@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "ShaderProgram.h"
 
+#include "Uniform.h"
+
 #include <fstream>
 #include <sstream>
 
@@ -148,7 +150,7 @@ void QuadShader::configure(pTexture texture) {
 TextShader::TextShader() {
     compile_from_file("shaders/text.vert", "shaders/text.frag");
     use();
-    projection_pos = glGetUniformLocation(id, "projection");
+    projection_pos = glGetUniformLocation(id, "projection2d");
     textColor_pos = glGetUniformLocation(id, "textColor");
     text_pos = glGetUniformLocation(id, "text");
 }
@@ -158,4 +160,16 @@ void TextShader::configure(glm::mat4 projection, glm::vec3 textColor) {
     glUniformMatrix4fv(projection_pos, 1, false, glm::value_ptr(projection));
     glUniform3fv(textColor_pos, 1, glm::value_ptr(textColor));
     glUniform1i(text_pos, 0);
+}
+
+SkyboxShader::SkyboxShader() {
+    compile_from_file("shaders/skybox.vert", "shaders/skybox.frag");
+    use();
+    Uniform::bind_block(id, "Camera");
+    skybox_pos = glGetUniformLocation(id, "skybox");
+}
+
+void SkyboxShader::configure(pCubeTexture texture) {
+    use();
+    bind_texture(skybox_pos, 0, texture);
 }

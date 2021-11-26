@@ -9,10 +9,15 @@ std::unordered_map<std::string, pTexture> texture2dStore;
 std::unordered_map<std::string, pCubeTexture> skyboxStore;
 
 void AssetsHub::load_all() {
+    using namespace EmbbedAssets;
     register_shader<QuadShader>();
     register_shader<TextShader>();
+    register_shader<SkyboxShader>();
 
     vaoStore["quad"] = load_quad_vao();
+    vaoStore["box"] = load_box_vao();
+    vaoStore["skybox"] = load_skybox_vao();
+    load_paperman_vaos(vaoStore);
 
     for (const auto& i : texturePath) {
         texture2dStore[i.first] = std::make_shared<Texture>(i.second, false);

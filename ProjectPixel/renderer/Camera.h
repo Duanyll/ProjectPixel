@@ -8,7 +8,7 @@ class Camera {
         : screenWidth(width), screenHeight(height) {}
 
     glm::vec3 pos = glm::vec3(0.0, 0.0, 0.0);
-    glm::vec3 front = glm::vec3(-1.0, 0.0, 0.0);
+    glm::vec3 front = glm::vec3(1.0, 0.0, 0.0);
     float fov = 45.0f;
 
     glm::mat4 get_view();
@@ -43,9 +43,9 @@ class FreeCamera : public Camera {
     void move_pos(Direction direction);
     void set_yaw_pitch(float yaw, float pitch);
    private:
-    glm::vec3 movementFront = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 movementFront = glm::vec3(1.0f, 0.0f, 0.0f);
 
     bool resetCursorFlag = true;
     float lastX = 0, lastY = 0;
-    float yaw = -90, pitch = 0;
+    float yaw = 0, pitch = 0;
 };
