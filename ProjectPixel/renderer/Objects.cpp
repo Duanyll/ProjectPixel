@@ -106,7 +106,15 @@ void Paperman::render() {
 }
 
 PapermanMatraial Paperman::get_material_preset(const std::string& key) {
-    return PapermanMatraial();
+    if (key == "droid") {
+        return {AssetsHub::get_texture_2d("paperman-droid-diffuse"),
+                AssetsHub::get_texture_2d("paperman-droid-specular"),
+                AssetsHub::get_texture_2d("paperman-droid-emission"), 64,
+                false};
+    }
+    return {AssetsHub::get_texture_2d("paperman-default"),
+            AssetsHub::get_texture_2d("no-specular"),
+            AssetsHub::get_texture_2d("no-emission"), 32, false};
 }
 
 glm::mat4 Paperman::get_head_model() {
@@ -125,7 +133,8 @@ glm::mat4 Paperman::get_larm_model() {
         base = glm::rotate(base, glm::radians(-30 * animationTimer),
                            {1.0, 0.0, 0.0});
     } else if (animationType == AnimationType::ZombieWalking) {
-        base = glm::rotate(base, glm::radians(-80.0f - 5 * animationTimer), {1.0, 0.0, 0.0});
+        base = glm::rotate(base, glm::radians(-80.0f - 5 * animationTimer),
+                           {1.0, 0.0, 0.0});
     } else if (animationType == AnimationType::Running) {
         base = glm::rotate(base, glm::radians(-60 * animationTimer),
                            {1.0, 0.0, 0.0});

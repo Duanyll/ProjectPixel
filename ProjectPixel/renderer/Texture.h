@@ -32,3 +32,15 @@ struct EntityMaterial {
     pTexture emission;
     float shininess = 32;
 };
+
+class FrameBufferTexture : public Texture {
+   public:
+    FrameBufferTexture(int width, int height, bool isPixelized = true);
+    ~FrameBufferTexture();
+    inline virtual GLenum get_type() const { return GL_TEXTURE_2D; }
+
+    GLuint rbo = 0;
+    GLuint bufferId = 0;
+
+    void drawInside(std::function<void()> draw);
+};

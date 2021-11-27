@@ -55,12 +55,13 @@ int main() {
     SpotLight spotLight;
 
     Paperman paperman;
-    paperman.material = {AssetsHub::get_texture_2d("paperman-droid-diffuse"),
-                         AssetsHub::get_texture_2d("paperman-droid-specular"),
-                         AssetsHub::get_texture_2d("paperman-droid-emission"), 64, true};
+    paperman.material = Paperman::get_material_preset("droid");
     paperman.position = {10, 0, 5};
-    paperman.animationType = Paperman::AnimationType::ZombieWalking;
+    paperman.animationType = Paperman::AnimationType::Running;
     Skybox skybox;
+
+    auto screen = std::make_shared<FrameBufferTexture>(1920, 1080, false);
+    FullScreenQuad quad(screen);
 
     while (!glfwWindowShouldClose(window)) {
         Window::process_keys(window);
@@ -76,8 +77,13 @@ int main() {
         spotLight.apply();
 
         paperman.step(FrameTimer::get_last_frame_time());
-        paperman.render();
-        skybox.render();
+
+        screen->drawInside([&]() -> void {
+            paperman.render();
+            skybox.render();
+        });
+        
+        quad.render();
 
         Logger::flush();
 
