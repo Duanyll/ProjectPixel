@@ -213,19 +213,19 @@ void EmbbedAssets::load_paperman_vaos(std::unordered_map<std::string, pVAO>& dat
     // LLeg 4 4 12 16 48 0 48
     // RLeg 4 4 12 0 16 0 32
     data["paperman-head"] =
-        paperman_bodypart(vec3(0, 28, 0), 8, 8, 8, 0, 0, 32, 0);
+        paperman_bodypart(vec3(0, 0, 0), 8, 8, 8, 0, 0, 32, 0);
     data["paperman-body"] =
         paperman_bodypart(vec3(0, 18, 0), 8, 4, 12, 16, 16, 16, 32);
     data["paperman-larm-slim"] =
-        paperman_bodypart(vec3(5.5, 18, 0), 3, 4, 12, 32, 48, 48, 48);
+        paperman_bodypart(vec3(5.5, -4, 0), 3, 4, 12, 32, 48, 48, 48);
     data["paperman-rarm-slim"] =
-        paperman_bodypart(vec3(-5.5, 18, 0), 3, 4, 12, 40, 16, 40, 32);
+        paperman_bodypart(vec3(-5.5, -4, 0), 3, 4, 12, 40, 16, 40, 32);
     data["paperman-larm"] =
-        paperman_bodypart(vec3(6, 18, 0), 4, 4, 12, 32, 48, 48, 48);
+        paperman_bodypart(vec3(6, -4, 0), 4, 4, 12, 32, 48, 48, 48);
     data["paperman-rarm"] =
-        paperman_bodypart(vec3(-6, 18, 0), 4, 4, 12, 40, 16, 40, 32);
+        paperman_bodypart(vec3(-6, -4, 0), 4, 4, 12, 40, 16, 40, 32);
     data["paperman-lleg"] =
-        paperman_bodypart(vec3(2, 6, 0), 4, 4, 12, 16, 48, 0, 48);
+        paperman_bodypart(vec3(2, -6, 0), 4, 4, 12, 16, 48, 0, 48);
     data["paperman-rleg"] =
-        paperman_bodypart(vec3(-2, 6, 0), 4, 4, 12, 0, 16, 0, 32);
+        paperman_bodypart(vec3(-2, -6, 0), 4, 4, 12, 0, 16, 0, 32);
 }

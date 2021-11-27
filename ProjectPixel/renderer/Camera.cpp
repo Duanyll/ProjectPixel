@@ -75,8 +75,8 @@ void FreeCamera::move_pos(Direction direction) {
 }
 
 void FreeCamera::set_yaw_pitch(float yaw, float pitch) {
-    if (yaw < 0) yaw += 360;
-    if (yaw >= 360) yaw -= 360;
+    if (yaw < -180) yaw += 360;
+    if (yaw >= 180) yaw -= 360;
     pitch = glm::clamp(pitch, -89.0f, 89.0f);
     this->yaw = yaw;
     this->pitch = pitch;

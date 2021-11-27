@@ -36,6 +36,7 @@ class FreeCamera : public Camera {
     enum class Direction { Front, Back, Left, Right, Up, Down };
 
     void move_pos(Direction direction);
+    float yaw = 0, pitch = 0;
     void set_yaw_pitch(float yaw, float pitch);
 
    private:
@@ -43,5 +44,4 @@ class FreeCamera : public Camera {
 
     bool resetCursorFlag = true;
     float lastX = 0, lastY = 0;
-    float yaw = 0, pitch = 0;
 };

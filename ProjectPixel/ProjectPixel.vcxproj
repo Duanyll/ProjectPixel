@@ -163,7 +163,7 @@
     <ClCompile Include="renderer\Camera.cpp" />
     <ClCompile Include="renderer\EmbbedAssets.cpp" />
     <ClCompile Include="renderer\Light.cpp" />
-    <ClCompile Include="renderer\RenderMethods.cpp" />
+    <ClCompile Include="renderer\Objects.cpp" />
     <ClCompile Include="renderer\ShaderProgram.cpp" />
     <ClCompile Include="renderer\Texture.cpp" />
     <ClCompile Include="renderer\Uniform.cpp" />
@@ -178,8 +178,8 @@
     <ClInclude Include="renderer\Camera.h" />
     <ClInclude Include="renderer\EmbbedAssets.h" />
     <ClInclude Include="renderer\Light.h" />
+    <ClInclude Include="renderer\Objects.h" />
     <ClInclude Include="renderer\pch.h" />
-    <ClInclude Include="renderer\RenderMethods.h" />
     <ClInclude Include="renderer\ShaderProgram.h" />
     <ClInclude Include="renderer\Texture.h" />
     <ClInclude Include="renderer\Uniform.h" />
