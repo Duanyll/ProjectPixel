@@ -3,7 +3,12 @@
 
 std::unordered_map<std::string, std::string> EmbbedAssets::texturePath{
     {"default", "assets/container.jpg"},
-    {"paperman-default", "assets/duanyll-skin.png"}};
+    {"no-specular", "assets/all-black.png"},
+    {"no-emission", "assets/all-black.png"},
+    {"paperman-default", "assets/duanyll-skin.png"},
+    {"paperman-droid-diffuse", "assets/droid-diffuse.png"},
+    {"paperman-droid-specular", "assets/droid-specular.png"},
+    {"paperman-droid-emission", "assets/droid-emission.png"}};
 std::unordered_map<std::string, std::vector<std::string>>
     EmbbedAssets::skyboxPath{
         {"default",

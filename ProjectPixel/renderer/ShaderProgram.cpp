@@ -173,3 +173,20 @@ void SkyboxShader::configure(pCubeTexture texture) {
     use();
     bind_texture(skybox_pos, 0, texture);
 }
+
+EntityShader::EntityShader() {
+    compile_from_file("shaders/entity.vert", "shaders/entity.frag");
+    use();
+    Uniform::bind_block(id, "Camera");
+    Uniform::bind_block(id, "Lights");
+}
+
+void EntityShader::configure(const EntityMaterial& material, glm::mat4 model) {
+    use();
+    bind_texture("material.diffuse", 0, material.diffuse);
+    bind_texture("material.specular", 1, material.specular);
+    bind_texture("material.emission", 2, material.emission);
+    set_uniform("material.shininess", material.shininess);
+    set_uniform("model", model);
+    set_uniform("normal", glm::mat3(glm::transpose(glm::inverse(model))));
+}

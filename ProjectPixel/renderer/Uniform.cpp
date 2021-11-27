@@ -34,10 +34,30 @@ UBO::UBO(GLuint programId, const std::string& blockName, int bindingPoint,
 UBO::~UBO() { glDeleteBuffers(1, &id); }
 
 std::unordered_map<std::string, pUBO> Uniform::uboStore;
-std::unordered_map<std::string, std::vector<std::string>> uniformBlockMembers{
-    {"Camera", {"view", "projection"}}};
+std::unordered_map<std::string, std::vector<std::string>> uniformBlockMembers;
 
 int bindingPointCount;
+
+void Uniform::init_members() {
+    uniformBlockMembers["Camera"] = {"view", "projection", "viewPos"};
+    uniformBlockMembers["Lights"] = {"useDirLight", "pointLightCount",
+                                     "useSpotLight", "ambientLight"};
+    auto prefix = [](std::string blockName, std::string pre,
+                     std::vector<std::string> vec) -> auto {
+        for (auto& i : vec) {
+            uniformBlockMembers[blockName].push_back(pre + i);
+        }
+    };
+    prefix("Lights", "dirLight.", {"direction", "diffuse", "specular"});
+    for (int i = 0; i < 4; i++) {
+        prefix("Lights", std::format("pointLights[{}].", i),
+               {"position", "constant", "linear", "quadratic", "diffuse",
+                "specular"});
+    }
+    prefix("Lights", "spotLight.",
+           {"position", "direction", "cutOff", "outerCutOff", "constant",
+            "linear", "quadratic", "diffuse", "specular"});
+}
 
 void Uniform::bind_block(GLuint programId, const std::string& blockName) {
     auto it = uboStore.find(blockName);

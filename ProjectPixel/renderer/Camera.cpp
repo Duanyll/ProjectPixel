@@ -2,12 +2,19 @@
 #include "Camera.h"
 
 #include "../utils/FrameTimer.h"
+#include "Uniform.h"
 
 glm::mat4 Camera::get_view() { return glm::lookAt(pos, pos + front, up); }
 
 glm::mat4 Camera::get_projection() {
     return glm::perspective(glm::radians(fov),
                             (float)screenWidth / screenHeight, 0.1f, 100.0f);
+}
+
+void Camera::apply_uniform() {
+    Uniform::set_data("Camera", "view", get_view());
+    Uniform::set_data("Camera", "projection", get_projection());
+    Uniform::set_data("Camera", "viewPos", pos);
 }
 
 void FreeCamera::change_screen_size(int new_w, int new_h) {
@@ -30,7 +37,7 @@ void FreeCamera::on_cursor_move(double xpos, double ypos) {
 
     xoffset *= cursorSensitivity;
     yoffset *= cursorSensitivity;
-    
+
     set_yaw_pitch(yaw + xoffset, pitch + yoffset);
 }
 
@@ -45,7 +52,7 @@ void FreeCamera::on_scroll(double offset) {
 
 void FreeCamera::move_pos(Direction direction) {
     float dis = moveSpeed * FrameTimer::get_last_frame_time();
-    switch (direction) { 
+    switch (direction) {
         case Direction::Front:
             pos += dis * movementFront;
             break;
@@ -68,6 +75,8 @@ void FreeCamera::move_pos(Direction direction) {
 }
 
 void FreeCamera::set_yaw_pitch(float yaw, float pitch) {
+    if (yaw < 0) yaw += 360;
+    if (yaw >= 360) yaw -= 360;
     pitch = glm::clamp(pitch, -89.0f, 89.0f);
     this->yaw = yaw;
     this->pitch = pitch;

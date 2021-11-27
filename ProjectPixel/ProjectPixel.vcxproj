@@ -124,6 +124,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -160,6 +162,7 @@
     <ClCompile Include="renderer\AssetsHub.cpp" />
     <ClCompile Include="renderer\Camera.cpp" />
     <ClCompile Include="renderer\EmbbedAssets.cpp" />
+    <ClCompile Include="renderer\Light.cpp" />
     <ClCompile Include="renderer\RenderMethods.cpp" />
     <ClCompile Include="renderer\ShaderProgram.cpp" />
     <ClCompile Include="renderer\Texture.cpp" />
@@ -174,6 +177,7 @@
     <ClInclude Include="renderer\AssetsHub.h" />
     <ClInclude Include="renderer\Camera.h" />
     <ClInclude Include="renderer\EmbbedAssets.h" />
+    <ClInclude Include="renderer\Light.h" />
     <ClInclude Include="renderer\pch.h" />
     <ClInclude Include="renderer\RenderMethods.h" />
     <ClInclude Include="renderer\ShaderProgram.h" />

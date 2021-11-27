@@ -21,11 +21,20 @@ class UBO {
         glBufferSubData(GL_UNIFORM_BUFFER, memberOffsets[member], sizeof(T),
                         &data);
     }
+
+    template<>
+    void set_data(const std::string& member, bool data) {
+        int to_int = data;
+        glBindBuffer(GL_UNIFORM_BUFFER, id);
+        glBufferSubData(GL_UNIFORM_BUFFER, memberOffsets[member], sizeof(int),
+                        &to_int);
+    }
 };
 
 typedef std::shared_ptr<UBO> pUBO;
 
 namespace Uniform {
+void init_members();
 void bind_block(GLuint programId, const std::string& blockName);
 extern std::unordered_map<std::string, pUBO> uboStore;
 template<typename T>

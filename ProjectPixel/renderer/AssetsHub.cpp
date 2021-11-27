@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "AssetsHub.h"
 
+#include "Uniform.h"
 #include "EmbbedAssets.h"
 
 std::unordered_map<int, pShaderProgram> AssetsHub::shaderStore;
@@ -10,9 +11,11 @@ std::unordered_map<std::string, pCubeTexture> skyboxStore;
 
 void AssetsHub::load_all() {
     using namespace EmbbedAssets;
+    Uniform::init_members();
     register_shader<QuadShader>();
     register_shader<TextShader>();
     register_shader<SkyboxShader>();
+    register_shader<EntityShader>();
 
     vaoStore["quad"] = load_quad_vao();
     vaoStore["box"] = load_box_vao();

@@ -10,6 +10,7 @@
 #include "renderer/RenderMethods.h"
 #include "renderer/Camera.h"
 #include "renderer/Uniform.h"
+#include "renderer/Light.h"
 #include "utils/Text.h"
 
 FreeCamera camera(1920, 1080);
@@ -21,6 +22,24 @@ int main()
 
     Window::register_key(GLFW_KEY_ESCAPE, Window::KeyMode::KeyDown,
                          [&]() -> void { glfwSetWindowShouldClose(window, true); });
+    Window::register_key(GLFW_KEY_W, Window::KeyMode::Continous, [&]() -> void {
+        camera.move_pos(FreeCamera::Direction::Front);
+    });
+    Window::register_key(GLFW_KEY_A, Window::KeyMode::Continous, [&]() -> void {
+        camera.move_pos(FreeCamera::Direction::Left);
+    });
+    Window::register_key(GLFW_KEY_S, Window::KeyMode::Continous, [&]() -> void {
+        camera.move_pos(FreeCamera::Direction::Back);
+    });
+    Window::register_key(GLFW_KEY_D, Window::KeyMode::Continous, [&]() -> void {
+        camera.move_pos(FreeCamera::Direction::Right);
+    });
+    Window::register_key(GLFW_KEY_LEFT_SHIFT, Window::KeyMode::Continous, [&]() -> void {
+        camera.move_pos(FreeCamera::Direction::Down);
+    });
+    Window::register_key(GLFW_KEY_SPACE, Window::KeyMode::Continous, [&]() -> void {
+        camera.move_pos(FreeCamera::Direction::Up);
+    });
 
     AssetsHub::load_all();
     Logger::init();
@@ -28,15 +47,33 @@ int main()
     Logger::info("hello");
 
     FrameTimer::begin_frame_stats();
+
+    EntityMaterial material{
+        AssetsHub::get_texture_2d("paperman-droid-diffuse"),
+        AssetsHub::get_texture_2d("paperman-droid-specular"),
+        AssetsHub::get_texture_2d("paperman-droid-emission"), 64};
+
+    DirLight dirLight;
+    dirLight.apply();
+    DirLight::set_ambient({0.1, 0.1, 0.1});
+    PointLight::set_active_count(0);
+    SpotLight spotLight;
+
     while (!glfwWindowShouldClose(window)) {
         Window::process_keys(window);
 
-        Uniform::set_data("Camera", "view", camera.get_view());
-        Uniform::set_data("Camera", "projection", camera.get_projection());
+        glEnable(GL_DEPTH_TEST);
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        camera.apply_uniform();
+        spotLight.position = camera.pos;
+        spotLight.direction = camera.front;
+        spotLight.apply();
+
+        RenderMethods::paperman_standing({0.0, 0.0, 0.0}, 0.0, 0.0, 0.0,
+                                         material, false);
         RenderMethods::skybox();
 
         Logger::flush();

@@ -10,7 +10,7 @@ class Texture {
     GLuint id = 0;
     int width = 0, height = 0, channels = 0;
 
-    inline virtual GLenum get_type() { return GL_TEXTURE_2D; }
+    inline virtual GLenum get_type() const { return GL_TEXTURE_2D; }
 
    protected:
     inline Texture() {}
@@ -21,7 +21,14 @@ typedef std::shared_ptr<Texture> pTexture;
 class CubeTexture : public Texture {
    public:
     CubeTexture(const std::vector<std::string>& facesPath);
-    inline virtual GLenum get_type() { return GL_TEXTURE_CUBE_MAP; }
+    inline virtual GLenum get_type() const { return GL_TEXTURE_CUBE_MAP; }
 };
 
 typedef std::shared_ptr<CubeTexture> pCubeTexture;
+
+struct EntityMaterial {
+    pTexture diffuse;
+    pTexture specular;
+    pTexture emission;
+    float shininess = 32;
+};

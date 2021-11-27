@@ -63,3 +63,11 @@ class SkyboxShader : public ShaderProgram {
    private:
     GLint skybox_pos;
 };
+
+class EntityShader : public ShaderProgram {
+   public:
+    EntityShader();
+    void configure(const EntityMaterial& material, glm::mat4 model);
+
+    const static int storeId = 4;
+};
