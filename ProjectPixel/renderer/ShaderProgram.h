@@ -70,4 +70,8 @@ class EntityShader : public ShaderProgram {
     void configure(const EntityMaterial& material, glm::mat4 model);
 
     const static int storeId = 4;
+
+   private:
+    GLint diffuse_pos, specular_pos, emission_pos, shininess_pos;
+    GLint model_pos, normal_pos;
 };

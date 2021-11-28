@@ -18,6 +18,8 @@ class VAO {
     void load_interleave_vbo(const float* vertices, size_t size, std::initializer_list<size_t> memberSize);
     void load_ebo(const int* indices, size_t size);
     void draw();
+
+    void update_vbo(const float* vertices, size_t offset, size_t size);
 };
 
 typedef std::shared_ptr<VAO> pVAO;

@@ -44,3 +44,12 @@ class FrameBufferTexture : public Texture {
 
     void drawInside(std::function<void()> draw);
 };
+
+class TextureMatrix : public FrameBufferTexture {
+   public:
+    TextureMatrix(int subWidth, int subHeight, int column, int row,
+                  bool isPixelized = true);
+    int subWidth, subHeight, column, row;
+    void load(const std::vector<pTexture>& subTextures);
+    std::vector<glm::vec2> query_position(int subId);
+};

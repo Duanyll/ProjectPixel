@@ -51,3 +51,10 @@ void VAO::draw() {
         glDrawArrays(GL_TRIANGLES, 0, triangleCount);
     }
 }
+
+void VAO::update_vbo(const float* vertices, size_t offset, size_t size) {
+    assert(vbo != 0);
+    glBindVertexArray(id);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferSubData(GL_ARRAY_BUFFER, offset, size, vertices);
+}

@@ -179,14 +179,23 @@ EntityShader::EntityShader() {
     use();
     Uniform::bind_block(id, "Camera");
     Uniform::bind_block(id, "Lights");
+
+    diffuse_pos = glGetUniformLocation(id, "material.diffuse");
+    specular_pos = glGetUniformLocation(id, "material.specular");
+    emission_pos = glGetUniformLocation(id, "material.emission");
+    shininess_pos = glGetUniformLocation(id, "material.shininess");
+    model_pos = glGetUniformLocation(id, "model");
+    normal_pos = glGetUniformLocation(id, "normal");
 }
 
 void EntityShader::configure(const EntityMaterial& material, glm::mat4 model) {
     use();
-    bind_texture("material.diffuse", 0, material.diffuse);
-    bind_texture("material.specular", 1, material.specular);
-    bind_texture("material.emission", 2, material.emission);
-    set_uniform("material.shininess", material.shininess);
-    set_uniform("model", model);
-    set_uniform("normal", glm::mat3(glm::transpose(glm::inverse(model))));
+    bind_texture(diffuse_pos, 0, material.diffuse);
+    bind_texture(specular_pos, 1, material.specular);
+    bind_texture(emission_pos, 2, material.emission);
+    glUniform1f(shininess_pos, material.shininess);
+    glUniformMatrix4fv(model_pos, 1, false, glm::value_ptr(model));
+    glUniformMatrix3fv(
+        normal_pos, 1, false,
+        glm::value_ptr(glm::mat3(glm::transpose(glm::inverse(model)))));
 }

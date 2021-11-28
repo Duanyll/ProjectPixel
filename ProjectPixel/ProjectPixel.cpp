@@ -17,7 +17,7 @@ FreeCamera camera(1920, 1080);
 
 int main() {
     Window::init_glfw();
-    auto window = Window::create(1920, 1080, "ProjectPixel");
+    auto window = Window::create(192, 192, "ProjectPixel");
 
     Window::register_key(
         GLFW_KEY_ESCAPE, Window::KeyMode::KeyDown,
@@ -46,32 +46,39 @@ int main() {
 
     Logger::info("hello");
 
-    FrameTimer::begin_frame_stats();
 
-    DirLight dirLight;
-    dirLight.apply();
-    DirLight::set_ambient({0.1, 0.1, 0.1});
-    PointLight::set_active_count(0);
-    SpotLight spotLight;
+    //DirLight dirLight;
+    //dirLight.apply();
+    //DirLight::set_ambient({0.1, 0.1, 0.1});
+    //PointLight::set_active_count(0);
+    //SpotLight spotLight;
 
-    Paperman paperman;
-    paperman.material = Paperman::get_material_preset("droid");
-    paperman.position = {10, 0, 5};
-    paperman.animationType = Paperman::AnimationType::Running;
-    Skybox skybox;
+    //Paperman paperman;
+    //paperman.material = Paperman::get_material_preset("droid");
+    //paperman.position = {10, 0, 5};
+    //paperman.animationType = Paperman::AnimationType::Running;
+    //Skybox skybox;
 
-    auto screen = std::make_shared<FrameBufferTexture>(1920, 1080, false);
+    auto screen = std::make_shared<TextureMatrix>(64, 64, 3, 3, true);
+    screen->load({
+        AssetsHub::get_texture_2d("paperman-droid-diffuse"),
+        AssetsHub::get_texture_2d("paperman-droid-specular"),
+        AssetsHub::get_texture_2d("paperman-droid-emission"),
+        AssetsHub::get_texture_2d("paperman-default"),
+        AssetsHub::get_texture_2d("no-specular"),
+        AssetsHub::get_texture_2d("no-emission"),
+    });
+    //auto screen = std::make_shared<FrameBufferTexture>(1920, 1080, false);
     FullScreenQuad quad(screen);
 
+    FrameTimer::begin_frame_stats();
     while (!glfwWindowShouldClose(window)) {
         Window::process_keys(window);
-
-        glEnable(GL_DEPTH_TEST);
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        camera.apply_uniform();
+        /*camera.apply_uniform();
         spotLight.position = camera.pos;
         spotLight.direction = camera.front;
         spotLight.apply();
@@ -79,9 +86,11 @@ int main() {
         paperman.step(FrameTimer::get_last_frame_time());
 
         screen->drawInside([&]() -> void {
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             paperman.render();
             skybox.render();
-        });
+        });*/
         
         quad.render();
 

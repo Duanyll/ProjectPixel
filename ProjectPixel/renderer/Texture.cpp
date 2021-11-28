@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Texture.h"
 
+#include "AssetsHub.h"
+
 Texture::Texture(const std::string& filePath, bool flipped) {
     stbi_set_flip_vertically_on_load(flipped);
     glGenTextures(1, &id);
@@ -69,6 +71,9 @@ CubeTexture::CubeTexture(const std::vector<std::string>& facesPath) {
 
 FrameBufferTexture::FrameBufferTexture(int width, int height,
                                        bool isPixelized) {
+    this->width = width;
+    this->height = height;
+    this->channels = 4;
     // framebuffer configuration
     // -------------------------
     glGenFramebuffers(1, &bufferId);
@@ -76,7 +81,7 @@ FrameBufferTexture::FrameBufferTexture(int width, int height,
     // create a color attachment texture
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
                  GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                     isPixelized ? GL_NEAREST : GL_LINEAR);
@@ -108,15 +113,64 @@ FrameBufferTexture::~FrameBufferTexture() {
 
 void FrameBufferTexture::drawInside(std::function<void()> draw) {
     glBindFramebuffer(GL_FRAMEBUFFER, bufferId);
-    glEnable(GL_DEPTH_TEST);  // enable depth testing (is disabled for rendering
-                              // screen-space quad)
-
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     draw();
 
     // now bind back to default framebuffer and draw a quad plane with the
     // attached framebuffer color texture
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+TextureMatrix::TextureMatrix(int subWidth, int subHeight, int column, int row,
+                             bool isPixelized)
+    : subWidth(subWidth),
+      subHeight(subHeight),
+      column(column),
+      row(row),
+      FrameBufferTexture(subWidth * column, subHeight * row, isPixelized) {}
+
+void TextureMatrix::load(const std::vector<pTexture>& subTextures) {
+    if (subTextures.size() > row * column) {
+        std::cout << "WARNING: Loading too many textures into a TextureMatrix!"
+                  << std::endl;
+    }
+
+    auto shader = AssetsHub::get_shader<QuadShader>();
+    auto vao = std::make_shared<VAO>();
+    vao->load_interleave_vbo(nullptr, 24 * sizeof(float), {2, 2});
+    drawInside([&]() -> void {
+        glDisable(GL_DEPTH_TEST);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);s
+
+        for (int i = 0; i < subTextures.size(); i++) {
+            auto p = query_position(i);
+            for (auto& k : p) {
+                k.x = k.x * 2 - 1;
+                k.y = k.y * 2 - 1;
+            }
+            GLfloat vertices[] = {
+                p[0].x, p[0].y, 1.0, 0.0, p[1].x, p[1].y, 1.0, 1.0,
+                p[2].x, p[2].y, 0.0, 1.0, p[0].x, p[0].y, 1.0, 0.0,
+                p[2].x, p[2].y, 0.0, 1.0, p[3].x, p[3].y, 0.0, 0.0};
+            shader->configure(subTextures[i]);
+            vao->update_vbo(reinterpret_cast<float*>(vertices), 0,
+                            sizeof vertices);
+            vao->draw();
+        }
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glEnable(GL_DEPTH_TEST);
+    });
+}
+
+std::vector<glm::vec2> TextureMatrix::query_position(int subId) {
+    int r = subId / column;
+    int c = subId % column;
+    return {
+        {float(c) / column, float(r) / row},
+        {float(c + 1) / column, float(r) / row},
+        {float(c + 1) / column, float(r + 1) / row},
+        {float(c) / column, float(r + 1) / row},
+    };
 }
