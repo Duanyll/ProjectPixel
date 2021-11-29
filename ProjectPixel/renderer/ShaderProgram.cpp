@@ -188,7 +188,7 @@ EntityShader::EntityShader() {
     normal_pos = glGetUniformLocation(id, "normal");
 }
 
-void EntityShader::configure(const EntityMaterial& material, glm::mat4 model) {
+void EntityShader::configure(const Material& material, glm::mat4 model) {
     use();
     bind_texture(diffuse_pos, 0, material.diffuse);
     bind_texture(specular_pos, 1, material.specular);

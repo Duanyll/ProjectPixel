@@ -23,6 +23,9 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
+
 #include <string>
 #include <iostream>
 #include <functional>
@@ -34,5 +37,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <format>
+#include <filesystem>
+#include <fstream>
+#include <sstream>
 
 #endif //PCH_H

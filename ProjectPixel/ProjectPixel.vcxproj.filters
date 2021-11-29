@@ -57,6 +57,12 @@
     <ClCompile Include="renderer\Objects.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="game\Level.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="game\Terrain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -111,6 +117,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="renderer\Objects.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="game\Level.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="game\pch.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="game\Terrain.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

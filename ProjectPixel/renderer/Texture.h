@@ -26,7 +26,7 @@ class CubeTexture : public Texture {
 
 typedef std::shared_ptr<CubeTexture> pCubeTexture;
 
-struct EntityMaterial {
+struct Material {
     pTexture diffuse;
     pTexture specular;
     pTexture emission;
@@ -42,7 +42,7 @@ class FrameBufferTexture : public Texture {
     GLuint rbo = 0;
     GLuint bufferId = 0;
 
-    void drawInside(std::function<void()> draw);
+    void draw_inside(std::function<void()> draw);
 };
 
 class TextureMatrix : public FrameBufferTexture {
@@ -51,5 +51,9 @@ class TextureMatrix : public FrameBufferTexture {
                   bool isPixelized = true);
     int subWidth, subHeight, column, row;
     void load(const std::vector<pTexture>& subTextures);
+    /*
+    * 3 --- 2
+    * 0 --- 1
+    */
     std::vector<glm::vec2> query_position(int subId);
 };

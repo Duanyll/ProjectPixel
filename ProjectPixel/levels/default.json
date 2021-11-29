@@ -1,0 +1,8 @@
+{
+    "version": 1,
+    "xSize": 32,
+    "ySize": 8,
+    "zSize": 32,
+    "terrainType": "boxStack",
+    "terrainPath": "default-terrain.txt"
+}

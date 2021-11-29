@@ -40,7 +40,7 @@ class RenderObjectWithSpeed : public RenderObjectWithPosition {
     virtual void step(float time);
 };
 
-struct PapermanMatraial : EntityMaterial {
+struct PapermanMatraial : Material {
     bool is_slim;
 };
 

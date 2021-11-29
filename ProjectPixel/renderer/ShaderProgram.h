@@ -67,7 +67,7 @@ class SkyboxShader : public ShaderProgram {
 class EntityShader : public ShaderProgram {
    public:
     EntityShader();
-    void configure(const EntityMaterial& material, glm::mat4 model);
+    void configure(const Material& material, glm::mat4 model);
 
     const static int storeId = 4;
 

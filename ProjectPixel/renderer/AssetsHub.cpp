@@ -38,7 +38,9 @@ void AssetsHub::register_vao(const std::string& key, pVAO vao) {
 }
 
 pTexture AssetsHub::get_texture_2d(const std::string& key) {
-    return texture2dStore[key];
+    auto& res = texture2dStore[key];
+    assert(res);
+    return res;
 }
 
 void AssetsHub::register_texture_2d(const std::string& key, pTexture texture) {

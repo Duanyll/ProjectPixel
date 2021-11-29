@@ -12,12 +12,13 @@
 #include "renderer/Light.h"
 #include "renderer/Objects.h"
 #include "utils/Text.h"
+#include "game/Level.h"
 
 FreeCamera camera(1920, 1080);
 
 int main() {
     Window::init_glfw();
-    auto window = Window::create(192, 192, "ProjectPixel");
+    auto window = Window::create(1920, 1080, "ProjectPixel");
 
     Window::register_key(
         GLFW_KEY_ESCAPE, Window::KeyMode::KeyDown,
@@ -46,29 +47,26 @@ int main() {
 
     Logger::info("hello");
 
+    std::ifstream levelFile("levels/default.json");
+    json configJson;
+    levelFile >> configJson;
+    auto config = configJson.get<LevelConfig>();
+    auto terrain = config.get_terrain();
+    TerrainRenderer terrainRenderer(terrain);
 
-    //DirLight dirLight;
-    //dirLight.apply();
-    //DirLight::set_ambient({0.1, 0.1, 0.1});
-    //PointLight::set_active_count(0);
-    //SpotLight spotLight;
+    DirLight dirLight;
+    dirLight.apply();
+    DirLight::set_ambient({0.3, 0.3, 0.3});
+    PointLight::set_active_count(0);
+    SpotLight spotLight;
 
-    //Paperman paperman;
-    //paperman.material = Paperman::get_material_preset("droid");
-    //paperman.position = {10, 0, 5};
-    //paperman.animationType = Paperman::AnimationType::Running;
-    //Skybox skybox;
+    Paperman paperman;
+    paperman.material = Paperman::get_material_preset("droid");
+    paperman.position = {10.5, 0, 5.5};
+    paperman.animationType = Paperman::AnimationType::Walking;
+    Skybox skybox;
 
-    auto screen = std::make_shared<TextureMatrix>(64, 64, 3, 3, true);
-    screen->load({
-        AssetsHub::get_texture_2d("paperman-droid-diffuse"),
-        AssetsHub::get_texture_2d("paperman-droid-specular"),
-        AssetsHub::get_texture_2d("paperman-droid-emission"),
-        AssetsHub::get_texture_2d("paperman-default"),
-        AssetsHub::get_texture_2d("no-specular"),
-        AssetsHub::get_texture_2d("no-emission"),
-    });
-    //auto screen = std::make_shared<FrameBufferTexture>(1920, 1080, false);
+    auto screen = std::make_shared<FrameBufferTexture>(1920, 1080, false);
     FullScreenQuad quad(screen);
 
     FrameTimer::begin_frame_stats();
@@ -78,19 +76,20 @@ int main() {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        /*camera.apply_uniform();
+        camera.apply_uniform();
         spotLight.position = camera.pos;
         spotLight.direction = camera.front;
         spotLight.apply();
 
         paperman.step(FrameTimer::get_last_frame_time());
 
-        screen->drawInside([&]() -> void {
+        screen->draw_inside([&]() -> void {
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             paperman.render();
+            terrainRenderer.render();
             skybox.render();
-        });*/
+        });
         
         quad.render();
 

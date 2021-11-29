@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        ".clang-format": "yaml",
+        "gamestate": "stellaris",
+        "iostream": "cpp",
+        "queue": "cpp"
+    }
+}

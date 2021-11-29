@@ -111,8 +111,9 @@ FrameBufferTexture::~FrameBufferTexture() {
     glDeleteFramebuffers(1, &bufferId);
 }
 
-void FrameBufferTexture::drawInside(std::function<void()> draw) {
+void FrameBufferTexture::draw_inside(std::function<void()> draw) {
     glBindFramebuffer(GL_FRAMEBUFFER, bufferId);
+    glViewport(0, 0, width, height);
 
     draw();
 
@@ -138,7 +139,7 @@ void TextureMatrix::load(const std::vector<pTexture>& subTextures) {
     auto shader = AssetsHub::get_shader<QuadShader>();
     auto vao = std::make_shared<VAO>();
     vao->load_interleave_vbo(nullptr, 24 * sizeof(float), {2, 2});
-    drawInside([&]() -> void {
+    draw_inside([&]() -> void {
         glDisable(GL_DEPTH_TEST);
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -151,9 +152,9 @@ void TextureMatrix::load(const std::vector<pTexture>& subTextures) {
                 k.y = k.y * 2 - 1;
             }
             GLfloat vertices[] = {
-                p[0].x, p[0].y, 1.0, 0.0, p[1].x, p[1].y, 1.0, 1.0,
-                p[2].x, p[2].y, 0.0, 1.0, p[0].x, p[0].y, 1.0, 0.0,
-                p[2].x, p[2].y, 0.0, 1.0, p[3].x, p[3].y, 0.0, 0.0};
+                p[0].x, p[0].y, 0.0, 1.0, p[3].x, p[3].y, 0.0, 0.0,
+                p[2].x, p[2].y, 1.0, 0.0, p[0].x, p[0].y, 0.0, 1.0,
+                p[2].x, p[2].y, 1.0, 0.0, p[1].x, p[1].y, 1.0, 1.0};
             shader->configure(subTextures[i]);
             vao->update_vbo(reinterpret_cast<float*>(vertices), 0,
                             sizeof vertices);

@@ -8,7 +8,12 @@ std::unordered_map<std::string, std::string> EmbbedAssets::texturePath{
     {"paperman-default", "assets/duanyll-skin.png"},
     {"paperman-droid-diffuse", "assets/droid-diffuse.png"},
     {"paperman-droid-specular", "assets/droid-specular.png"},
-    {"paperman-droid-emission", "assets/droid-emission.png"}};
+    {"paperman-droid-emission", "assets/droid-emission.png"},
+    {"terrain-stone-diffuse", "assets/terrain/smooth_stone.png"},
+    {"terrain-stone-specular", "assets/terrain/smooth_stone-specular.png"},
+    {"terrain-planks-diffuse", "assets/terrain/oak_planks.png"},
+    {"terrain-planks-specular", "assets/terrain/oak_planks-specular.png"},
+};
 std::unordered_map<std::string, std::vector<std::string>>
     EmbbedAssets::skyboxPath{
         {"default",
@@ -146,7 +151,6 @@ struct vertex {
     vec3 pos;
     vec3 norm;
     vec2 tpos;
-    vertex(vec3 pos, vec3 norm, vec2 tpos) : pos(pos), norm(norm), tpos(tpos) {}
 };
 
 void face(vector<vertex>& res, vec3 a, vec3 b, vec3 c, vec3 d, vec3 normal,
@@ -154,14 +158,12 @@ void face(vector<vertex>& res, vec3 a, vec3 b, vec3 c, vec3 d, vec3 normal,
     vec2 tb(td.x, ta.y);
     vec2 tc(ta.x, td.y);
 
-    res.insert(res.end(), {
-                              vertex(a, normal, ta),
-                              vertex(b, normal, tb),
-                              vertex(d, normal, td),
-                              vertex(a, normal, ta),
-                              vertex(d, normal, td),
-                              vertex(c, normal, tc),
-                          });
+    res.insert(res.end(), {{a, normal, ta},
+                           {b, normal, tb},
+                           {d, normal, td},
+                           {a, normal, ta},
+                           {d, normal, td},
+                           {c, normal, tc}});
 }
 
 void generate_cube(vector<vertex>& r, int w, int d, int h, float resize, int x0,
@@ -189,8 +191,7 @@ void generate_cube(vector<vertex>& r, int w, int d, int h, float resize, int x0,
          vec2(x0 + d + w + w, y0 + d));
 }
 
-pVAO paperman_bodypart(glm::vec3 offset, int w, int d, int h,
-                                   int x0, int y0,
+pVAO paperman_bodypart(glm::vec3 offset, int w, int d, int h, int x0, int y0,
                        int x1, int y1) {
     pVAO vao = std::make_shared<VAO>();
     vector<vertex> res;
@@ -205,7 +206,8 @@ pVAO paperman_bodypart(glm::vec3 offset, int w, int d, int h,
     return vao;
 }
 
-void EmbbedAssets::load_paperman_vaos(std::unordered_map<std::string, pVAO>& data) {
+void EmbbedAssets::load_paperman_vaos(
+    std::unordered_map<std::string, pVAO>& data) {
     // Head 8 8 8 0 0 32 0
     // Body 8 4 12 16 16 16 32
     // LArm 4 4 12 32 48 48 48
