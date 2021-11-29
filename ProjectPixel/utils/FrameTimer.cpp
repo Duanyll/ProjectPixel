@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "FrameTimer.h"
 
+#include "Window.h"
+#include "Text.h";
+
 float lastFrame;
 float deltaTime;
 
@@ -10,7 +13,12 @@ float total_time;
 int frame_count;
 float fps;
 
-void FrameTimer::begin_frame_stats() { lastFrame = glfwGetTime(); }
+void FrameTimer::begin_frame_stats() {
+    lastFrame = glfwGetTime();
+    Window::register_command("framerate", [](float _) {
+        Logger::info(std::format("Framerate: {:.2f}FPS", get_average_framerate()));
+    });
+}
 
 void FrameTimer::tick_frame() {
     float currentFrame = glfwGetTime();

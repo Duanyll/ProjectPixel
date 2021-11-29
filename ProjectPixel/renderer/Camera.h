@@ -4,8 +4,7 @@
 
 class Camera {
    public:
-    inline Camera(int width, int height)
-        : screenWidth(width), screenHeight(height) {}
+    inline Camera() {}
 
     glm::vec3 pos = glm::vec3(0.0, 0.0, 0.0);
     glm::vec3 front = glm::vec3(1.0, 0.0, 0.0);
@@ -18,17 +17,17 @@ class Camera {
 
    protected:
     glm::vec3 up = glm::vec3(0.0, 1.0, 0.0);
-    int screenWidth, screenHeight;
 };
 
 class FreeCamera : public Camera {
    public:
-    inline FreeCamera(int width, int height) : Camera(width, height) {}
+    inline FreeCamera() {}
+
+    void register_commands();
 
     float cursorSensitivity = 0.05f;
     float moveSpeed = 2.5f;
 
-    void change_screen_size(int new_w, int new_h);
     void on_cursor_move(double xpos, double ypos);
     void on_cursor_enter(int isEnter);
     void on_scroll(double offset);

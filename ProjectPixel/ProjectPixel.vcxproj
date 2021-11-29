@@ -177,6 +177,7 @@
   <ItemGroup>
     <ClInclude Include="game\Level.h" />
     <ClInclude Include="game\pch.h" />
+    <ClInclude Include="game\Processor.h" />
     <ClInclude Include="game\Terrain.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="renderer\AssetsHub.h" />

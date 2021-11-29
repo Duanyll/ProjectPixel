@@ -61,14 +61,44 @@ class ConcurrenceQueue {
 
 typedef decltype(std::chrono::steady_clock::now()) TimeStamp;
 
+class InputForwarder {
+    inline void add_command_time(const std::string& command, float time) {
+        std::lock_guard<std::mutex> lg(mtx);
+        keyTime[command] += time;
+    }
+
+    inline void add_command_event(const std::string& command) {
+        std::lock_guard<std::mutex> lg(mtx);
+        keyEvents.push(command);
+    }
+
+    inline void collect(std::unordered_map<std::string, float>& outKeyTime,
+                        std::queue<std::string> outKeyEvents) {
+        std::lock_guard<std::mutex> lg(mtx);
+        for (auto& i : keyTime) {
+            outKeyTime[i.first] += i.second;
+            i.second = 0;
+        }
+        while (!keyEvents.empty()) {
+            outKeyEvents.push(keyEvents.front());
+            keyEvents.pop();
+        }
+    }
+
+   private:
+    mutable std::mutex mtx;
+    std::unordered_map<std::string, float> keyTime;
+    std::queue<std::string> keyEvents;
+};
+
 class WorkerThread {
    public:
     virtual std::chrono::milliseconds get_cycle_time() = 0;
     inline virtual void start() {
-        if (is_running) return;
+        if (isRunning) return;
         std::thread worker([this]() -> void {
-            is_running = true;
-            while (!stop_flag) {
+            isRunning = true;
+            while (!shouldStop) {
                 auto finish_time =
                     std::chrono::steady_clock::now() + get_cycle_time();
                 work();
@@ -76,21 +106,26 @@ class WorkerThread {
                     std::this_thread::sleep_until(finish_time);
                 }
             }
-            is_running = false;
-            stop_flag = false;
+            isRunning = false;
+            shouldStop = false;
+            condStop.notify_all();            
         });
         worker.detach();
     }
 
     inline virtual void stop() {
-        if (!is_running) return;
-        stop_flag = true;
-        while (is_running)
-            ;
+        if (!isRunning) return;
+        shouldStop = true;
+
+        std::unique_lock<std::mutex> lock(mtxStop);
+        condStop.wait(lock, [this] { return !isRunning; });
     }
 
    protected:
     virtual void work() = 0;
-    mutable std::atomic<bool> stop_flag = false;
-    mutable std::atomic<bool> is_running = false;
+    mutable std::atomic<bool> shouldStop = false;
+    mutable std::atomic<bool> isRunning = false;
+
+    mutable std::mutex mtxStop;
+    std::condition_variable condStop;
 };

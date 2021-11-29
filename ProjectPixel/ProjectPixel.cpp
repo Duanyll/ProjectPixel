@@ -14,38 +14,30 @@
 #include "utils/Text.h"
 #include "game/Level.h"
 
-FreeCamera camera(1920, 1080);
-
 int main() {
     Window::init_glfw();
-    auto window = Window::create(1920, 1080, "ProjectPixel");
-
-    Window::register_key(
-        GLFW_KEY_ESCAPE, Window::KeyMode::KeyDown,
-        [&]() -> void { glfwSetWindowShouldClose(window, true); });
-    Window::register_key(GLFW_KEY_W, Window::KeyMode::Continous, [&]() -> void {
-        camera.move_pos(FreeCamera::Direction::Front);
+    Window::create(1920, 1080, "ProjectPixel");
+    {
+        using Window::KeyMode;
+        Window::bind_keys(
+            {{GLFW_KEY_W, {"move-front", KeyMode::Continous}},
+             {GLFW_KEY_A, {"move-left", KeyMode::Continous}},
+             {GLFW_KEY_S, {"move-back", KeyMode::Continous}},
+             {GLFW_KEY_D, {"move-right", KeyMode::Continous}},
+             {GLFW_KEY_LEFT_SHIFT, {"move-down", KeyMode::Continous}},
+             {GLFW_KEY_SPACE, {"move-up", KeyMode::Continous}},
+             {GLFW_KEY_F3, {"diagnostics", KeyMode::Toggle}},
+             {GLFW_KEY_F, {"framerate", KeyMode::KeyDown}},
+             {GLFW_KEY_ESCAPE, {"exit", KeyMode::KeyUp}}});
+    }
+    Window::register_command("exit", [](float _) {
+        glfwSetWindowShouldClose(Window::handle, true);
     });
-    Window::register_key(GLFW_KEY_A, Window::KeyMode::Continous, [&]() -> void {
-        camera.move_pos(FreeCamera::Direction::Left);
-    });
-    Window::register_key(GLFW_KEY_S, Window::KeyMode::Continous, [&]() -> void {
-        camera.move_pos(FreeCamera::Direction::Back);
-    });
-    Window::register_key(GLFW_KEY_D, Window::KeyMode::Continous, [&]() -> void {
-        camera.move_pos(FreeCamera::Direction::Right);
-    });
-    Window::register_key(
-        GLFW_KEY_LEFT_SHIFT, Window::KeyMode::Continous,
-        [&]() -> void { camera.move_pos(FreeCamera::Direction::Down); });
-    Window::register_key(
-        GLFW_KEY_SPACE, Window::KeyMode::Continous,
-        [&]() -> void { camera.move_pos(FreeCamera::Direction::Up); });
+    FreeCamera camera;
+    camera.register_commands();
 
     AssetsHub::load_all();
     Logger::init();
-
-    Logger::info("hello");
 
     std::ifstream levelFile("levels/default.json");
     json configJson;
@@ -70,8 +62,8 @@ int main() {
     FullScreenQuad quad(screen);
 
     FrameTimer::begin_frame_stats();
-    while (!glfwWindowShouldClose(window)) {
-        Window::process_keys(window);
+    while (!glfwWindowShouldClose(Window::handle)) {
+        Window::process_keys();
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -90,33 +82,19 @@ int main() {
             terrainRenderer.render();
             skybox.render();
         });
-        
+
+        glViewport(0, 0, Window::width, Window::height);
         quad.render();
 
         Logger::flush();
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(Window::handle);
         glfwPollEvents();
 
         FrameTimer::tick_frame();
     }
 
     Window::stop_glfw();
-}
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, width, height);
-    camera.change_screen_size(width, height);
-}
-
-void cursor_move_callback(GLFWwindow* window, double xpos, double ypos) {
-    camera.on_cursor_move(xpos, ypos);
-}
-void cursor_enter_callback(GLFWwindow* window, int in) {
-    camera.on_cursor_enter(in);
-}
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    camera.on_scroll(yoffset);
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单

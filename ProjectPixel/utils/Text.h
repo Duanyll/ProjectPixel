@@ -32,7 +32,6 @@ typedef std::shared_ptr<TextPrinter> pTextPrinter;
 namespace Logger {
 void init(const std::string& font_path = "assets/CaskaydiaCoveNF.ttf",
           int screen_width = 1920, int screen_height = 1080);
-void on_screen_size_changed(int new_w, int new_h);
 void info(const std::string& str);
 void error(const std::string& str);
 void flush();

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Text.h"
+#include "Window.h"
 
 TextPrinter::TextPrinter(const std::string& font_path, int screen_width,
                          int screen_height) {
@@ -143,10 +144,6 @@ void Logger::init(const std::string& font_path, int screen_width,
         std::make_shared<TextPrinter>(font_path, screen_width, screen_height);
 }
 
-void Logger::on_screen_size_changed(int new_w, int new_h) {
-    printer->on_screen_size_changed(new_w, new_h);
-}
-
 void base_log(const std::string& str, const std::string& level,
     glm::vec3 color) {
     std::cout << "[" << level << "]: " << str << std::endl;
@@ -169,6 +166,7 @@ void Logger::error(const std::string& str) {
 }
 
 void Logger::flush() {
+    printer->on_screen_size_changed(Window::width, Window::height);
     int ypos = 25;
     for (auto i : logs) {
         printer->print(i.str, 25, ypos, 1.0f, i.color);

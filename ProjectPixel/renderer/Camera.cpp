@@ -2,13 +2,14 @@
 #include "Camera.h"
 
 #include "../utils/FrameTimer.h"
+#include "../utils/Window.h"
 #include "Uniform.h"
 
 glm::mat4 Camera::get_view() { return glm::lookAt(pos, pos + front, up); }
 
 glm::mat4 Camera::get_projection() {
     return glm::perspective(glm::radians(fov),
-                            (float)screenWidth / screenHeight, 0.1f, 100.0f);
+                            (float)Window::width / Window::height, 0.1f, 100.0f);
 }
 
 void Camera::apply_uniform() {
@@ -17,10 +18,26 @@ void Camera::apply_uniform() {
     Uniform::set_data("Camera", "viewPos", pos);
 }
 
-void FreeCamera::change_screen_size(int new_w, int new_h) {
-    screenWidth = new_w;
-    screenHeight = new_h;
-    resetCursorFlag = true;
+void FreeCamera::register_commands() {
+    Window::register_command("move-front",
+                             [this](float _) { move_pos(Direction::Front); });
+    Window::register_command("move-back",
+                             [this](float _) { move_pos(Direction::Back); });
+    Window::register_command("move-left",
+                             [this](float _) { move_pos(Direction::Left); });
+    Window::register_command("move-right",
+                             [this](float _) { move_pos(Direction::Right); });
+    Window::register_command("move-up",
+                             [this](float _) { move_pos(Direction::Up); });
+    Window::register_command("move-down",
+                             [this](float _) { move_pos(Direction::Down); });
+    Window::register_command("mouse-enter",
+                             [this](float p) { on_cursor_enter(p > 0); });
+    Window::register_command("mouse-x",
+                             [this](float t) { on_cursor_move(t, lastY); });
+    Window::register_command("mouse-y",
+                             [this](float t) { on_cursor_move(lastX, t); });
+    Window::register_command("scroll-y", [this](float t) { on_scroll(t); });
 }
 
 void FreeCamera::on_cursor_move(double xpos, double ypos) {
