@@ -68,12 +68,6 @@ pVAO BoxStackTerrain::create_vao(Material material) {
                                {A, norm, texPos[3]},
                                {C, norm, texPos[1]},
                                {B, norm, texPos[2]}});
-        /*res.insert(res.end(), {{A, norm, {0.0f, 1.0f}},
-                               {D, norm, {0.0f, 0.0f}},
-                               {C, norm, {1.0f, 0.0f}},
-                               {A, norm, {0.0f, 1.0f}},
-                               {C, norm, {1.0f, 0.0f}},
-                               {B, norm, {1.0f, 1.0f}}});*/
     };
     auto getHeight = [&](int x, int z) {
         if (x < 0 || x >= xSize || z < 0 || z >= zSize) return 0;

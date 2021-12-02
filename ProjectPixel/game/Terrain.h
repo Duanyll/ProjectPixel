@@ -17,6 +17,10 @@ class ITerrain {
     virtual Tile get_tile(glm::vec3 point) = 0;
     virtual Material create_material() = 0;
     virtual pVAO create_vao(Material material) = 0;
+
+    virtual int get_xsize() = 0;
+    virtual int get_ysize() = 0;
+    virtual int get_zsize() = 0;
 };
 
 typedef std::shared_ptr<ITerrain> pTerrain;
@@ -33,6 +37,10 @@ class BoxStackTerrain : public ITerrain {
     Tile get_tile(glm::vec3 point);
     Material create_material();
     pVAO create_vao(Material material);
+
+    inline int get_xsize() { return xSize; }
+    inline int get_ysize() { return 32; }
+    inline int get_zsize() { return zSize; }
 
    protected:
     int xSize, zSize;

@@ -12,3 +12,11 @@ inline int dcmp(T a, T b) {
     if (delta < -eps) return -1;
     return 0;
 }
+
+typedef decltype(std::chrono::steady_clock::now()) TimeStamp;
+typedef std::chrono::steady_clock::duration TimeDuration;
+
+inline float to_float_timestamp(TimeDuration duration) {
+    using namespace std::chrono;
+    return duration / 1ms * 0.001;
+}

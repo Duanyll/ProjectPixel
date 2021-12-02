@@ -1,13 +1,6 @@
 #pragma once
 
-#include <chrono>
-#include <condition_variable>
-#include <deque>
-#include <memory>
-#include <mutex>
-#include <queue>
-#include <string>
-#include <thread>
+#include "pch.h"
 
 template <typename T, typename TContainer = std::deque<T>>
 class ConcurrenceQueue {
@@ -59,15 +52,14 @@ class ConcurrenceQueue {
     std::condition_variable cond;
 };
 
-typedef decltype(std::chrono::steady_clock::now()) TimeStamp;
-
 class InputForwarder {
-    inline void add_command_time(const std::string& command, float time) {
+   public:
+    inline void add_time(const std::string& command, float time) {
         std::lock_guard<std::mutex> lg(mtx);
         keyTime[command] += time;
     }
 
-    inline void add_command_event(const std::string& command) {
+    inline void add_event(const std::string& command) {
         std::lock_guard<std::mutex> lg(mtx);
         keyEvents.push(command);
     }
@@ -91,6 +83,24 @@ class InputForwarder {
     std::queue<std::string> keyEvents;
 };
 
+template <typename T>
+class OutputBuffer {
+   public:
+    void update(std::unique_ptr<T>& ptr) { 
+        std::lock_guard<std::mutex> lg(mtx);
+        obj = std::move(ptr);
+    }
+
+    std::unique_ptr<T> try_get() { 
+        std::lock_guard<std::mutex> lg(mtx);
+        return std::move(obj);
+    }
+
+   private:
+    mutable std::mutex mtx;
+    std::unique_ptr<T> obj;
+};
+
 class WorkerThread {
    public:
     virtual std::chrono::milliseconds get_cycle_time() = 0;
@@ -108,7 +118,7 @@ class WorkerThread {
             }
             isRunning = false;
             shouldStop = false;
-            condStop.notify_all();            
+            condStop.notify_all();
         });
         worker.detach();
     }

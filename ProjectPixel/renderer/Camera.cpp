@@ -37,6 +37,8 @@ void FreeCamera::register_commands() {
                              [this](float t) { on_cursor_move(t, lastY); });
     Window::register_command("mouse-y",
                              [this](float t) { on_cursor_move(lastX, t); });
+    Window::register_command(
+        "scroll-x", [this](float t) { set_yaw_pitch(yaw + t * 10, pitch); });
     Window::register_command("scroll-y", [this](float t) { on_scroll(t); });
 }
 
@@ -98,13 +100,13 @@ void FreeCamera::set_yaw_pitch(float yaw, float pitch) {
     this->yaw = yaw;
     this->pitch = pitch;
 
-    front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+    front.x = cos(glm::radians(pitch)) * sin(-glm::radians(yaw));
     front.y = sin(glm::radians(pitch));
-    front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+    front.z = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
     front = glm::normalize(front);
 
-    movementFront.x = cos(glm::radians(yaw));
+    movementFront.x = sin(-glm::radians(yaw));
     movementFront.y = 0;
-    movementFront.z = sin(glm::radians(yaw));
+    movementFront.z = cos(glm::radians(yaw));
     movementFront = glm::normalize(movementFront);
 }

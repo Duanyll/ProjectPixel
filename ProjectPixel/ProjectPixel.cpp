@@ -54,7 +54,7 @@ int main() {
 
     Paperman paperman;
     paperman.material = Paperman::get_material_preset("droid");
-    paperman.position = {10.5, 0, 5.5};
+    paperman.position = config.playerSpawnPos;
     paperman.animationType = Paperman::AnimationType::Walking;
     Skybox skybox;
 
@@ -73,6 +73,7 @@ int main() {
         spotLight.direction = camera.front;
         spotLight.apply();
 
+        paperman.headYaw = camera.yaw;
         paperman.step(FrameTimer::get_last_frame_time());
 
         screen->draw_inside([&]() -> void {

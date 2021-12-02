@@ -63,6 +63,12 @@
     <ClCompile Include="game\Terrain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="game\Processor.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="game\Entity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -129,6 +135,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="game\Processor.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="game\Instructions.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="game\Entity.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

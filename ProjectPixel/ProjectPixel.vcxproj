@@ -152,7 +152,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="game\Entity.cpp" />
     <ClCompile Include="game\Level.cpp" />
+    <ClCompile Include="game\Processor.cpp" />
     <ClCompile Include="game\Terrain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -175,9 +177,11 @@
     <ClCompile Include="utils\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="game\Entity.h" />
     <ClInclude Include="game\Level.h" />
     <ClInclude Include="game\pch.h" />
     <ClInclude Include="game\Processor.h" />
+    <ClInclude Include="game\Instructions.h" />
     <ClInclude Include="game\Terrain.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="renderer\AssetsHub.h" />

@@ -40,5 +40,8 @@ using json = nlohmann::json;
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+#include <chrono>
+#include <thread>
+#include <mutex>
 
 #endif //PCH_H

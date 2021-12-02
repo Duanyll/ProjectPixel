@@ -4,5 +4,10 @@
     "ySize": 8,
     "zSize": 32,
     "terrainType": "boxStack",
-    "terrainPath": "default-terrain.txt"
+    "terrainPath": "default-terrain.txt",
+    "playerSpawnPos": {
+        "x": 5,
+        "y": 0,
+        "z": 10
+    }
 }
