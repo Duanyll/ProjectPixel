@@ -6,6 +6,8 @@ class Camera {
    public:
     inline Camera() {}
 
+    inline virtual void apply_to_window() {}
+
     glm::vec3 pos = glm::vec3(0.0, 1.5, 0.0);
     glm::vec3 front = glm::vec3(0.0, 0.0, 1.0);
     float fov = 45.0f;
@@ -15,15 +17,15 @@ class Camera {
 
     void apply_uniform();
 
-   protected:
     glm::vec3 up = glm::vec3(0.0, 1.0, 0.0);
+   protected:
 };
 
 class FreeCamera : public Camera {
    public:
     inline FreeCamera() {}
 
-    void register_commands();
+    void apply_to_window();
 
     float cursorSensitivity = 0.05f;
     float moveSpeed = 2.5f;
@@ -43,4 +45,15 @@ class FreeCamera : public Camera {
 
     bool resetCursorFlag = true;
     float lastX = 0, lastY = 0;
+};
+
+class ThirdPersonCamera : public Camera {
+   public:
+    inline ThirdPersonCamera() {}
+
+    void set_entity_position(glm::vec3 pos);
+    void set_yaw(float yaw);
+    glm::vec3 groundFront = glm::normalize(glm::vec3(1.0, 0.0, 1.0));
+    float backwardDistance = 6.0;
+    float liftHeight = 10.0;
 };

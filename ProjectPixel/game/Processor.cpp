@@ -13,9 +13,9 @@ void LevelProcessor::start() {
 
 void LevelProcessor::work() {
     auto calcTime = timer.start_tick();
-    auto duration = to_float_timestamp(calcTime - lastTime);
+    auto duration = to_float_duration(calcTime - lastTime);
     lastTime = calcTime;
-    
+
     step_motion(duration);
     handle_user_input(duration);
     clip_speed();
@@ -37,14 +37,16 @@ void LevelProcessor::handle_user_input(float duration) {
     auto player = std::dynamic_pointer_cast<Player>(level.entities["player1"]);
     if (player) {
         glm::vec3 control_speed{o["speed-x"], 0, o["speed-z"]};
-        if (control_speed.length() > 0.01) {
-            control_speed = glm::normalize(control_speed) * duration * Player::moveSpeed;
+        if (glm::length(control_speed) > 0.01) {
+            control_speed =
+                glm::normalize(control_speed) * Player::moveSpeed;
             // TODO: 更好的玩家速度操控
             player->speed = control_speed;
+        } else {
+            player->speed = {0, 0, 0};
         }
     }
 }
-
 
 void LevelProcessor::clip_speed() {
     // TODO: 裁剪地形方向上的速度

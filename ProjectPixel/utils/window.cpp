@@ -51,11 +51,13 @@ void Window::create(int width, int height, const std::string& title) {
     std::cout << "GL_RENDERER: " << glGetString(GL_RENDERER) << std::endl;
 
     glViewport(0, 0, width, height);
-    glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(handle, cursor_move_callback);
     glfwSetCursorEnterCallback(handle, cursor_enter_callback);
     glfwSetScrollCallback(handle, scroll_callback);
     glfwSetFramebufferSizeCallback(handle, framebuffer_size_callback);
+    
+    // Turn on vsync
+    glfwSwapInterval(1);
 }
 
 void Window::stop_glfw() { glfwTerminate(); }

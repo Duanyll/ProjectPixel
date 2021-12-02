@@ -13,6 +13,7 @@
 #include "renderer/Objects.h"
 #include "utils/Text.h"
 #include "game/Level.h"
+#include "game/Game.h"
 
 int main() {
     Window::init_glfw();
@@ -33,8 +34,6 @@ int main() {
     Window::register_command("exit", [](float _) {
         glfwSetWindowShouldClose(Window::handle, true);
     });
-    FreeCamera camera;
-    camera.register_commands();
 
     AssetsHub::load_all();
     Logger::init();
@@ -43,24 +42,13 @@ int main() {
     json configJson;
     levelFile >> configJson;
     auto config = configJson.get<LevelConfig>();
-    auto terrain = config.get_terrain();
-    TerrainRenderer terrainRenderer(terrain);
-
-    DirLight dirLight;
-    dirLight.apply();
-    DirLight::set_ambient({0.3, 0.3, 0.3});
-    PointLight::set_active_count(0);
-    SpotLight spotLight;
-
-    Paperman paperman;
-    paperman.material = Paperman::get_material_preset("droid");
-    paperman.position = config.playerSpawnPos;
-    paperman.animationType = Paperman::AnimationType::Walking;
-    Skybox skybox;
+    Game game(config);
+    game.apply_to_window();
 
     auto screen = std::make_shared<FrameBufferTexture>(1920, 1080, false);
     FullScreenQuad quad(screen);
 
+    game.start();
     FrameTimer::begin_frame_stats();
     while (!glfwWindowShouldClose(Window::handle)) {
         Window::process_keys();
@@ -68,21 +56,7 @@ int main() {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        camera.apply_uniform();
-        spotLight.position = camera.pos;
-        spotLight.direction = camera.front;
-        spotLight.apply();
-
-        paperman.headYaw = camera.yaw;
-        paperman.step(FrameTimer::get_last_frame_time());
-
-        screen->draw_inside([&]() -> void {
-            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            paperman.render();
-            terrainRenderer.render();
-            skybox.render();
-        });
+        screen->draw_inside([&]() -> void { game.render(); });
 
         glViewport(0, 0, Window::width, Window::height);
         quad.render();
@@ -94,6 +68,7 @@ int main() {
 
         FrameTimer::tick_frame();
     }
+    game.stop();
 
     Window::stop_glfw();
 }

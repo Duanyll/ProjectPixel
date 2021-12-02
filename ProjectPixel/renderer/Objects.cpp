@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Objects.h"
 
+#include "../game/Instructions.h"
+
 FullScreenQuad::FullScreenQuad(pTexture texture) : texture(texture) {}
 
 FullScreenQuad::FullScreenQuad(const std::string& str)
@@ -31,25 +33,32 @@ void Skybox::render() {
     glDepthFunc(GL_LESS);
 }
 
-glm::mat4 RenderObjectWithPosition::get_model() {
+glm::mat4 EntityRenderer::get_model() {
     return glm::rotate(glm::translate(glm::mat4(), position),
                        glm::radians(facing), {0.0, -1.0, 0.0});
 }
 
-void RenderObjectWithSpeed::step(float time) {
+void EntityRenderer::step(float time) {
     position += speed * time;
-    facing += angle_speed * time;
+    facing += rotationSpeed * time;
     if (facing < -180) facing += 360;
     if (facing >= 180) facing -= 360;
 }
 
+void EntityRenderer::update(EntityInstruction& instruction) {
+    position = instruction.pos;
+    facing = instruction.facing;
+    speed = instruction.speed;
+    rotationSpeed = instruction.rotationSpeed;
+}
+
 glm::mat4 Paperman::get_model() {
-    return glm::scale(RenderObjectWithPosition::get_model(),
+    return glm::scale(EntityRenderer::get_model(),
                       {0.05, 0.05, 0.05});
 }
 
 void Paperman::step(float time) {
-    RenderObjectWithSpeed::step(time);
+    EntityRenderer::step(time);
     animationTotal += time;
     if (animationTotal > glm::pi<float>() * 2) {
         animationTotal -= glm::pi<float>() * 2;
@@ -59,13 +68,13 @@ void Paperman::step(float time) {
             animationTimer = 0;
             break;
         case AnimationType::Walking:
-            animationTimer = glm::sin(animationTotal * 5);
-            break;
-        case AnimationType::Running:
             animationTimer = glm::sin(animationTotal * 8);
             break;
+        case AnimationType::Running:
+            animationTimer = glm::sin(animationTotal * 12);
+            break;
         case AnimationType::ZombieWalking:
-            animationTimer = glm::sin(animationTotal * 3);
+            animationTimer = glm::sin(animationTotal * 5);
             break;
         default:
             break;
@@ -184,4 +193,19 @@ glm::mat4 Paperman::get_rleg_model() {
                            {1.0, 0.0, 0.0});
     }
     return base;
+}
+
+std::shared_ptr<EntityRenderer> get_entity_renderer(
+    EntityInstruction instruction) {
+    std::shared_ptr<EntityRenderer> e;
+    if (instruction.type == "player") {
+        auto paperman = std::make_shared<Paperman>();
+        paperman->material = Paperman::get_material_preset("droid");
+        paperman->animationType = Paperman::AnimationType::Walking;
+        e = paperman;
+    }
+
+    e->update(instruction);
+
+    return e;
 }

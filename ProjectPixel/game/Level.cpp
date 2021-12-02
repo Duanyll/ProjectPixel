@@ -15,5 +15,6 @@ pTerrain LevelConfig::get_terrain() {
 
 Level::Level(LevelConfig& config) : config(config) {
     terrain = config.get_terrain();
-    add_entity<Player>("player1");
+    auto player = add_entity<Player>("player1");
+    player->pos = config.playerSpawnPos;
 }

@@ -25,7 +25,7 @@ void FrameTimer::tick_frame() {
     auto currentFrame = std::chrono::steady_clock::now();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
-    deltaTimeFloat = to_float_timestamp(deltaTime);
+    deltaTimeFloat = to_float_duration(deltaTime);
     total_time += deltaTimeFloat;
     frametime_history.push(deltaTimeFloat);
     if (frametime_history.size() > fps_stats_cycle) {

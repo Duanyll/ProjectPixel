@@ -126,6 +126,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <FloatingPointExceptions>true</FloatingPointExceptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -153,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="game\Entity.cpp" />
+    <ClCompile Include="game\Game.cpp" />
     <ClCompile Include="game\Level.cpp" />
     <ClCompile Include="game\Processor.cpp" />
     <ClCompile Include="game\Terrain.cpp" />
@@ -178,6 +180,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game\Entity.h" />
+    <ClInclude Include="game\Game.h" />
     <ClInclude Include="game\Level.h" />
     <ClInclude Include="game\pch.h" />
     <ClInclude Include="game\Processor.h" />

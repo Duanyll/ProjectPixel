@@ -24,27 +24,26 @@ class Skybox : public RenderObject {
     void render();
 };
 
-class RenderObjectWithPosition : public RenderObject {
+struct EntityInstruction;
+class EntityRenderer : public RenderObject {
    public:
     glm::vec3 position{0, 0, 0};
     float facing = 0;
 
     virtual glm::mat4 get_model();
-};
 
-class RenderObjectWithSpeed : public RenderObjectWithPosition {
-   public:
     glm::vec3 speed{0, 0, 0};
-    float angle_speed = 0;
+    float rotationSpeed = 0;
 
     virtual void step(float time);
+    virtual void update(EntityInstruction& instruction);
 };
 
 struct PapermanMatraial : Material {
     bool is_slim;
 };
 
-class Paperman : public RenderObjectWithSpeed {
+class Paperman : public EntityRenderer {
    public:
     glm::mat4 get_model();
     PapermanMatraial material;
@@ -75,3 +74,6 @@ class Paperman : public RenderObjectWithSpeed {
     glm::mat4 get_lleg_model();
     glm::mat4 get_rleg_model();
 };
+
+std::shared_ptr<EntityRenderer> get_entity_renderer(
+    EntityInstruction instruction);

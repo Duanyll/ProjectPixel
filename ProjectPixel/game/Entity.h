@@ -10,7 +10,7 @@ class Entity {
     Entity(Level& level, const std::string& id);
 
     std::string id;
-    glm::vec3 pos, speed;
+    glm::vec3 pos{0, 0, 0}, speed{0, 0, 0};
     float facing = 0, rotationSpeed = 0;
 
     virtual std::string get_type() = 0;

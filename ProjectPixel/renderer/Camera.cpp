@@ -18,7 +18,8 @@ void Camera::apply_uniform() {
     Uniform::set_data("Camera", "viewPos", pos);
 }
 
-void FreeCamera::register_commands() {
+void FreeCamera::apply_to_window() {
+    glfwSetInputMode(Window::handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     Window::register_command("move-front",
                              [this](float _) { move_pos(Direction::Front); });
     Window::register_command("move-back",
@@ -109,4 +110,13 @@ void FreeCamera::set_yaw_pitch(float yaw, float pitch) {
     movementFront.y = 0;
     movementFront.z = cos(glm::radians(yaw));
     movementFront = glm::normalize(movementFront);
+}
+
+void ThirdPersonCamera::set_entity_position(glm::vec3 epos) {
+    pos = epos - groundFront * backwardDistance + glm::vec3(0, liftHeight, 0);
+    front = epos - pos;
+}
+
+void ThirdPersonCamera::set_yaw(float yaw) {
+    groundFront = {sin(-glm::radians(yaw)), 0, cos(glm::radians(yaw))};
 }

@@ -12,4 +12,5 @@ struct EntityInstruction {
 struct SceneInstruction {
     TimeStamp creationTime;
     std::vector<EntityInstruction> entities;
+    std::vector<std::string> deletedEntities;
 };
