@@ -4,16 +4,22 @@
 #include "../renderer/VAO.h"
 #include "../renderer/Texture.h"
 #include "../renderer/Objects.h"
+#include "../utils/Geomentry.h"
 
 enum class Tile : unsigned char { Air = 0, Stone = 1, Box = 2 };
 
 class ITerrain {
    public:
-    // 测试一个点是否与地形碰撞：
-    // 大于 0 的值在地形内部，等于 0 在地形表面，小于 0 在地形之外
-    virtual int test_point(glm::vec3 point) = 0;
-    virtual bool test_line_intersection(glm::vec3 from, glm::vec3 to,
-                                        glm::vec3& point) = 0;
+    virtual void get_bounding_boxes(glm::vec3 point,
+                                    std::vector<TileBoundingBox>& res) = 0;
+    virtual bool test_point_intersection(glm::vec3 point);
+    virtual bool test_line_intersection(glm::vec3 point, glm::vec3 dir,
+                                        float& dis);
+    virtual bool test_box_intersection(TileBoundingBox box);
+    virtual bool test_box_movement_intersection(TileBoundingBox box,
+                                                glm::vec3 dir, float& dis);
+    virtual BoxClipping clip_point(glm::vec3& point);
+    virtual BoxClipping clip_box(TileBoundingBox& box);
     virtual Tile get_tile(glm::vec3 point) = 0;
     virtual Material create_material() = 0;
     virtual pVAO create_vao(Material material) = 0;
@@ -21,6 +27,16 @@ class ITerrain {
     virtual int get_xsize() = 0;
     virtual int get_ysize() = 0;
     virtual int get_zsize() = 0;
+
+   private:
+    std::vector<TileBoundingBox> get_bounding_boxes_range(
+        std::pair<float, float> x, std::pair<float, float> y,
+        std::pair<float, float> z);
+
+    bool base_line_intersection(glm::vec3 point, glm::vec3 dir, float& dis);
+
+    bool base_box_movement_intersection(TileBoundingBox box, glm::vec3 dir,
+                                        float& dis);
 };
 
 typedef std::shared_ptr<ITerrain> pTerrain;
@@ -32,8 +48,7 @@ class BoxStackTerrain : public ITerrain {
     //       z
     //       z
     BoxStackTerrain(int xSize, int zSize, const std::string& data);
-    int test_point(glm::vec3 point);
-    bool test_line_intersection(glm::vec3 from, glm::vec3 to, glm::vec3& point);
+    void get_bounding_boxes(glm::vec3 point, std::vector<TileBoundingBox>& res);
     Tile get_tile(glm::vec3 point);
     Material create_material();
     pVAO create_vao(Material material);
@@ -54,6 +69,7 @@ class TerrainRenderer : public RenderObject {
     void render();
 
     Material material;
+
    protected:
     pVAO vao;
 };

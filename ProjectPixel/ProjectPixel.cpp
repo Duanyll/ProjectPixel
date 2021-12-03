@@ -27,7 +27,7 @@ int main() {
              {GLFW_KEY_D, {"move-right", KeyMode::Continous}},
              {GLFW_KEY_LEFT_SHIFT, {"move-down", KeyMode::Continous}},
              {GLFW_KEY_SPACE, {"move-up", KeyMode::Continous}},
-             {GLFW_KEY_F3, {"diagnostics", KeyMode::Toggle}},
+             {GLFW_KEY_F3, {"diagnostics", KeyMode::KeyDown}},
              {GLFW_KEY_F, {"framerate", KeyMode::KeyDown}},
              {GLFW_KEY_ESCAPE, {"exit", KeyMode::KeyUp}}});
     }

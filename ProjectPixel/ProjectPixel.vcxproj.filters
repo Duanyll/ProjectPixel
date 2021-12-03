@@ -149,6 +149,9 @@
     <ClInclude Include="game\Game.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="utils\Geomentry.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />

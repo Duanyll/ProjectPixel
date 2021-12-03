@@ -199,6 +199,7 @@
     <ClInclude Include="renderer\VAO.h" />
     <ClInclude Include="utils\Debug.h" />
     <ClInclude Include="utils\FrameTimer.h" />
+    <ClInclude Include="utils\Geomentry.h" />
     <ClInclude Include="utils\pch.h" />
     <ClInclude Include="utils\Text.h" />
     <ClInclude Include="utils\Threading.h" />

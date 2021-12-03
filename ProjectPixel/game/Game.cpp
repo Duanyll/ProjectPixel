@@ -2,14 +2,15 @@
 #include "Game.h"
 
 #include "../utils/Utils.h"
+#include "../utils/Text.h"
 
 Game::Game(LevelConfig& config)
     : config(config),
       terrainRenderer(config.get_terrain()),
       processor(config) {}
 
-void Game::apply_to_window() { 
-    Window::register_command("move-front", [this](float _) { 
+void Game::apply_to_window() {
+    Window::register_command("move-front", [this](float _) {
         auto vecdir = glm::normalize(camera.groundFront) *
                       FrameTimer::get_last_frame_time();
         processor.input.add_time("speed-x", vecdir.x);
@@ -22,19 +23,30 @@ void Game::apply_to_window() {
         processor.input.add_time("speed-z", vecdir.z);
     });
     Window::register_command("move-left", [this](float _) {
-        auto vecdir = glm::normalize(-glm::cross(camera.groundFront, camera.up)) *
-                      FrameTimer::get_last_frame_time();
+        auto vecdir =
+            glm::normalize(-glm::cross(camera.groundFront, camera.up)) *
+            FrameTimer::get_last_frame_time();
         processor.input.add_time("speed-x", vecdir.x);
         processor.input.add_time("speed-z", vecdir.z);
     });
     Window::register_command("move-right", [this](float _) {
         auto vecdir =
             glm::normalize(glm::cross(camera.groundFront, camera.up)) *
-                      FrameTimer::get_last_frame_time();
+            FrameTimer::get_last_frame_time();
         processor.input.add_time("speed-x", vecdir.x);
         processor.input.add_time("speed-z", vecdir.z);
     });
-    camera.apply_to_window(); 
+    Window::register_command("diagnostics", [this](float _) {
+        auto it = entities.find("player1");
+        if (it != entities.end()) {
+            auto pos = it->second->position;
+            Logger::info(
+                std::format("X{:.2f} Y{:.2f} X{:.2f}", pos.x, pos.y, pos.z));
+        } else {
+            Logger::error(std::format("NO PLAYER!"));
+        }
+    });
+    camera.apply_to_window();
 }
 
 void Game::start() {

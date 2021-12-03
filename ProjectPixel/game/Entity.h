@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "Instructions.h"
 #include "Level.h"
+#include "../utils/Geomentry.h"
 
 class Entity {
    public:
@@ -28,7 +29,11 @@ class MobEntity : public Entity {
     inline MobEntity(Level& level, const std::string& id) : Entity(level, id) {}
 
     virtual glm::vec3 get_bounding_box_size() = 0;
+    virtual TileBoundingBox get_bounding_box();
     void step_motion(float time);
+
+    BoxClipping clipping = BoxClipping::None;
+    void clip_speed();
 };
 
 class Player : public MobEntity {

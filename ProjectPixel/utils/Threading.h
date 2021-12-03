@@ -116,6 +116,7 @@ class WorkerThread {
                     std::this_thread::sleep_until(finish_time);
                 }
             }
+
             isRunning = false;
             shouldStop = false;
             condStop.notify_all();

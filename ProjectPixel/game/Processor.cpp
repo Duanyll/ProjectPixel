@@ -38,8 +38,7 @@ void LevelProcessor::handle_user_input(float duration) {
     if (player) {
         glm::vec3 control_speed{o["speed-x"], 0, o["speed-z"]};
         if (glm::length(control_speed) > 0.01) {
-            control_speed =
-                glm::normalize(control_speed) * Player::moveSpeed;
+            control_speed = glm::normalize(control_speed) * Player::moveSpeed;
             // TODO: 更好的玩家速度操控
             player->speed = control_speed;
         } else {
@@ -49,7 +48,10 @@ void LevelProcessor::handle_user_input(float duration) {
 }
 
 void LevelProcessor::clip_speed() {
-    // TODO: 裁剪地形方向上的速度
+    for (auto& i : level.entities) {
+        auto e = std::dynamic_pointer_cast<MobEntity>(i.second);
+        if (e) e->clip_speed();
+    }
 }
 
 void LevelProcessor::emit_instructions(TimeStamp time) {
