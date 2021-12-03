@@ -13,10 +13,11 @@ void LevelProcessor::start() {
 
 void LevelProcessor::work() {
     auto calcTime = timer.start_tick();
-    auto duration = to_float_duration(calcTime - lastTime);
+    auto duration = std::min(to_float_duration(calcTime - lastTime), 0.05f);
     lastTime = calcTime;
 
     step_motion(duration);
+    tick_entities(duration);
     handle_user_input(duration);
     clip_speed();
     emit_instructions(calcTime);
@@ -30,27 +31,50 @@ void LevelProcessor::step_motion(float duration) {
     }
 }
 
+void LevelProcessor::tick_entities(float duration) {
+    for (auto& e : level.entities) {
+        e.second->tick(duration);
+    }
+}
+
 void LevelProcessor::handle_user_input(float duration) {
     std::unordered_map<std::string, float> o;
     std::queue<std::string> events;
     input.collect(o, events);
     auto player = std::dynamic_pointer_cast<Player>(level.entities["player1"]);
     if (player) {
-        glm::vec3 control_speed{o["speed-x"], 0, o["speed-z"]};
-        if (glm::length(control_speed) > 0.01) {
-            control_speed = glm::normalize(control_speed) * Player::moveSpeed;
-            // TODO: 更好的玩家速度操控
-            player->speed = control_speed;
+        glm::vec3 controlSpeed{o["speed-x"], 0, o["speed-z"]};
+        glm::vec3 finalSpeed;
+        if (glm::length(controlSpeed) > 0.01) {
+            finalSpeed = glm::normalize(controlSpeed) * Player::moveSpeed;
         } else {
-            player->speed = {0, 0, 0};
+            finalSpeed = {0, 0, 0};
+        }
+        auto deltaSpeed = finalSpeed - glm::vec3(player->speed.x, 0, player->speed.z);
+        auto acc = Player::maxAcceleration * duration;
+        if (glm::length(deltaSpeed) <= acc) {
+            player->speed.x = finalSpeed.x;
+            player->speed.z = finalSpeed.z;
+        } else {
+            player->speed += glm::normalize(deltaSpeed) * acc;
+        }
+
+        while (!events.empty()) {
+            auto i = events.front();
+            events.pop();
+            if (i == "jump") {
+                if (player->ticksToJump == 0 &&
+                    (player->clipping & BoxClipping::NegY)) {
+                    player->speed.y = Player::jumpSpeed;
+                }
+            }
         }
     }
 }
 
 void LevelProcessor::clip_speed() {
-    for (auto& i : level.entities) {
-        auto e = std::dynamic_pointer_cast<MobEntity>(i.second);
-        if (e) e->clip_speed();
+    for (auto& e : level.entities) {
+        e.second->clip_speed();
     }
 }
 

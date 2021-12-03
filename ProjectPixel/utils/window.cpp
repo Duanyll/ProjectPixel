@@ -57,7 +57,7 @@ void Window::create(int width, int height, const std::string& title) {
     glfwSetFramebufferSizeCallback(handle, framebuffer_size_callback);
     
     // Turn on vsync
-    glfwSwapInterval(1);
+    //glfwSwapInterval(1);
 }
 
 void Window::stop_glfw() { glfwTerminate(); }

@@ -65,7 +65,7 @@ class InputForwarder {
     }
 
     inline void collect(std::unordered_map<std::string, float>& outKeyTime,
-                        std::queue<std::string> outKeyEvents) {
+                        std::queue<std::string>& outKeyEvents) {
         std::lock_guard<std::mutex> lg(mtx);
         for (auto& i : keyTime) {
             outKeyTime[i.first] += i.second;

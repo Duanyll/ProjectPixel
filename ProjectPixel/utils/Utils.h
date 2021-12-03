@@ -31,9 +31,9 @@ inline typename std::enable_if<std::is_enum<T>::value, T>::type operator|(T a,
     return (T)((int)a | (int)b);
 }
 template <class T>
-inline typename std::enable_if<std::is_enum<T>::value, T>::type operator&(T a,
+inline typename std::enable_if<std::is_enum<T>::value, bool>::type operator&(T a,
                                                                           T b) {
-    return (T)((int)a & (int)b);
+    return (bool)((int)a & (int)b);
 }
 template <class T>
 inline typename std::enable_if<std::is_enum<T>::value, T>::type operator^(T a,

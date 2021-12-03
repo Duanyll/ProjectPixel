@@ -60,12 +60,12 @@ inline bool test_point_inside_quad(glm::vec3 p, glm::vec3 a, glm::vec3 b,
     float deno = (dot00 * dot11 - dot01 * dot01);
 
     float u = (dot11 * dot02 - dot01 * dot12) / deno;
-    if (u < 0 || u > 1) {
+    if (u <= 0 || u >= 1) {
         return false;
     }
 
     float v = (dot00 * dot12 - dot01 * dot02) / deno;
-    if (v < 0 || v > 1) {
+    if (v <= 0 || v >= 1) {
         return false;
     }
 
@@ -91,11 +91,6 @@ struct TileBoundingBox {
     glm::vec3 s;
 
     inline bool test_line_intersection(glm::vec3 l0, glm::vec3 l, float& d) {
-        if (test_point_inside(l0)) {
-            d = 0;
-            return true;
-        }
-
         glm::vec3 A{a.x, a.y, a.z};
         glm::vec3 B{a.x + s.x, a.y, a.z};
         glm::vec3 C{a.x + s.z, a.y, a.z + s.z};
@@ -109,7 +104,7 @@ struct TileBoundingBox {
                         glm::vec3 norm) -> auto {
             float d = -1;
             if (test_line_plane_intersection(l0, l, norm, A, d)) {
-                if (d >= 0 && test_point_inside_quad(d * l + l0, A, B, C)) {
+                if (dcmp(d, 0.0f) > 0 && test_point_inside_quad(d * l + l0, A, B, C)) {
                     return d;
                 }
             }

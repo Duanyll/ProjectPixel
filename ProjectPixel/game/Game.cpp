@@ -36,6 +36,8 @@ void Game::apply_to_window() {
         processor.input.add_time("speed-x", vecdir.x);
         processor.input.add_time("speed-z", vecdir.z);
     });
+    Window::register_command(
+        "move-up", [this](float _) { processor.input.add_event("jump"); });
     Window::register_command("diagnostics", [this](float _) {
         auto it = entities.find("player1");
         if (it != entities.end()) {

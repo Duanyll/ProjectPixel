@@ -18,6 +18,10 @@ class Entity {
     virtual std::string get_state() = 0;
 
     inline virtual void step_motion(float time) {}
+    BoxClipping clipping = BoxClipping::None;
+    void clip_speed();
+
+    inline virtual void tick(float time){};
 
     virtual EntityInstruction get_instruction();
 };
@@ -31,9 +35,7 @@ class MobEntity : public Entity {
     virtual glm::vec3 get_bounding_box_size() = 0;
     virtual TileBoundingBox get_bounding_box();
     void step_motion(float time);
-
-    BoxClipping clipping = BoxClipping::None;
-    void clip_speed();
+    void tick(float time);
 };
 
 class Player : public MobEntity {
@@ -44,7 +46,14 @@ class Player : public MobEntity {
     inline std::string get_state() { return ""; }
     inline glm::vec3 get_bounding_box_size() { return {0.5, 1.6, 0.5}; }
 
+    int ticksToJump = 0;
+
     inline const static float moveSpeed = 2.5;
+    inline const static float maxAcceleration = 20.0f;
+    inline const static int jumpCooldown = 5;
+    inline const static int jumpSpeed = 6;
+
+    void tick(float time);
 };
 
 typedef std::shared_ptr<Player> pPlayer;
