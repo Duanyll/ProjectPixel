@@ -152,3 +152,15 @@ struct TileBoundingBox {
         return m->point;
     }
 };
+
+inline float horizonal_angle(glm::vec3 base, glm::vec3 dir) {
+    base = glm::normalize(base);
+    dir = glm::normalize(dir);
+    auto dot = glm::dot(base, dir);
+    auto cross = glm::cross(base, dir);
+    if (cross.y > 0) {
+        return -glm::degrees(std::acosf(dot));
+    } else {
+        return glm::degrees(std::acosf(dot));
+    }
+}

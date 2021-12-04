@@ -43,7 +43,7 @@ class Player : public MobEntity {
     inline Player(Level& level, const std::string& id) : MobEntity(level, id) {}
 
     inline std::string get_type() { return "player"; }
-    inline std::string get_state() { return ""; }
+    std::string get_state();
     inline glm::vec3 get_bounding_box_size() { return {0.5, 1.6, 0.5}; }
 
     int ticksToJump = 0;
@@ -51,7 +51,8 @@ class Player : public MobEntity {
     inline const static float moveSpeed = 2.5;
     inline const static float maxAcceleration = 20.0f;
     inline const static int jumpCooldown = 5;
-    inline const static int jumpSpeed = 6;
+    inline const static float jumpSpeed = 6;
+    inline const static float maxRotationSpeed = 720;
 
     void tick(float time);
 };

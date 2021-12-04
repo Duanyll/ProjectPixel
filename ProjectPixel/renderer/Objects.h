@@ -56,11 +56,12 @@ class Paperman : public EntityRenderer {
         Walking,
         Running,
         ZombieWalking
-    } animationType = AnimationType::Standing;
+    } animation = AnimationType::Standing;
     void step(float time);
     void render();
 
     static PapermanMatraial get_material_preset(const std::string& key);
+    void update(EntityInstruction& instruction);
 
    protected:
     float animationTimer = 0;

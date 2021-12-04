@@ -50,13 +50,29 @@ void LevelProcessor::handle_user_input(float duration) {
         } else {
             finalSpeed = {0, 0, 0};
         }
-        auto deltaSpeed = finalSpeed - glm::vec3(player->speed.x, 0, player->speed.z);
+        auto deltaSpeed =
+            finalSpeed - glm::vec3(player->speed.x, 0, player->speed.z);
         auto acc = Player::maxAcceleration * duration;
         if (glm::length(deltaSpeed) <= acc) {
             player->speed.x = finalSpeed.x;
             player->speed.z = finalSpeed.z;
         } else {
             player->speed += glm::normalize(deltaSpeed) * acc;
+        }
+
+        auto rotation = o["rotation"];
+        auto rotationAcc = Player::maxRotationSpeed * duration;
+        if (!std::isnan(rotation) && std::fabsf(rotation) > 1) {
+            if (rotation > rotationAcc) {
+                player->rotationSpeed = Player::maxRotationSpeed;
+            } else if (rotation < -rotationAcc) {
+                player->rotationSpeed = -Player::maxRotationSpeed;
+            } else {
+                player->rotationSpeed = 0;
+                player->facing += rotation;
+            }
+        } else {
+            player->rotationSpeed = 0;
         }
 
         while (!events.empty()) {

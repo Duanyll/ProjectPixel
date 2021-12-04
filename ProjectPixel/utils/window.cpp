@@ -21,6 +21,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 void cursor_move_callback(GLFWwindow* window, double xpos, double ypos) {
+    Window::execute_command("mouse");
     Window::execute_command("mouse-x", xpos);
     Window::execute_command("mouse-y", ypos);
 }
@@ -57,7 +58,7 @@ void Window::create(int width, int height, const std::string& title) {
     glfwSetFramebufferSizeCallback(handle, framebuffer_size_callback);
     
     // Turn on vsync
-    //glfwSwapInterval(1);
+    glfwSwapInterval(1);
 }
 
 void Window::stop_glfw() { glfwTerminate(); }

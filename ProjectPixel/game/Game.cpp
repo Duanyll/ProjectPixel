@@ -3,6 +3,7 @@
 
 #include "../utils/Utils.h"
 #include "../utils/Text.h"
+#include "../utils/Geomentry.h"
 
 Game::Game(LevelConfig& config)
     : config(config),
@@ -13,40 +14,56 @@ void Game::apply_to_window() {
     Window::register_command("move-front", [this](float _) {
         auto vecdir = glm::normalize(camera.groundFront) *
                       FrameTimer::get_last_frame_time();
-        processor.input.add_time("speed-x", vecdir.x);
-        processor.input.add_time("speed-z", vecdir.z);
+        processor.input.add("speed-x", vecdir.x);
+        processor.input.add("speed-z", vecdir.z);
     });
     Window::register_command("move-back", [this](float _) {
         auto vecdir = glm::normalize(-camera.groundFront) *
                       FrameTimer::get_last_frame_time();
-        processor.input.add_time("speed-x", vecdir.x);
-        processor.input.add_time("speed-z", vecdir.z);
+        processor.input.add("speed-x", vecdir.x);
+        processor.input.add("speed-z", vecdir.z);
     });
     Window::register_command("move-left", [this](float _) {
         auto vecdir =
             glm::normalize(-glm::cross(camera.groundFront, camera.up)) *
             FrameTimer::get_last_frame_time();
-        processor.input.add_time("speed-x", vecdir.x);
-        processor.input.add_time("speed-z", vecdir.z);
+        processor.input.add("speed-x", vecdir.x);
+        processor.input.add("speed-z", vecdir.z);
     });
     Window::register_command("move-right", [this](float _) {
         auto vecdir =
             glm::normalize(glm::cross(camera.groundFront, camera.up)) *
             FrameTimer::get_last_frame_time();
-        processor.input.add_time("speed-x", vecdir.x);
-        processor.input.add_time("speed-z", vecdir.z);
+        processor.input.add("speed-x", vecdir.x);
+        processor.input.add("speed-z", vecdir.z);
     });
     Window::register_command(
         "move-up", [this](float _) { processor.input.add_event("jump"); });
+    Window::register_command("mouse", [this](float _) {
+        auto it = entities.find("player1");
+        if (it != entities.end()) {
+            auto pos = it->second->position;
+            auto facing = it->second->facing;
+            auto control = camera.resolve_cursor_pos() - glm::vec3(pos.x, 0, pos.z);
+            if (glm::length(control) >= 1) {
+                processor.input.set(
+                    "rotation", horizonal_angle({sin(-glm::radians(facing)), 0,
+                                                 cos(glm::radians(facing))},
+                                                control));
+            }
+        }
+    });
     Window::register_command("diagnostics", [this](float _) {
         auto it = entities.find("player1");
         if (it != entities.end()) {
             auto pos = it->second->position;
             Logger::info(
-                std::format("X{:.2f} Y{:.2f} X{:.2f}", pos.x, pos.y, pos.z));
+                std::format("X{:.2f} Y{:.2f} Z{:.2f}", pos.x, pos.y, pos.z));
         } else {
             Logger::error(std::format("NO PLAYER!"));
         }
+        auto cursor = camera.resolve_cursor_pos();
+        Logger::info(std::format("Cursor X{:.2f} Z{:.2f}", cursor.x, cursor.z));
     });
     camera.apply_to_window();
 }

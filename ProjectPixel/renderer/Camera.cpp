@@ -3,13 +3,14 @@
 
 #include "../utils/FrameTimer.h"
 #include "../utils/Window.h"
+#include "../utils/Geomentry.h"
 #include "Uniform.h"
 
 glm::mat4 Camera::get_view() { return glm::lookAt(pos, pos + front, up); }
 
 glm::mat4 Camera::get_projection() {
-    return glm::perspective(glm::radians(fov),
-                            (float)Window::width / Window::height, 0.1f, 100.0f);
+    return glm::perspective(
+        glm::radians(fov), (float)Window::width / Window::height, 0.1f, 100.0f);
 }
 
 void Camera::apply_uniform() {
@@ -113,10 +114,35 @@ void FreeCamera::set_yaw_pitch(float yaw, float pitch) {
 }
 
 void ThirdPersonCamera::set_entity_position(glm::vec3 epos) {
+    groundPos = epos;
     pos = epos - groundFront * backwardDistance + glm::vec3(0, liftHeight, 0);
     front = epos - pos;
 }
 
 void ThirdPersonCamera::set_yaw(float yaw) {
     groundFront = {sin(-glm::radians(yaw)), 0, cos(glm::radians(yaw))};
+}
+
+glm::vec3 ThirdPersonCamera::resolve_cursor_pos() {
+    double cursorScreenX = 0, cursorScreenY = 0;
+    glfwGetCursorPos(Window::handle, &cursorScreenX, &cursorScreenY);
+    auto cursorClipX = cursorScreenX / Window::width * 2 - 1;
+    auto cursorClipY =
+        (Window::height - cursorScreenY) / Window::height * 2 - 1;
+    glm::vec3 clipPos{cursorClipX, cursorClipY, 0.0};
+    glm::vec4 cursorPosWorld4 = glm::inverse(get_view()) *
+                                glm::inverse(get_projection()) *
+                                glm::vec4(clipPos, 1.0);
+    glm::vec3 cursorPosWorld{cursorPosWorld4.x / cursorPosWorld4.w,
+                             cursorPosWorld4.y / cursorPosWorld4.w,
+                             cursorPosWorld4.z / cursorPosWorld4.w};
+    glm::vec3 cursorDirWorld = glm::normalize(cursorPosWorld - pos);
+    float d = -1;
+    if (test_line_plane_intersection(pos, cursorDirWorld, {0, 1, 0}, {0, 0, 0},
+                                     d)) {
+        auto res = pos + d * cursorDirWorld;
+        return {res.x, 0, res.z};
+    } else {
+        return {0, 0, 0};
+    }
 }

@@ -63,7 +63,7 @@ void Paperman::step(float time) {
     if (animationTotal > glm::pi<float>() * 2) {
         animationTotal -= glm::pi<float>() * 2;
     }
-    switch (animationType) {
+    switch (animation) {
         case AnimationType::Standing:
             animationTimer = 0;
             break;
@@ -129,6 +129,17 @@ PapermanMatraial Paperman::get_material_preset(const std::string& key) {
             AssetsHub::get_texture_2d("no-emission"), 32, false};
 }
 
+void Paperman::update(EntityInstruction& instruction) {
+    EntityRenderer::update(instruction);
+    if (instruction.state == "standing") {
+        animation = AnimationType::Standing;
+    } else if (instruction.state == "walking") {
+        animation = AnimationType::Walking;
+    } else if (instruction.state == "running") {
+        animation = AnimationType::Running;
+    }
+}
+
 glm::mat4 Paperman::get_head_model() {
     return glm::rotate(
         glm::rotate(glm::translate(glm::mat4(), {0, 28, 0}),
@@ -141,13 +152,13 @@ glm::mat4 Paperman::get_body_model() { return glm::mat4(); }
 
 glm::mat4 Paperman::get_larm_model() {
     auto base = glm::translate(glm::mat4(), {0, 22, 0});
-    if (animationType == AnimationType::Walking) {
+    if (animation == AnimationType::Walking) {
         base = glm::rotate(base, glm::radians(-30 * animationTimer),
                            {1.0, 0.0, 0.0});
-    } else if (animationType == AnimationType::ZombieWalking) {
+    } else if (animation == AnimationType::ZombieWalking) {
         base = glm::rotate(base, glm::radians(-80.0f - 5 * animationTimer),
                            {1.0, 0.0, 0.0});
-    } else if (animationType == AnimationType::Running) {
+    } else if (animation == AnimationType::Running) {
         base = glm::rotate(base, glm::radians(-60 * animationTimer),
                            {1.0, 0.0, 0.0});
     }
@@ -156,13 +167,13 @@ glm::mat4 Paperman::get_larm_model() {
 
 glm::mat4 Paperman::get_rarm_model() {
     auto base = glm::translate(glm::mat4(), {0, 22, 0});
-    if (animationType == AnimationType::Walking) {
+    if (animation == AnimationType::Walking) {
         base = glm::rotate(base, glm::radians(30 * animationTimer),
                            {1.0, 0.0, 0.0});
-    } else if (animationType == AnimationType::ZombieWalking) {
+    } else if (animation == AnimationType::ZombieWalking) {
         base = glm::rotate(base, glm::radians(-80.0f + 5 * animationTimer),
                            {1.0, 0.0, 0.0});
-    } else if (animationType == AnimationType::Running) {
+    } else if (animation == AnimationType::Running) {
         base = glm::rotate(base, glm::radians(60 * animationTimer),
                            {1.0, 0.0, 0.0});
     }
@@ -171,11 +182,11 @@ glm::mat4 Paperman::get_rarm_model() {
 
 glm::mat4 Paperman::get_lleg_model() {
     auto base = glm::translate(glm::mat4(), {0, 12, 0});
-    if (animationType == AnimationType::Walking ||
-        animationType == AnimationType::ZombieWalking) {
+    if (animation == AnimationType::Walking ||
+        animation == AnimationType::ZombieWalking) {
         base = glm::rotate(base, glm::radians(30 * animationTimer),
                            {1.0, 0.0, 0.0});
-    } else if (animationType == AnimationType::Running) {
+    } else if (animation == AnimationType::Running) {
         base = glm::rotate(base, glm::radians(45 * animationTimer),
                            {1.0, 0.0, 0.0});
     }
@@ -184,11 +195,11 @@ glm::mat4 Paperman::get_lleg_model() {
 
 glm::mat4 Paperman::get_rleg_model() {
     auto base = glm::translate(glm::mat4(), {0, 12, 0});
-    if (animationType == AnimationType::Walking ||
-        animationType == AnimationType::ZombieWalking) {
+    if (animation == AnimationType::Walking ||
+        animation == AnimationType::ZombieWalking) {
         base = glm::rotate(base, glm::radians(-30 * animationTimer),
                            {1.0, 0.0, 0.0});
-    } else if (animationType == AnimationType::Running) {
+    } else if (animation == AnimationType::Running) {
         base = glm::rotate(base, glm::radians(-45 * animationTimer),
                            {1.0, 0.0, 0.0});
     }
@@ -201,7 +212,7 @@ std::shared_ptr<EntityRenderer> get_entity_renderer(
     if (instruction.type == "player") {
         auto paperman = std::make_shared<Paperman>();
         paperman->material = Paperman::get_material_preset("droid");
-        paperman->animationType = Paperman::AnimationType::Walking;
+        paperman->animation = Paperman::AnimationType::Walking;
         e = paperman;
     }
 

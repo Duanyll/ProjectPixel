@@ -54,9 +54,14 @@ class ConcurrenceQueue {
 
 class InputForwarder {
    public:
-    inline void add_time(const std::string& command, float time) {
+    inline void add(const std::string& command, float time) {
         std::lock_guard<std::mutex> lg(mtx);
         keyTime[command] += time;
+    }
+
+    inline void set(const std::string& command, float time) {
+        std::lock_guard<std::mutex> lg(mtx);
+        keyTime[command] = time;
     }
 
     inline void add_event(const std::string& command) {

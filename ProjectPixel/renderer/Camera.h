@@ -53,7 +53,11 @@ class ThirdPersonCamera : public Camera {
 
     void set_entity_position(glm::vec3 pos);
     void set_yaw(float yaw);
-    glm::vec3 groundFront = glm::normalize(glm::vec3(1.0, 0.0, 1.0));
+    glm::vec3 groundPos = {0, 0, 0};
+    glm::vec3 groundFront = glm::normalize(glm::vec3(-1.0, 0.0, -1.0));
     float backwardDistance = 6.0;
     float liftHeight = 10.0;
+
+    // 返回鼠标射线在世界空间 xoz 平面的坐标
+    glm::vec3 resolve_cursor_pos();
 };

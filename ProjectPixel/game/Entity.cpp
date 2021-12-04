@@ -24,7 +24,8 @@ void MobEntity::step_motion(float time) {
     auto posDelta = speed * time;
     float dis = -1;
     auto box = get_bounding_box();
-    if (glm::length(posDelta) > 1e-4 && level.terrain->test_box_movement_intersection(box, posDelta, dis)) {
+    if (glm::length(posDelta) > 1e-4 &&
+        level.terrain->test_box_movement_intersection(box, posDelta, dis)) {
         box.a += glm::normalize(posDelta) * dis;
     } else {
         box.a += posDelta;
@@ -71,6 +72,26 @@ void Entity::clip_speed() {
     }
     if ((clipping & BoxClipping::NegZ) && speed.z < 0) {
         speed.z = 0;
+    }
+}
+
+std::string Player::get_state() {
+    if (clipping & BoxClipping::NegY) {
+        if (glm::length(speed) > 3) {
+            return "running";
+        } else if (glm::length(speed) > 1) {
+            return "walking";
+        } else {
+            return "standing";
+        }
+    } else {
+        if (speed.y > 4) {
+            return "running";
+        } else if (glm::length(glm::vec3(speed.x, 0, speed.z)) > 1) {
+            return "walking";
+        } else {
+            return "standing";
+        }
     }
 }
 
