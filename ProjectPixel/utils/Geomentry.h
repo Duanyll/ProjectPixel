@@ -154,8 +154,8 @@ struct TileBoundingBox {
 };
 
 inline float horizonal_angle(glm::vec3 base, glm::vec3 dir) {
-    base = glm::normalize(base);
-    dir = glm::normalize(dir);
+    base = glm::normalize(glm::vec3(base.x, 0, base.z));
+    dir = glm::normalize(glm::vec3(dir.x, 0, dir.z));
     auto dot = glm::dot(base, dir);
     auto cross = glm::cross(base, dir);
     if (cross.y > 0) {

@@ -13,6 +13,7 @@ class Entity {
     std::string id;
     glm::vec3 pos{0, 0, 0}, speed{0, 0, 0};
     float facing = 0, rotationSpeed = 0;
+    glm::vec3 get_front();
 
     virtual std::string get_type() = 0;
     virtual std::string get_state() = 0;
@@ -36,6 +37,9 @@ class MobEntity : public Entity {
     virtual TileBoundingBox get_bounding_box();
     void step_motion(float time);
     void tick(float time);
+
+    void walk(float time, glm::vec3 dir, float walkSpeed, float walkAcc);
+    void turn(float time, float angle, float maxSpeed);
 };
 
 class Player : public MobEntity {
@@ -58,3 +62,19 @@ class Player : public MobEntity {
 };
 
 typedef std::shared_ptr<Player> pPlayer;
+
+class Zombie : public MobEntity {
+   public:
+    inline Zombie(Level& level, const std::string& id) : MobEntity(level, id) {}
+    inline std::string get_type() { return "zombie"; }
+    inline std::string get_state() { return ""; }
+    inline glm::vec3 get_bounding_box_size() { return {0.5, 1.6, 0.5}; }
+
+    inline const static float moveSpeed = 2;
+    inline const static float maxAcceleration = 10.0f;
+    inline const static int jumpCooldown = 5;
+    inline const static float jumpSpeed = 6;
+    inline const static float maxRotationSpeed = 720;
+
+    void tick(float time);
+};

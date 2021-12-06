@@ -29,7 +29,8 @@ int main() {
              {GLFW_KEY_SPACE, {"move-up", KeyMode::KeyDown}},
              {GLFW_KEY_F3, {"diagnostics", KeyMode::KeyDown}},
              {GLFW_KEY_F, {"framerate", KeyMode::KeyDown}},
-             {GLFW_KEY_ESCAPE, {"exit", KeyMode::KeyUp}}});
+             {GLFW_KEY_ESCAPE, {"exit", KeyMode::KeyUp}},
+             {GLFW_KEY_LEFT_CONTROL, {"run", KeyMode::Toggle}}});
     }
     Window::register_command("exit", [](float _) {
         glfwSetWindowShouldClose(Window::handle, true);

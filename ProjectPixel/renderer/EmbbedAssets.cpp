@@ -9,6 +9,8 @@ std::unordered_map<std::string, std::string> EmbbedAssets::texturePath{
     {"paperman-droid-diffuse", "assets/droid-diffuse.png"},
     {"paperman-droid-specular", "assets/droid-specular.png"},
     {"paperman-droid-emission", "assets/droid-emission.png"},
+    {"paperman-zombie-diffuse", "assets/zombie-diffuse.png"},
+    {"paperman-zombie-specular", "assets/zombie-specular.png"},
     {"terrain-stone-diffuse", "assets/terrain/smooth_stone.png"},
     {"terrain-stone-specular", "assets/terrain/smooth_stone-specular.png"},
     {"terrain-planks-diffuse", "assets/terrain/oak_planks.png"},

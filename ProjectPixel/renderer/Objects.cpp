@@ -123,6 +123,10 @@ PapermanMatraial Paperman::get_material_preset(const std::string& key) {
                 AssetsHub::get_texture_2d("paperman-droid-specular"),
                 AssetsHub::get_texture_2d("paperman-droid-emission"), 64,
                 false};
+    } else if (key == "zombie") {
+        return {AssetsHub::get_texture_2d("paperman-zombie-diffuse"),
+                AssetsHub::get_texture_2d("paperman-zombie-specular"),
+                AssetsHub::get_texture_2d("no-emission"), 32, false};
     }
     return {AssetsHub::get_texture_2d("paperman-default"),
             AssetsHub::get_texture_2d("no-specular"),
@@ -213,6 +217,11 @@ std::shared_ptr<EntityRenderer> get_entity_renderer(
         auto paperman = std::make_shared<Paperman>();
         paperman->material = Paperman::get_material_preset("droid");
         paperman->animation = Paperman::AnimationType::Walking;
+        e = paperman;
+    } else if (instruction.type == "zombie") {
+        auto paperman = std::make_shared<Paperman>();
+        paperman->material = Paperman::get_material_preset("zombie");
+        paperman->animation = Paperman::AnimationType::ZombieWalking;
         e = paperman;
     }
 

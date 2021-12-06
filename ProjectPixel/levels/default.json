@@ -1,13 +1,21 @@
 {
-    "version": 1,
-    "xSize": 32,
-    "ySize": 8,
-    "zSize": 32,
-    "terrainType": "boxStack",
-    "terrainPath": "default-terrain.txt",
-    "playerSpawnPos": {
-        "x": 5,
-        "y": 0,
-        "z": 10
-    }
+  "version": 1,
+  "xSize": 32,
+  "ySize": 8,
+  "zSize": 32,
+  "terrainType": "boxStack",
+  "terrainPath": "default-terrain.txt",
+  "playerSpawnPos": {
+    "x": 5,
+    "y": 0,
+    "z": 10
+  },
+  "mobs": {
+    "zombie": [
+      { "x": 16, "y": 0, "z": 10 },
+      { "x": 19, "y": 0, "z": 27 },
+      { "x": 25, "y": 0, "z": 27 },
+      { "x": 22, "y": 1, "z": 8 }
+    ]
+  }
 }

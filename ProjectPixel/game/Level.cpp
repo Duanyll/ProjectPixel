@@ -13,8 +13,13 @@ pTerrain LevelConfig::get_terrain() {
     }
 }
 
-Level::Level(LevelConfig& config) : config(config) {
+Level::Level(LevelConfig& config) : config(config), entityRegistry(4, config.xSize, config.zSize) {
     terrain = config.get_terrain();
     auto player = add_entity<Player>("player1");
     player->pos = config.playerSpawnPos;
+
+    for (auto& pos : config.mobs["zombie"]) {
+        auto zombie = add_entity<Zombie>(generate_unique_id("zombie"));
+        zombie->pos = pos;
+    }
 }

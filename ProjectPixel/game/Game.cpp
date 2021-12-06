@@ -39,18 +39,34 @@ void Game::apply_to_window() {
     });
     Window::register_command(
         "move-up", [this](float _) { processor.input.add_event("jump"); });
+    Window::register_command("run", [this](float isDown) {
+        if (isDown != 0) {
+            processor.input.set_flag("run");
+        } else {
+            processor.input.clear_flag("run");
+        }
+    });
     Window::register_command("mouse", [this](float _) {
         auto it = entities.find("player1");
         if (it != entities.end()) {
             auto pos = it->second->position;
             auto facing = it->second->facing;
-            auto control = camera.resolve_cursor_pos() - glm::vec3(pos.x, 0, pos.z);
+            auto control =
+                camera.resolve_cursor_pos() - glm::vec3(pos.x, 0, pos.z);
             if (glm::length(control) >= 1) {
                 processor.input.set(
                     "rotation", horizonal_angle({sin(-glm::radians(facing)), 0,
                                                  cos(glm::radians(facing))},
                                                 control));
             }
+        }
+    });
+    Window::register_command("mouse-button", [this](float _) {
+        if (glfwGetMouseButton(Window::handle, GLFW_MOUSE_BUTTON_RIGHT) ==
+            GLFW_PRESS) {
+            processor.input.set_flag("aim");
+        } else {
+            processor.input.clear_flag("aim");
         }
     });
     Window::register_command("diagnostics", [this](float _) {

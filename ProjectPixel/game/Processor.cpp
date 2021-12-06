@@ -26,8 +26,10 @@ void LevelProcessor::work() {
 }
 
 void LevelProcessor::step_motion(float duration) {
+    level.entityRegistry.clear();
     for (auto& e : level.entities) {
         e.second->step_motion(duration);
+        level.entityRegistry.add(e.second);
     }
 }
 
@@ -40,39 +42,29 @@ void LevelProcessor::tick_entities(float duration) {
 void LevelProcessor::handle_user_input(float duration) {
     std::unordered_map<std::string, float> o;
     std::queue<std::string> events;
-    input.collect(o, events);
+    std::unordered_set<std::string> flags;
+    input.poll(o, events, flags);
     auto player = std::dynamic_pointer_cast<Player>(level.entities["player1"]);
     if (player) {
         glm::vec3 controlSpeed{o["speed-x"], 0, o["speed-z"]};
-        glm::vec3 finalSpeed;
-        if (glm::length(controlSpeed) > 0.01) {
-            finalSpeed = glm::normalize(controlSpeed) * Player::moveSpeed;
+        if (flags.contains("aim")) {
+            player->walk(duration, controlSpeed, Player::moveSpeed * 0.6,
+                         Player::maxAcceleration);
+        } else if (flags.contains("run")) {
+            player->walk(duration, controlSpeed, Player::moveSpeed * 1.5,
+                         Player::maxAcceleration);
         } else {
-            finalSpeed = {0, 0, 0};
-        }
-        auto deltaSpeed =
-            finalSpeed - glm::vec3(player->speed.x, 0, player->speed.z);
-        auto acc = Player::maxAcceleration * duration;
-        if (glm::length(deltaSpeed) <= acc) {
-            player->speed.x = finalSpeed.x;
-            player->speed.z = finalSpeed.z;
-        } else {
-            player->speed += glm::normalize(deltaSpeed) * acc;
+            player->walk(duration, controlSpeed, Player::moveSpeed,
+                         Player::maxAcceleration);
         }
 
-        auto rotation = o["rotation"];
-        auto rotationAcc = Player::maxRotationSpeed * duration;
-        if (!std::isnan(rotation) && std::fabsf(rotation) > 1) {
-            if (rotation > rotationAcc) {
-                player->rotationSpeed = Player::maxRotationSpeed;
-            } else if (rotation < -rotationAcc) {
-                player->rotationSpeed = -Player::maxRotationSpeed;
-            } else {
-                player->rotationSpeed = 0;
-                player->facing += rotation;
-            }
+        if (flags.contains("aim")) {
+            auto rotation = o["rotation"];
+            player->turn(duration, rotation, Player::maxRotationSpeed);
         } else {
-            player->rotationSpeed = 0;
+            player->turn(duration,
+                         horizonal_angle(player->get_front(), controlSpeed),
+                         Player::maxRotationSpeed);
         }
 
         while (!events.empty()) {

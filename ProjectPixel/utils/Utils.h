@@ -55,3 +55,8 @@ inline typename std::enable_if<std::is_enum<T>::value, T>::type& operator^=(
     T& a, T b) {
     return (T&)((int&)a ^= (int)b);
 }
+
+inline std::string generate_unique_id(const std::string& prefix = "id") {
+    static int counter = 0;
+    return std::format("{}-{}", prefix, ++counter);
+}

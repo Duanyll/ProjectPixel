@@ -69,8 +69,19 @@ class InputForwarder {
         keyEvents.push(command);
     }
 
-    inline void collect(std::unordered_map<std::string, float>& outKeyTime,
-                        std::queue<std::string>& outKeyEvents) {
+    inline void set_flag(const std::string& f) {
+        std::lock_guard<std::mutex> lg(mtx);
+        flags.insert(f);
+    }
+
+    inline void clear_flag(const std::string& f) {
+        std::lock_guard<std::mutex> lg(mtx);
+        flags.erase(f);
+    }
+
+    inline void poll(std::unordered_map<std::string, float>& outKeyTime,
+                     std::queue<std::string>& outKeyEvents,
+                     std::unordered_set<std::string>& outFlags) {
         std::lock_guard<std::mutex> lg(mtx);
         for (auto& i : keyTime) {
             outKeyTime[i.first] += i.second;
@@ -80,12 +91,16 @@ class InputForwarder {
             outKeyEvents.push(keyEvents.front());
             keyEvents.pop();
         }
+        for (auto& i : flags) {
+            outFlags.insert(i);
+        }
     }
 
    private:
     mutable std::mutex mtx;
     std::unordered_map<std::string, float> keyTime;
     std::queue<std::string> keyEvents;
+    std::unordered_set<std::string> flags;
 };
 
 template <typename T>

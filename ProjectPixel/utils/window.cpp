@@ -32,6 +32,10 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     Window::execute_command("scroll-x", xoffset);
     Window::execute_command("scroll-y", yoffset);
 }
+void mouse_button_callback(GLFWwindow* window, int button, int action,
+                           int mods) {
+    Window::execute_command("mouse-button");
+}
 
 void Window::create(int width, int height, const std::string& title) {
     Window::width = width;
@@ -56,6 +60,7 @@ void Window::create(int width, int height, const std::string& title) {
     glfwSetCursorEnterCallback(handle, cursor_enter_callback);
     glfwSetScrollCallback(handle, scroll_callback);
     glfwSetFramebufferSizeCallback(handle, framebuffer_size_callback);
+    glfwSetMouseButtonCallback(handle, mouse_button_callback);
     
     // Turn on vsync
     glfwSwapInterval(1);

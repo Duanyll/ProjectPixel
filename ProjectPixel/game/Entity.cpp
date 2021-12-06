@@ -3,6 +3,10 @@
 
 Entity::Entity(Level& level, const std::string& id) : level(level), id(id) {}
 
+glm::vec3 Entity::get_front() {
+    return {sin(-glm::radians(facing)), 0, cos(glm::radians(facing))};
+}
+
 EntityInstruction Entity::get_instruction() {
     return {id, get_type(), get_state(), pos, speed, facing, rotationSpeed};
 }
@@ -52,6 +56,53 @@ void MobEntity::tick(float time) {
         speed.x = groundSpeed.x;
         speed.z = groundSpeed.z;
     }
+
+    auto nearby = level.entityRegistry.query_square_range(pos, 1);
+    for (auto& i : nearby) {
+        if (i.get() == this) continue;
+        auto e = std::dynamic_pointer_cast<MobEntity>(i);
+        if (e) {
+            auto dis = glm::length(pos - e->pos);
+            if (dis <= 1) {
+                auto dir = glm::normalize(pos - e->pos);
+                speed += dir / (dis * dis) / 2.0f;
+            }
+        }
+    }
+}
+
+void MobEntity::walk(float time, glm::vec3 dir, float walkSpeed,
+                     float walkAcc) {
+    glm::vec3 finalSpeed;
+    if (glm::length(dir) > 0.01) {
+        finalSpeed = glm::normalize(dir) * walkSpeed;
+    } else {
+        finalSpeed = {0, 0, 0};
+    }
+    auto deltaSpeed = finalSpeed - glm::vec3(speed.x, 0, speed.z);
+    auto acc = walkAcc * time;
+    if (glm::length(deltaSpeed) <= acc) {
+        speed.x = finalSpeed.x;
+        speed.z = finalSpeed.z;
+    } else {
+        speed += glm::normalize(deltaSpeed) * acc;
+    }
+}
+
+void MobEntity::turn(float time, float angle, float maxSpeed) {
+    auto rotationAcc = maxSpeed * time;
+    if (!std::isnan(angle) && std::fabsf(angle) > 1) {
+        if (angle > rotationAcc) {
+            rotationSpeed = maxSpeed;
+        } else if (angle < -rotationAcc) {
+            rotationSpeed = -maxSpeed;
+        } else {
+            rotationSpeed = 0;
+            facing += angle;
+        }
+    } else {
+        rotationSpeed = 0;
+    }
 }
 
 void Entity::clip_speed() {
@@ -98,4 +149,29 @@ std::string Player::get_state() {
 void Player::tick(float time) {
     MobEntity::tick(time);
     if (ticksToJump > 0) ticksToJump--;
+}
+
+void Zombie::tick(float time) {
+    MobEntity::tick(time);
+    auto it = level.entities.find("player1");
+    if (it != level.entities.end()) {
+        auto player = std::dynamic_pointer_cast<Player>(it->second);
+        auto dis = glm::length(player->pos - pos);
+        if (dis > 1 && dis < 8) {
+            auto dir = glm::normalize(player->pos - pos);
+            float d = -1;
+            if (level.terrain->test_line_intersection(
+                    {pos.x, pos.y + 1.5, pos.z}, dir, d) &&
+                d < dis) {
+                walk(time, {0, 0, 0}, moveSpeed, maxAcceleration);
+                turn(time, 0, maxRotationSpeed);
+            } else {
+                walk(time, dir, moveSpeed, maxAcceleration);
+                turn(time, horizonal_angle(get_front(), dir), maxRotationSpeed);
+            }
+        } else {
+            walk(time, {0, 0, 0}, moveSpeed, maxAcceleration);
+            turn(time, 0, maxRotationSpeed);
+        }
+    }
 }
