@@ -8,7 +8,7 @@ glm::vec3 Entity::get_front() {
 }
 
 EntityInstruction Entity::get_instruction() {
-    return {id, get_type(), get_state(), pos, speed, facing, rotationSpeed};
+    return {id, get_type(), {}, pos, speed, facing, rotationSpeed};
 }
 
 TileBoundingBox MobEntity::get_bounding_box() {
@@ -74,8 +74,8 @@ void MobEntity::tick(float time) {
 void MobEntity::walk(float time, glm::vec3 dir, float walkSpeed,
                      float walkAcc) {
     glm::vec3 finalSpeed;
-    if (glm::length(dir) > 0.01) {
-        finalSpeed = glm::normalize(dir) * walkSpeed;
+    if (glm::length(glm::vec3(dir.x, 0, dir.z)) > 0.01) {
+        finalSpeed = glm::normalize(glm::vec3(dir.x, 0, dir.z)) * walkSpeed;
     } else {
         finalSpeed = {0, 0, 0};
     }
@@ -126,29 +126,39 @@ void Entity::clip_speed() {
     }
 }
 
-std::string Player::get_state() {
-    if (clipping & BoxClipping::NegY) {
-        if (glm::length(speed) > 3) {
-            return "running";
-        } else if (glm::length(speed) > 1) {
-            return "walking";
-        } else {
-            return "standing";
-        }
-    } else {
-        if (speed.y > 4) {
-            return "running";
-        } else if (glm::length(glm::vec3(speed.x, 0, speed.z)) > 1) {
-            return "walking";
-        } else {
-            return "standing";
-        }
-    }
-}
-
 void Player::tick(float time) {
     MobEntity::tick(time);
     if (ticksToJump > 0) ticksToJump--;
+}
+
+void Player::jump() {
+    if (ticksToJump == 0 && (clipping & BoxClipping::NegY)) {
+        speed.y = jumpSpeed;
+    }
+}
+
+EntityInstruction Player::get_instruction() {
+    auto i = Entity::get_instruction();
+    i.state[1] = (char)HandAction::None;
+    i.state[2] = (char)Item::DiamondSword;
+    if (clipping & BoxClipping::NegY) {
+        if (glm::length(speed) > 3) {
+            i.state[0] = (char)LegAction::Running;
+        } else if (glm::length(speed) > 1) {
+            i.state[0] = (char)LegAction::Walking;
+        } else {
+            i.state[0] = (char)LegAction::Standing;
+        }
+    } else {
+        if (speed.y > 4) {
+            i.state[0] = (char)LegAction::Running;
+        } else if (glm::length(glm::vec3(speed.x, 0, speed.z)) > 1) {
+            i.state[0] = (char)LegAction::Walking;
+        } else {
+            i.state[0] = (char)LegAction::Standing;
+        }
+    }
+    return i;
 }
 
 void Zombie::tick(float time) {
@@ -157,21 +167,38 @@ void Zombie::tick(float time) {
     if (it != level.entities.end()) {
         auto player = std::dynamic_pointer_cast<Player>(it->second);
         auto dis = glm::length(player->pos - pos);
-        if (dis > 1 && dis < 8) {
-            auto dir = glm::normalize(player->pos - pos);
-            float d = -1;
-            if (level.terrain->test_line_intersection(
-                    {pos.x, pos.y + 1.5, pos.z}, dir, d) &&
-                d < dis) {
-                walk(time, {0, 0, 0}, moveSpeed, maxAcceleration);
-                turn(time, 0, maxRotationSpeed);
-            } else {
-                walk(time, dir, moveSpeed, maxAcceleration);
-                turn(time, horizonal_angle(get_front(), dir), maxRotationSpeed);
+        if (dis > 0.5 && dis < 8 &&
+            level.terrain->test_connectivity(get_head_pos(),
+                                             player->get_head_pos())) {
+            walk(time, player->pos - pos, moveSpeed, maxAcceleration);
+            turn(time, horizonal_angle(get_front(), player->pos - pos),
+                 maxRotationSpeed);
+            if (player->pos.y > pos.y + 0.5 && (clipping & BoxClipping::NegY) &&
+                (clipping & (BoxClipping::PosX | BoxClipping::PosZ |
+                             BoxClipping::NegX | BoxClipping::NegZ))) {
+                jump();
             }
         } else {
             walk(time, {0, 0, 0}, moveSpeed, maxAcceleration);
             turn(time, 0, maxRotationSpeed);
         }
     }
+}
+
+void Zombie::jump() {
+    if (ticksToJump == 0 && (clipping & BoxClipping::NegY)) {
+        speed.y = jumpSpeed;
+    }
+}
+
+EntityInstruction Zombie::get_instruction() {
+    auto i = Entity::get_instruction();
+    i.state[1] = (char)HandAction::ZombieHanging;
+    i.state[2] = (char)Item::DiamondAxe;
+    if (glm::length(speed) > 1) {
+        i.state[0] = (char)LegAction::Walking;
+    } else {
+        i.state[0] = (char)LegAction::Standing;
+    }
+    return i;
 }

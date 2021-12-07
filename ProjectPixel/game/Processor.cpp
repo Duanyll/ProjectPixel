@@ -71,10 +71,7 @@ void LevelProcessor::handle_user_input(float duration) {
             auto i = events.front();
             events.pop();
             if (i == "jump") {
-                if (player->ticksToJump == 0 &&
-                    (player->clipping & BoxClipping::NegY)) {
-                    player->speed.y = Player::jumpSpeed;
-                }
+                player->jump();
             }
         }
     }

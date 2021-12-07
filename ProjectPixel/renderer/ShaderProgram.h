@@ -71,6 +71,12 @@ class EntityShader : public ShaderProgram {
 
     const static int storeId = 4;
 
+    struct Vertex {
+        glm::vec3 pos;
+        glm::vec3 norm;
+        glm::vec2 tpos;
+    };
+
    private:
     GLint diffuse_pos, specular_pos, emission_pos, shininess_pos;
     GLint model_pos, normal_pos;

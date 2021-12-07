@@ -53,32 +53,13 @@ void EntityRenderer::update(EntityInstruction& instruction) {
 }
 
 glm::mat4 Paperman::get_model() {
-    return glm::scale(EntityRenderer::get_model(),
-                      {0.05, 0.05, 0.05});
+    return glm::scale(EntityRenderer::get_model(), {0.05, 0.05, 0.05});
 }
 
 void Paperman::step(float time) {
     EntityRenderer::step(time);
-    animationTotal += time;
-    if (animationTotal > glm::pi<float>() * 2) {
-        animationTotal -= glm::pi<float>() * 2;
-    }
-    switch (animation) {
-        case AnimationType::Standing:
-            animationTimer = 0;
-            break;
-        case AnimationType::Walking:
-            animationTimer = glm::sin(animationTotal * 8);
-            break;
-        case AnimationType::Running:
-            animationTimer = glm::sin(animationTotal * 12);
-            break;
-        case AnimationType::ZombieWalking:
-            animationTimer = glm::sin(animationTotal * 5);
-            break;
-        default:
-            break;
-    }
+    legBase.step(time);
+    legReal.step_to(time, legBase.value);
 }
 
 void Paperman::render() {
@@ -115,6 +96,15 @@ void Paperman::render() {
 
     shader->configure(material, baseModel * get_rleg_model());
     rlegVAO->draw();
+
+    if (handItem != Item::None) {
+        pVAO itemVAO;
+        Material itemMaterial;
+        get_item_resources(handItem, itemVAO, itemMaterial);
+        shader->configure(itemMaterial,
+                          EntityRenderer::get_model() * get_item_model());
+        itemVAO->draw();
+    }
 }
 
 PapermanMatraial Paperman::get_material_preset(const std::string& key) {
@@ -133,14 +123,31 @@ PapermanMatraial Paperman::get_material_preset(const std::string& key) {
             AssetsHub::get_texture_2d("no-emission"), 32, false};
 }
 
-void Paperman::update(EntityInstruction& instruction) {
-    EntityRenderer::update(instruction);
-    if (instruction.state == "standing") {
-        animation = AnimationType::Standing;
-    } else if (instruction.state == "walking") {
-        animation = AnimationType::Walking;
-    } else if (instruction.state == "running") {
-        animation = AnimationType::Running;
+void Paperman::update(EntityInstruction& i) {
+    EntityRenderer::update(i);
+
+    set_leg_action((LegAction)i.state[0]);
+    hand = (HandAction)i.state[1];
+    handItem = (Item)i.state[2];
+}
+
+void Paperman::set_leg_action(LegAction action) {
+    if (leg == action) return;
+    leg = action;
+    switch (action) {
+        case LegAction::Standing:
+            legBase.amplitude = 0;
+            break;
+        case LegAction::Walking:
+            legBase.amplitude = 30;
+            legBase.peirod = 1;
+            break;
+        case LegAction::Running:
+            legBase.amplitude = 60;
+            legBase.peirod = 0.5;
+            break;
+        default:
+            break;
     }
 }
 
@@ -156,58 +163,80 @@ glm::mat4 Paperman::get_body_model() { return glm::mat4(); }
 
 glm::mat4 Paperman::get_larm_model() {
     auto base = glm::translate(glm::mat4(), {0, 22, 0});
-    if (animation == AnimationType::Walking) {
-        base = glm::rotate(base, glm::radians(-30 * animationTimer),
-                           {1.0, 0.0, 0.0});
-    } else if (animation == AnimationType::ZombieWalking) {
-        base = glm::rotate(base, glm::radians(-80.0f - 5 * animationTimer),
-                           {1.0, 0.0, 0.0});
-    } else if (animation == AnimationType::Running) {
-        base = glm::rotate(base, glm::radians(-60 * animationTimer),
-                           {1.0, 0.0, 0.0});
+    if (hand != HandAction::ZombieHanging) {
+        base =
+            glm::rotate(base, glm::radians(-0.8f * legReal.value), {1, 0, 0});
+    } else {
+        base = glm::rotate(base, glm::radians(-80.0f - 0.05f * legReal.value),
+                           {1, 0, 0});
     }
     return base;
 }
 
 glm::mat4 Paperman::get_rarm_model() {
     auto base = glm::translate(glm::mat4(), {0, 22, 0});
-    if (animation == AnimationType::Walking) {
-        base = glm::rotate(base, glm::radians(30 * animationTimer),
-                           {1.0, 0.0, 0.0});
-    } else if (animation == AnimationType::ZombieWalking) {
-        base = glm::rotate(base, glm::radians(-80.0f + 5 * animationTimer),
-                           {1.0, 0.0, 0.0});
-    } else if (animation == AnimationType::Running) {
-        base = glm::rotate(base, glm::radians(60 * animationTimer),
-                           {1.0, 0.0, 0.0});
+    if (hand != HandAction::ZombieHanging) {
+        base = glm::rotate(base, glm::radians(0.8f * legReal.value), {1, 0, 0});
+    } else {
+        base = glm::rotate(base, glm::radians(-80.0f + 0.05f * legReal.value),
+                           {1, 0, 0});
     }
     return base;
 }
 
 glm::mat4 Paperman::get_lleg_model() {
     auto base = glm::translate(glm::mat4(), {0, 12, 0});
-    if (animation == AnimationType::Walking ||
-        animation == AnimationType::ZombieWalking) {
-        base = glm::rotate(base, glm::radians(30 * animationTimer),
-                           {1.0, 0.0, 0.0});
-    } else if (animation == AnimationType::Running) {
-        base = glm::rotate(base, glm::radians(45 * animationTimer),
-                           {1.0, 0.0, 0.0});
-    }
+    base = glm::rotate(base, glm::radians(legReal.value), {1, 0, 0});
     return base;
 }
 
 glm::mat4 Paperman::get_rleg_model() {
     auto base = glm::translate(glm::mat4(), {0, 12, 0});
-    if (animation == AnimationType::Walking ||
-        animation == AnimationType::ZombieWalking) {
-        base = glm::rotate(base, glm::radians(-30 * animationTimer),
-                           {1.0, 0.0, 0.0});
-    } else if (animation == AnimationType::Running) {
-        base = glm::rotate(base, glm::radians(-45 * animationTimer),
-                           {1.0, 0.0, 0.0});
-    }
+    base = glm::rotate(base, glm::radians(-legReal.value), {1, 0, 0});
     return base;
+}
+
+glm::mat4 Paperman::get_item_model() {
+    glm::mat4 base = glm::translate(glm::mat4(), {0, 1.05, 0});
+    if (hand != HandAction::ZombieHanging) {
+        base = glm::rotate(base, glm::radians(0.8f * legReal.value), {1, 0, 0});
+    } else {
+        base = glm::rotate(base, glm::radians(-80.0f + 0.05f * legReal.value),
+                           {1, 0, 0});
+    }
+    base = glm::translate(base, {-0.75, 0, 0.29});
+    base = glm::rotate(base, glm::radians(-30.0f), {1, 0, 0});
+    base = glm::rotate(base, glm::radians(-45.0f), {0, 0, 1});
+    base = glm::rotate(base, glm::radians(-120.0f), {0, 1, 0});
+    base = glm::translate(base, {-1, 0, -1});
+    return base;
+}
+
+void Paperman::get_item_resources(Item item, pVAO& vao, Material& material) {
+    switch (item) {
+        case Item::None:
+            break;
+        case Item::DiamondSword:
+            vao = AssetsHub::get_vao("item-diamond-sword");
+            material = {AssetsHub::get_texture_2d("item-diamond-sword"),
+                        AssetsHub::get_texture_2d("item-diamond-sword-specular"),
+                        AssetsHub::get_texture_2d("no-emission"), 32};
+            break;
+        case Item::DiamondAxe:
+            vao = AssetsHub::get_vao("item-diamond-axe");
+            material = {AssetsHub::get_texture_2d("item-diamond-axe"),
+                        AssetsHub::get_texture_2d("item-diamond-axe-specular"),
+                        AssetsHub::get_texture_2d("no-emission"), 32};
+            break;
+        case Item::Bow:
+            vao = AssetsHub::get_vao("item-bow");
+            material = {AssetsHub::get_texture_2d("item-bow"),
+                        AssetsHub::get_texture_2d("no-specular"),
+                        AssetsHub::get_texture_2d("no-emission"), 32};
+            break;
+        default:
+            break;
+    }
 }
 
 std::shared_ptr<EntityRenderer> get_entity_renderer(
@@ -216,16 +245,40 @@ std::shared_ptr<EntityRenderer> get_entity_renderer(
     if (instruction.type == "player") {
         auto paperman = std::make_shared<Paperman>();
         paperman->material = Paperman::get_material_preset("droid");
-        paperman->animation = Paperman::AnimationType::Walking;
+        paperman->handItem = Item::DiamondSword;
         e = paperman;
     } else if (instruction.type == "zombie") {
         auto paperman = std::make_shared<Paperman>();
         paperman->material = Paperman::get_material_preset("zombie");
-        paperman->animation = Paperman::AnimationType::ZombieWalking;
+        paperman->hand = HandAction::ZombieHanging;
         e = paperman;
     }
 
     e->update(instruction);
 
     return e;
+}
+
+void SineAnimation::step(float time) {
+    if (amplitude == 0) {
+        value = 0;
+        return;
+    }
+    total += time * 2 * glm::pi<float>() / peirod;
+    if (total > 2 * glm::pi<float>()) {
+        total -= 2 * glm::pi<float>();
+    }
+    value = amplitude * std::sin(total);
+}
+
+void AccelerateAdapter::step_to(float time, float target) {
+    auto delta = target - value;
+    auto acc = maxAcc * time;
+    if (std::abs(delta) <= acc) {
+        value = target;
+    } else if (delta > 0) {
+        value += acc;
+    } else {
+        value -= acc;
+    }
 }

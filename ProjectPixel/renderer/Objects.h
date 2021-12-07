@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include "AssetsHub.h"
+#include "../game/Instructions.h"
 
 class RenderObject {
    public:
@@ -24,7 +25,6 @@ class Skybox : public RenderObject {
     void render();
 };
 
-struct EntityInstruction;
 class EntityRenderer : public RenderObject {
    public:
     glm::vec3 position{0, 0, 0};
@@ -43,6 +43,23 @@ struct PapermanMatraial : Material {
     bool is_slim;
 };
 
+class SineAnimation {
+   public:
+    float value = 0;
+    float amplitude = 1, peirod = 1;
+    void step(float time);
+
+   private:
+    float total = 0;
+};
+
+class AccelerateAdapter {
+   public:
+    float value = 0;
+    float maxAcc = 1;
+    void step_to(float time, float target);
+};
+
 class Paperman : public EntityRenderer {
    public:
     glm::mat4 get_model();
@@ -51,21 +68,20 @@ class Paperman : public EntityRenderer {
     float headYaw = 0;
     float headPitch = 0;
 
-    enum class AnimationType {
-        Standing,
-        Walking,
-        Running,
-        ZombieWalking
-    } animation = AnimationType::Standing;
+    HandAction hand = HandAction::None;
+    LegAction leg = LegAction::Standing;
+    Item handItem = Item::None;
+
     void step(float time);
     void render();
 
     static PapermanMatraial get_material_preset(const std::string& key);
     void update(EntityInstruction& instruction);
+    void set_leg_action(LegAction action);
 
    protected:
-    float animationTimer = 0;
-    float animationTotal = 0;
+    SineAnimation legBase;
+    AccelerateAdapter legReal{ 0, 360 };
 
    private:
     glm::mat4 get_head_model();
@@ -74,6 +90,9 @@ class Paperman : public EntityRenderer {
     glm::mat4 get_rarm_model();
     glm::mat4 get_lleg_model();
     glm::mat4 get_rleg_model();
+    glm::mat4 get_item_model();
+
+    void get_item_resources(Item item, pVAO& vao, Material& material);
 };
 
 std::shared_ptr<EntityRenderer> get_entity_renderer(

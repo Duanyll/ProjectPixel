@@ -48,14 +48,8 @@ Material BoxStackTerrain::create_material() {
             AssetsHub::get_texture_2d("no-emission"), 32};
 }
 
-struct vertex {
-    glm::vec3 pos;
-    glm::vec3 norm;
-    glm::vec2 tpos;
-};
-
 pVAO BoxStackTerrain::create_vao(Material material) {
-    std::vector<vertex> res;
+    std::vector<EntityShader::Vertex> res;
     auto face = [&](glm::vec3 A, glm::vec3 B, glm::vec3 C, glm::vec3 D,
                     glm::vec3 norm, const std::vector<glm::vec2>& texPos) {
         res.insert(res.end(), {{A, norm, texPos[3]},
@@ -109,7 +103,7 @@ pVAO BoxStackTerrain::create_vao(Material material) {
     }
     auto vao = std::make_shared<VAO>();
     vao->load_interleave_vbo(reinterpret_cast<float*>(res.data()),
-                             res.size() * sizeof(vertex), {3, 3, 2});
+                             res.size() * sizeof(EntityShader::Vertex), {3, 3, 2});
     return vao;
 }
 
@@ -302,6 +296,16 @@ BoxClipping ITerrain::clip_box(TileBoundingBox& box) {
         }
     }
     return result;
+}
+
+bool ITerrain::test_connectivity(glm::vec3 a, glm::vec3 b) { 
+    auto dir = b - a;
+    auto dis = glm::length(dir);
+    if (dis < 0.01) {
+        return !test_point_intersection(a);
+    }
+    float d = -1;
+    return !test_line_intersection(a, dir, d);
 }
 
 std::vector<TileBoundingBox> ITerrain::get_bounding_boxes_range(

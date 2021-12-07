@@ -20,6 +20,8 @@ class ITerrain {
                                                 glm::vec3 dir, float& dis);
     virtual BoxClipping clip_point(glm::vec3& point);
     virtual BoxClipping clip_box(TileBoundingBox& box);
+    virtual bool test_connectivity(glm::vec3 a, glm::vec3 b);
+
     virtual Tile get_tile(glm::vec3 point) = 0;
     virtual Material create_material() = 0;
     virtual pVAO create_vao(Material material) = 0;

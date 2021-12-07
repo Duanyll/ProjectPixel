@@ -16,7 +16,6 @@ class Entity {
     glm::vec3 get_front();
 
     virtual std::string get_type() = 0;
-    virtual std::string get_state() = 0;
 
     inline virtual void step_motion(float time) {}
     BoxClipping clipping = BoxClipping::None;
@@ -35,6 +34,7 @@ class MobEntity : public Entity {
 
     virtual glm::vec3 get_bounding_box_size() = 0;
     virtual TileBoundingBox get_bounding_box();
+    virtual glm::vec3 get_head_pos() = 0;
     void step_motion(float time);
     void tick(float time);
 
@@ -47,8 +47,8 @@ class Player : public MobEntity {
     inline Player(Level& level, const std::string& id) : MobEntity(level, id) {}
 
     inline std::string get_type() { return "player"; }
-    std::string get_state();
     inline glm::vec3 get_bounding_box_size() { return {0.5, 1.6, 0.5}; }
+    inline glm::vec3 get_head_pos() { return pos + glm::vec3(0, 1.5, 0); }
 
     int ticksToJump = 0;
 
@@ -59,6 +59,9 @@ class Player : public MobEntity {
     inline const static float maxRotationSpeed = 720;
 
     void tick(float time);
+    void jump();
+
+    EntityInstruction get_instruction();
 };
 
 typedef std::shared_ptr<Player> pPlayer;
@@ -67,14 +70,19 @@ class Zombie : public MobEntity {
    public:
     inline Zombie(Level& level, const std::string& id) : MobEntity(level, id) {}
     inline std::string get_type() { return "zombie"; }
-    inline std::string get_state() { return ""; }
     inline glm::vec3 get_bounding_box_size() { return {0.5, 1.6, 0.5}; }
+    inline glm::vec3 get_head_pos() { return pos + glm::vec3(0, 1.5, 0); }
 
     inline const static float moveSpeed = 2;
     inline const static float maxAcceleration = 10.0f;
-    inline const static int jumpCooldown = 5;
+    inline const static int jumpCooldown = 8;
     inline const static float jumpSpeed = 6;
     inline const static float maxRotationSpeed = 720;
 
+    int ticksToJump = 0;
+
     void tick(float time);
+    void jump();
+
+    EntityInstruction get_instruction();
 };
