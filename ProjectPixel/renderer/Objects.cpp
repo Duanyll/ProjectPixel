@@ -175,11 +175,14 @@ glm::mat4 Paperman::get_larm_model() {
 
 glm::mat4 Paperman::get_rarm_model() {
     auto base = glm::translate(glm::mat4(), {0, 22, 0});
-    if (hand != HandAction::ZombieHanging) {
-        base = glm::rotate(base, glm::radians(0.8f * legReal.value), {1, 0, 0});
-    } else {
+    if (hand == HandAction::ZombieHanging) {
         base = glm::rotate(base, glm::radians(-80.0f + 0.05f * legReal.value),
                            {1, 0, 0});
+    } else if (hand == HandAction::Holding) {
+        base = glm::rotate(base, glm::radians(-45.0f + 0.05f * legReal.value),
+                           {1, 0, 0});
+    } else {
+        base = glm::rotate(base, glm::radians(0.8f * legReal.value), {1, 0, 0});
     }
     return base;
 }
@@ -197,19 +200,28 @@ glm::mat4 Paperman::get_rleg_model() {
 }
 
 glm::mat4 Paperman::get_item_model() {
-    glm::mat4 base = glm::translate(glm::mat4(), {0, 1.05, 0});
-    if (hand != HandAction::ZombieHanging) {
-        base = glm::rotate(base, glm::radians(0.8f * legReal.value), {1, 0, 0});
+    if (hand == HandAction::None) {
+        glm::mat4 base;
+        base = glm::translate(base, {-0.5, 1.35, -0.1});
+        base = glm::rotate(base, glm::radians(-90.0f), {1, 0, 0});
+        base = glm::translate(base, {0, 0, -1});
+        return base;
     } else {
-        base = glm::rotate(base, glm::radians(-80.0f + 0.05f * legReal.value),
-                           {1, 0, 0});
+        glm::mat4 base = glm::translate(glm::mat4(), {0, 1.05, 0});
+        if (hand == HandAction::ZombieHanging) {
+            base = glm::rotate(
+                base, glm::radians(-80.0f + 0.05f * legReal.value), {1, 0, 0});
+        } else if (hand == HandAction::Holding) {
+            base = glm::rotate(
+                base, glm::radians(-45.0f + 0.05f * legReal.value), {1, 0, 0});
+        }
+        base = glm::translate(base, {-0.75, 0, 0.29});
+        base = glm::rotate(base, glm::radians(-30.0f), {1, 0, 0});
+        base = glm::rotate(base, glm::radians(-45.0f), {0, 0, 1});
+        base = glm::rotate(base, glm::radians(-120.0f), {0, 1, 0});
+        base = glm::translate(base, {-1, 0, -1});
+        return base;
     }
-    base = glm::translate(base, {-0.75, 0, 0.29});
-    base = glm::rotate(base, glm::radians(-30.0f), {1, 0, 0});
-    base = glm::rotate(base, glm::radians(-45.0f), {0, 0, 1});
-    base = glm::rotate(base, glm::radians(-120.0f), {0, 1, 0});
-    base = glm::translate(base, {-1, 0, -1});
-    return base;
 }
 
 void Paperman::get_item_resources(Item item, pVAO& vao, Material& material) {

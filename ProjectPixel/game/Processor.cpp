@@ -59,9 +59,11 @@ void LevelProcessor::handle_user_input(float duration) {
         }
 
         if (flags.contains("aim")) {
+            player->isAiming = true;
             auto rotation = o["rotation"];
             player->turn(duration, rotation, Player::maxRotationSpeed);
         } else {
+            player->isAiming = false;
             player->turn(duration,
                          horizonal_angle(player->get_front(), controlSpeed),
                          Player::maxRotationSpeed);

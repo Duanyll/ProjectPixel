@@ -63,9 +63,11 @@ void MobEntity::tick(float time) {
         auto e = std::dynamic_pointer_cast<MobEntity>(i);
         if (e) {
             auto dis = glm::length(pos - e->pos);
-            if (dis <= 1) {
+            if (dis >= 0.01 && dis <= 1) {
                 auto dir = glm::normalize(pos - e->pos);
-                speed += dir / (dis * dis) / 2.0f;
+                auto ratio = 0.5f / (dis * dis);
+                ratio = std::min(ratio, 3.0f);
+                speed += dir * ratio;
             }
         }
     }
@@ -81,6 +83,9 @@ void MobEntity::walk(float time, glm::vec3 dir, float walkSpeed,
     }
     auto deltaSpeed = finalSpeed - glm::vec3(speed.x, 0, speed.z);
     auto acc = walkAcc * time;
+    if (!(clipping & BoxClipping::NegY)) {
+        acc *= 0.2;
+    }
     if (glm::length(deltaSpeed) <= acc) {
         speed.x = finalSpeed.x;
         speed.z = finalSpeed.z;
@@ -139,7 +144,11 @@ void Player::jump() {
 
 EntityInstruction Player::get_instruction() {
     auto i = Entity::get_instruction();
-    i.state[1] = (char)HandAction::None;
+    if (isAiming) {
+        i.state[1] = (char)HandAction::Holding;
+    } else {
+        i.state[1] = (char)HandAction::None;
+    }
     i.state[2] = (char)Item::DiamondSword;
     if (clipping & BoxClipping::NegY) {
         if (glm::length(speed) > 3) {

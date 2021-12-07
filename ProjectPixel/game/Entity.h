@@ -51,6 +51,7 @@ class Player : public MobEntity {
     inline glm::vec3 get_head_pos() { return pos + glm::vec3(0, 1.5, 0); }
 
     int ticksToJump = 0;
+    bool isAiming = false;
 
     inline const static float moveSpeed = 2.5;
     inline const static float maxAcceleration = 20.0f;
