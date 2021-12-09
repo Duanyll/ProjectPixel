@@ -71,6 +71,8 @@ void MobEntity::tick(float time) {
             }
         }
     }
+
+    if (ticksToHurt > 0) ticksToHurt--;
 }
 
 void MobEntity::walk(float time, glm::vec3 dir, float walkSpeed,
@@ -110,6 +112,16 @@ void MobEntity::turn(float time, float angle, float maxSpeed) {
     }
 }
 
+void MobEntity::hitback(glm::vec3 source, float strength) {
+    speed += strength * (glm::normalize(pos - source) + glm::vec3(0, 0.5, 0));
+}
+
+bool MobEntity::hurt(int hits, HurtType type) {
+    if (ticksToHurt > 0) return false;
+    ticksToHurt = 5;
+    return true;
+}
+
 void Entity::clip_speed() {
     if ((clipping & BoxClipping::PosX) && speed.x > 0) {
         speed.x = 0;
@@ -134,17 +146,21 @@ void Entity::clip_speed() {
 void Player::tick(float time) {
     MobEntity::tick(time);
     if (ticksToJump > 0) ticksToJump--;
+    if (ticksToAttack > 0) ticksToAttack--;
 }
 
 void Player::jump() {
     if (ticksToJump == 0 && (clipping & BoxClipping::NegY)) {
         speed.y = jumpSpeed;
+        ticksToJump = jumpCooldown;
     }
 }
 
 EntityInstruction Player::get_instruction() {
     auto i = Entity::get_instruction();
-    if (isAiming) {
+    if (ticksToAttack > 0) {
+        i.state[1] = (char)HandAction::Attacking;
+    } else if (isAiming) {
         i.state[1] = (char)HandAction::Holding;
     } else {
         i.state[1] = (char)HandAction::None;
@@ -172,6 +188,8 @@ EntityInstruction Player::get_instruction() {
 
 void Zombie::tick(float time) {
     MobEntity::tick(time);
+    if (ticksToJump > 0) ticksToJump--;
+    if (ticksToAttack > 0) ticksToAttack--;
     auto it = level.entities.find("player1");
     if (it != level.entities.end()) {
         auto player = std::dynamic_pointer_cast<Player>(it->second);
@@ -187,6 +205,19 @@ void Zombie::tick(float time) {
                              BoxClipping::NegX | BoxClipping::NegZ))) {
                 jump();
             }
+
+            if (ticksToAttack == 25) {
+                if (dis < 1.5) {
+                    if (player->hurt(5, HurtType::Melee)) {
+                        player->hitback(pos, 4);
+                    }
+                } else {
+                    ticksToAttack = 15;
+                }
+            }
+            if (dis < 2 && ticksToAttack == 0) {
+                ticksToAttack = 30;
+            }
         } else {
             walk(time, {0, 0, 0}, moveSpeed, maxAcceleration);
             turn(time, 0, maxRotationSpeed);
@@ -197,12 +228,17 @@ void Zombie::tick(float time) {
 void Zombie::jump() {
     if (ticksToJump == 0 && (clipping & BoxClipping::NegY)) {
         speed.y = jumpSpeed;
+        ticksToJump = jumpCooldown;
     }
 }
 
 EntityInstruction Zombie::get_instruction() {
     auto i = Entity::get_instruction();
-    i.state[1] = (char)HandAction::ZombieHanging;
+    if (ticksToAttack >= 20) {
+        i.state[1] = (char)HandAction::ZombieAttacking;
+    } else {
+        i.state[1] = (char)HandAction::ZombieHanging;
+    }
     i.state[2] = (char)Item::DiamondAxe;
     if (glm::length(speed) > 1) {
         i.state[0] = (char)LegAction::Walking;

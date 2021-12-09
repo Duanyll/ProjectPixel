@@ -60,6 +60,8 @@ void Paperman::step(float time) {
     EntityRenderer::step(time);
     legBase.step(time);
     legReal.step_to(time, legBase.value);
+    handBase.step(time);
+    handReal.step_to(time, handBase.value);
 }
 
 void Paperman::render() {
@@ -127,7 +129,7 @@ void Paperman::update(EntityInstruction& i) {
     EntityRenderer::update(i);
 
     set_leg_action((LegAction)i.state[0]);
-    hand = (HandAction)i.state[1];
+    set_hand_action((HandAction)i.state[1]);
     handItem = (Item)i.state[2];
 }
 
@@ -151,6 +153,31 @@ void Paperman::set_leg_action(LegAction action) {
     }
 }
 
+void Paperman::set_hand_action(HandAction action) {
+    if (hand == action) return;
+    hand = action;
+    switch (action) {
+        case HandAction::None:
+            break;
+        case HandAction::ZombieHanging:
+            break;
+        case HandAction::Holding:
+            break;
+        case HandAction::Attacking:
+            handBase.value = 60;
+            handBase.speed = 360;
+            handReal.maxAcc = 1440;
+            break;
+        case HandAction::ZombieAttacking:
+            handBase.value = 60;
+            handBase.speed = 180;
+            handReal.maxAcc = 720;
+            break;
+        default:
+            break;
+    }
+}
+
 glm::mat4 Paperman::get_head_model() {
     return glm::rotate(
         glm::rotate(glm::translate(glm::mat4(), {0, 28, 0}),
@@ -163,12 +190,16 @@ glm::mat4 Paperman::get_body_model() { return glm::mat4(); }
 
 glm::mat4 Paperman::get_larm_model() {
     auto base = glm::translate(glm::mat4(), {0, 22, 0});
-    if (hand != HandAction::ZombieHanging) {
-        base =
-            glm::rotate(base, glm::radians(-0.8f * legReal.value), {1, 0, 0});
-    } else {
+    if (hand == HandAction::ZombieHanging) {
         base = glm::rotate(base, glm::radians(-80.0f - 0.05f * legReal.value),
                            {1, 0, 0});
+
+    } else if (hand == HandAction::ZombieAttacking) {
+        base = glm::rotate(base, glm::radians(-80.0f - handReal.value),
+                           {1, 0, 0});
+    } else {
+        base =
+            glm::rotate(base, glm::radians(-0.8f * legReal.value), {1, 0, 0});
     }
     return base;
 }
@@ -181,6 +212,12 @@ glm::mat4 Paperman::get_rarm_model() {
     } else if (hand == HandAction::Holding) {
         base = glm::rotate(base, glm::radians(-45.0f + 0.05f * legReal.value),
                            {1, 0, 0});
+    } else if (hand == HandAction::Attacking) {
+        base = glm::rotate(base, glm::radians(-45.0f - handReal.value * 2),
+                           {1, 0, 0});
+    } else if (hand == HandAction::ZombieAttacking) {
+        base =
+            glm::rotate(base, glm::radians(-80.0f - handReal.value), {1, 0, 0});
     } else {
         base = glm::rotate(base, glm::radians(0.8f * legReal.value), {1, 0, 0});
     }
@@ -207,19 +244,27 @@ glm::mat4 Paperman::get_item_model() {
         base = glm::translate(base, {0, 0, -1});
         return base;
     } else {
-        glm::mat4 base = glm::translate(glm::mat4(), {0, 1.05, 0});
+        glm::mat4 base;
+        base = glm::translate(base, {-0.3, 1.2, 0});
         if (hand == HandAction::ZombieHanging) {
             base = glm::rotate(
                 base, glm::radians(-80.0f + 0.05f * legReal.value), {1, 0, 0});
         } else if (hand == HandAction::Holding) {
             base = glm::rotate(
                 base, glm::radians(-45.0f + 0.05f * legReal.value), {1, 0, 0});
+        } else if (hand == HandAction::Attacking) {
+            base = glm::rotate(base, glm::radians(-45.0f - handReal.value * 2),
+                               {1, 0, 0});
+        } else if (hand == HandAction::ZombieAttacking) {
+            base = glm::rotate(base, glm::radians(-80.0f - handReal.value),
+                               {1, 0, 0});
         }
-        base = glm::translate(base, {-0.75, 0, 0.29});
-        base = glm::rotate(base, glm::radians(-30.0f), {1, 0, 0});
-        base = glm::rotate(base, glm::radians(-45.0f), {0, 0, 1});
-        base = glm::rotate(base, glm::radians(-120.0f), {0, 1, 0});
-        base = glm::translate(base, {-1, 0, -1});
+        base = glm::translate(base, {0, -0.4, 0});
+        base = glm::rotate(base, glm::radians(handReal.value - 75), {-1, 0, 0});
+        base = glm::rotate(base, glm::radians(10.0f), {0, 1, 0});
+        base = glm::translate(base, {0, -0.2, 0.8});
+        base = glm::rotate(base, glm::radians(180.0f), {0, 1, 0});
+        base = glm::rotate(base, glm::radians(90.0f), {0, 0, 1});
         return base;
     }
 }
@@ -230,9 +275,10 @@ void Paperman::get_item_resources(Item item, pVAO& vao, Material& material) {
             break;
         case Item::DiamondSword:
             vao = AssetsHub::get_vao("item-diamond-sword");
-            material = {AssetsHub::get_texture_2d("item-diamond-sword"),
-                        AssetsHub::get_texture_2d("item-diamond-sword-specular"),
-                        AssetsHub::get_texture_2d("no-emission"), 32};
+            material = {
+                AssetsHub::get_texture_2d("item-diamond-sword"),
+                AssetsHub::get_texture_2d("item-diamond-sword-specular"),
+                AssetsHub::get_texture_2d("no-emission"), 32};
             break;
         case Item::DiamondAxe:
             vao = AssetsHub::get_vao("item-diamond-axe");
@@ -292,5 +338,16 @@ void AccelerateAdapter::step_to(float time, float target) {
         value += acc;
     } else {
         value -= acc;
+    }
+}
+
+void LinearAnimation::step(float time) {
+    if (value > 0) {
+        auto delta = speed * time;
+        if (delta >= value) {
+            value = 0;
+        } else {
+            value -= delta;
+        }
     }
 }

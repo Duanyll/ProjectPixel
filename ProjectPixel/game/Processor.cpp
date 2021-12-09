@@ -69,6 +69,38 @@ void LevelProcessor::handle_user_input(float duration) {
                          Player::maxRotationSpeed);
         }
 
+        if (flags.contains("attack")) {
+            if (player->ticksAttackHold == 0) {
+                if (player->ticksToAttack == 0) {
+                    player->ticksToAttack = 5;
+                    auto targets =
+                        level.entityRegistry.query_square_range(player->pos, 2);
+                    std::shared_ptr<MobEntity> target;
+                    float minAngle = 20.0f;
+                    for (auto& i : targets) {
+                        auto e = std::dynamic_pointer_cast<MobEntity>(i);
+                        if (e) {
+                            auto cur =
+                                abs(horizonal_angle(player->get_front(),
+                                                    e->pos - player->pos));
+                            if (cur < minAngle) {
+                                minAngle = cur;
+                                target = e;
+                            }
+                        }
+                    }
+                    if (target) {
+                        if (target->hurt(5, HurtType::Melee)) {
+                            target->hitback(player->pos, 5);
+                        }
+                    }
+                }
+            }
+            player->ticksAttackHold++;
+        } else {
+            player->ticksAttackHold = 0;
+        }
+
         while (!events.empty()) {
             auto i = events.front();
             events.pop();

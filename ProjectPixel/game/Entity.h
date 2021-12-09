@@ -28,6 +28,8 @@ class Entity {
 
 typedef std::shared_ptr<Entity> pEntity;
 
+enum class HurtType { Melee, Arrow };
+
 class MobEntity : public Entity {
    public:
     inline MobEntity(Level& level, const std::string& id) : Entity(level, id) {}
@@ -40,6 +42,11 @@ class MobEntity : public Entity {
 
     void walk(float time, glm::vec3 dir, float walkSpeed, float walkAcc);
     void turn(float time, float angle, float maxSpeed);
+
+    int ticksToHurt = 0;
+
+    virtual void hitback(glm::vec3 source, float strength);
+    virtual bool hurt(int hits, HurtType type);
 };
 
 class Player : public MobEntity {
@@ -52,6 +59,8 @@ class Player : public MobEntity {
 
     int ticksToJump = 0;
     bool isAiming = false;
+    int ticksAttackHold = 0;
+    int ticksToAttack = 0;
 
     inline const static float moveSpeed = 2.5;
     inline const static float maxAcceleration = 20.0f;
@@ -81,6 +90,7 @@ class Zombie : public MobEntity {
     inline const static float maxRotationSpeed = 720;
 
     int ticksToJump = 0;
+    int ticksToAttack = 0;
 
     void tick(float time);
     void jump();

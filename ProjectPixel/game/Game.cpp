@@ -55,13 +55,18 @@ void Game::apply_to_window() {
                 camera.resolve_cursor_pos() - glm::vec3(pos.x, 0, pos.z);
             if (glm::length(control) >= 1) {
                 processor.input.set(
-                    "rotation", horizonal_angle({sin(-glm::radians(facing)), 0,
-                                                 cos(glm::radians(facing))},
-                                                control));
+                    "rotation",
+                    horizonal_angle(angle_to_front(facing), control));
             }
         }
     });
     Window::register_command("mouse-button", [this](float _) {
+        if (glfwGetMouseButton(Window::handle, GLFW_MOUSE_BUTTON_LEFT) ==
+            GLFW_PRESS) {
+            processor.input.set_flag("attack");
+        } else {
+            processor.input.clear_flag("attack");
+        }
         if (glfwGetMouseButton(Window::handle, GLFW_MOUSE_BUTTON_RIGHT) ==
             GLFW_PRESS) {
             processor.input.set_flag("aim");
@@ -86,7 +91,7 @@ void Game::apply_to_window() {
 
 void Game::start() {
     dirLight.apply();
-    DirLight::set_ambient({0.3, 0.3, 0.3});
+    DirLight::set_ambient({0.1, 0.1, 0.1});
     PointLight::set_active_count(0);
     updateTime = std::chrono::steady_clock::now();
     processor.start();
@@ -99,11 +104,12 @@ void Game::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     auto it = entities.find("player1");
     if (it != entities.end()) {
+        auto player = it->second;
         camera.set_entity_position(it->second->position);
+        spotLight.position = player->position + glm::vec3{0, 1, 0};
+        spotLight.direction = angle_to_front(player->facing);
     }
     camera.apply_uniform();
-    spotLight.position = camera.pos;
-    spotLight.direction = camera.front;
     spotLight.apply();
 
     for (auto& i : entities) {

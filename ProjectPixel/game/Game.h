@@ -23,7 +23,9 @@ class Game {
 
    protected:
     DirLight dirLight;
-    SpotLight spotLight;
+    SpotLight spotLight{
+        .cutOff = 45, .outerCutOff = 50 
+    };
 
     ThirdPersonCamera camera;
     TerrainRenderer terrainRenderer;

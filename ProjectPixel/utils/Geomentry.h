@@ -164,3 +164,7 @@ inline float horizonal_angle(glm::vec3 base, glm::vec3 dir) {
         return glm::degrees(std::acosf(dot));
     }
 }
+
+inline glm::vec3 angle_to_front(float facing) {
+    return {sin(-glm::radians(facing)), 0, cos(glm::radians(facing))};
+}

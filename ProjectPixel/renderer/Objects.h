@@ -43,6 +43,13 @@ struct PapermanMatraial : Material {
     bool is_slim;
 };
 
+class LinearAnimation {
+   public:
+    float value = 0;
+    float speed = 1;
+    void step(float time);
+};
+
 class SineAnimation {
    public:
     float value = 0;
@@ -78,10 +85,13 @@ class Paperman : public EntityRenderer {
     static PapermanMatraial get_material_preset(const std::string& key);
     void update(EntityInstruction& instruction);
     void set_leg_action(LegAction action);
+    void set_hand_action(HandAction action);
 
    protected:
     SineAnimation legBase;
-    AccelerateAdapter legReal{ 0, 360 };
+    AccelerateAdapter legReal{.maxAcc = 360};
+    LinearAnimation handBase{.speed = 360};
+    AccelerateAdapter handReal{.maxAcc = 1440};
 
    private:
     glm::mat4 get_head_model();
