@@ -20,17 +20,21 @@ int main() {
     Window::create(1920, 1080, "ProjectPixel");
     {
         using Window::KeyMode;
-        Window::bind_keys(
-            {{GLFW_KEY_W, {"move-front", KeyMode::Continous}},
-             {GLFW_KEY_A, {"move-left", KeyMode::Continous}},
-             {GLFW_KEY_S, {"move-back", KeyMode::Continous}},
-             {GLFW_KEY_D, {"move-right", KeyMode::Continous}},
-             {GLFW_KEY_LEFT_SHIFT, {"move-down", KeyMode::Continous}},
-             {GLFW_KEY_SPACE, {"move-up", KeyMode::KeyDown}},
-             {GLFW_KEY_F3, {"diagnostics", KeyMode::KeyDown}},
-             {GLFW_KEY_F, {"framerate", KeyMode::KeyDown}},
-             {GLFW_KEY_ESCAPE, {"exit", KeyMode::KeyUp}},
-             {GLFW_KEY_LEFT_CONTROL, {"run", KeyMode::Toggle}}});
+        Window::bind_keys({
+            {GLFW_KEY_W, {"move-front", KeyMode::Continous}},
+            {GLFW_KEY_A, {"move-left", KeyMode::Continous}},
+            {GLFW_KEY_S, {"move-back", KeyMode::Continous}},
+            {GLFW_KEY_D, {"move-right", KeyMode::Continous}},
+            {GLFW_KEY_LEFT_SHIFT, {"move-down", KeyMode::Continous}},
+            {GLFW_KEY_SPACE, {"move-up", KeyMode::KeyDown}},
+            {GLFW_KEY_F3, {"diagnostics", KeyMode::KeyDown}},
+            {GLFW_KEY_F, {"framerate", KeyMode::KeyDown}},
+            {GLFW_KEY_ESCAPE, {"exit", KeyMode::KeyUp}},
+            {GLFW_KEY_LEFT_CONTROL, {"run", KeyMode::Toggle}},
+            {GLFW_KEY_1, {"slot-1", KeyMode::KeyDown}},
+            {GLFW_KEY_2, {"slot-2", KeyMode::KeyDown}},
+            {GLFW_KEY_3, {"slot-3", KeyMode::KeyDown}},
+        });
     }
     Window::register_command("exit", [](float _) {
         glfwSetWindowShouldClose(Window::handle, true);

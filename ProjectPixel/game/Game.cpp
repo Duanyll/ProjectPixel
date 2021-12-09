@@ -86,6 +86,12 @@ void Game::apply_to_window() {
         auto cursor = camera.resolve_cursor_pos();
         Logger::info(std::format("Cursor X{:.2f} Z{:.2f}", cursor.x, cursor.z));
     });
+    Window::register_command(
+        "slot-1", [this](float _) { processor.input.add_event("slot-1"); });
+    Window::register_command(
+        "slot-2", [this](float _) { processor.input.add_event("slot-2"); });
+    Window::register_command(
+        "slot-3", [this](float _) { processor.input.add_event("slot-3"); });
     camera.apply_to_window();
 }
 

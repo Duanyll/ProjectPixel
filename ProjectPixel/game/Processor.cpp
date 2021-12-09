@@ -72,7 +72,8 @@ void LevelProcessor::handle_user_input(float duration) {
         if (flags.contains("attack")) {
             if (player->ticksAttackHold == 0) {
                 player->attack();
-            } else if (player->ticksAttackHold > 2 &&
+            } else if (player->weapon == Item::DiamondSword &&
+                       player->ticksAttackHold > 2 &&
                        abs(player->rotationSpeed) >=
                            0.8 * Player::maxRotationSpeed) {
                 player->isSweeping = true;
@@ -89,6 +90,12 @@ void LevelProcessor::handle_user_input(float duration) {
             events.pop();
             if (i == "jump") {
                 player->jump();
+            } else if (i == "slot-1") {
+                player->weapon = Item::DiamondSword;
+            } else if (i == "slot-2") {
+                player->weapon = Item::DiamondAxe;
+            } else if (i == "slot-3") {
+                player->weapon = Item::Bow;
             }
         }
     }

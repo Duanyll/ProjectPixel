@@ -160,7 +160,11 @@ void Player::jump() {
 
 void Player::attack() {
     if (ticksToAttack == 0) {
-        ticksToAttack = 5;
+        if (weapon == Item::DiamondAxe) {
+            ticksToAttack = 8;
+        } else {
+            ticksToAttack = 5;
+        }
         auto targets = level.entityRegistry.query_square_range(pos, 2);
         std::shared_ptr<MobEntity> target;
         float minAngle = 20.0f;
@@ -177,11 +181,24 @@ void Player::attack() {
             }
         }
         if (target) {
-            float baseHurt = 5;
-            if (!isAiming) baseHurt *= 0.8;
-            if (speed.y < 0) baseHurt *= 1.2;
+            float baseHurt, baseHitback = 5;
+            if (weapon == Item::DiamondSword) {
+                baseHurt = 5;
+            } else if (weapon == Item::DiamondAxe) {
+                baseHurt = 7;
+            } else {
+                baseHurt = 3;
+            }
+            if (!isAiming) {
+                baseHurt *= 0.8;
+                baseHitback *= 0.8;
+            }
+            if (speed.y < 0) {
+                baseHurt *= 1.2;
+                baseHitback *= 1.2;
+            }
             if (target->hurt(baseHurt, HurtType::Melee)) {
-                target->hitback(pos, baseHurt);
+                target->hitback(pos, baseHitback);
             }
         }
     }
@@ -217,7 +234,7 @@ EntityInstruction Player::get_instruction() {
     } else {
         i.state[1] = (char)HandAction::None;
     }
-    i.state[2] = (char)Item::DiamondSword;
+    i.state[2] = (char)weapon;
     if (clipping & BoxClipping::NegY) {
         if (glm::length(speed) > 3) {
             i.state[0] = (char)LegAction::Running;

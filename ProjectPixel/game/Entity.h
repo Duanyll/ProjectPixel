@@ -63,6 +63,8 @@ class Player : public MobEntity {
     int ticksAttackHold = 0;
     int ticksToAttack = 0;
 
+    Item weapon = Item::DiamondSword;
+
     inline const static float moveSpeed = 2.5;
     inline const static float maxAcceleration = 20.0f;
     inline const static int jumpCooldown = 5;
