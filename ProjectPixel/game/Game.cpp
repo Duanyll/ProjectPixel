@@ -97,7 +97,7 @@ void Game::apply_to_window() {
 
 void Game::start() {
     dirLight.apply();
-    DirLight::set_ambient({0.1, 0.1, 0.1});
+    DirLight::set_ambient({0.3, 0.3, 0.3});
     PointLight::set_active_count(0);
     updateTime = std::chrono::steady_clock::now();
     processor.start();

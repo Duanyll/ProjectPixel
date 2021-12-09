@@ -22,10 +22,8 @@ class Game {
     void stop();
 
    protected:
-    DirLight dirLight;
-    SpotLight spotLight{
-        .cutOff = 45, .outerCutOff = 50 
-    };
+    DirLight dirLight{.diffuse = {0.6, 0.6, 0.5}};
+    SpotLight spotLight{.cutOff = 45, .outerCutOff = 50};
 
     ThirdPersonCamera camera;
     TerrainRenderer terrainRenderer;
@@ -36,5 +34,4 @@ class Game {
     TimeStamp updateTime;
 
     void update();
-
 };

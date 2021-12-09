@@ -70,14 +70,24 @@ void LevelProcessor::handle_user_input(float duration) {
         }
 
         if (flags.contains("attack")) {
-            if (player->ticksAttackHold == 0) {
-                player->attack();
-            } else if (player->weapon == Item::DiamondSword &&
-                       player->ticksAttackHold > 2 &&
-                       abs(player->rotationSpeed) >=
-                           0.8 * Player::maxRotationSpeed) {
-                player->isSweeping = true;
-                player->sweep();
+            if (player->weapon != Item::Bow) {
+                if (player->ticksAttackHold == 0) {
+                    player->attack();
+                } else if (player->weapon == Item::DiamondSword &&
+                           player->ticksAttackHold > 2 &&
+                           abs(player->rotationSpeed) >=
+                               0.8 * Player::maxRotationSpeed) {
+                    player->isSweeping = true;
+                    player->sweep();
+                }
+            } else {
+                if (player->ticksAttackHold == 0) {
+                    auto arrow =
+                        level.add_entity<Arrow>(generate_unique_id("arrow"));
+                    arrow->pos =
+                        player->pos + glm::vec3{0, 1, 0} + player->get_front() * 0.7f;
+                    arrow->speed = player->get_front() * 15.0f + glm::vec3{0, 1, 0};
+                }
             }
             player->ticksAttackHold++;
         } else {
@@ -112,7 +122,14 @@ void LevelProcessor::emit_instructions(TimeStamp time) {
     instructions->creationTime = time;
     instructions->entities.reserve(level.entities.size());
     for (auto& i : level.entities) {
-        instructions->entities.push_back(i.second->get_instruction());
+        if (i.second->destroyFlag) {
+            instructions->deletedEntities.push_back(i.second->id);
+        } else {
+            instructions->entities.push_back(i.second->get_instruction());
+        }
+    }
+    for (auto& i : instructions->deletedEntities) {
+        level.entities.erase(i);
     }
     output.update(instructions);
 }

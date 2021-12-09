@@ -10,6 +10,8 @@ class Entity {
     Level& level;
     Entity(Level& level, const std::string& id);
 
+    bool destroyFlag = false;
+
     std::string id;
     glm::vec3 pos{0, 0, 0}, speed{0, 0, 0};
     float facing = 0, rotationSpeed = 0;
@@ -21,7 +23,7 @@ class Entity {
     BoxClipping clipping = BoxClipping::None;
     void clip_speed();
 
-    inline virtual void tick(float time){};
+    inline virtual void tick(float time) {}
 
     virtual EntityInstruction get_instruction();
 };
@@ -83,7 +85,9 @@ typedef std::shared_ptr<Player> pPlayer;
 
 class Zombie : public MobEntity {
    public:
-    inline Zombie(Level& level, const std::string& id) : MobEntity(level, id) {}
+    inline Zombie(Level& level,
+                  const std::string& id = generate_unique_id("zombie"))
+        : MobEntity(level, id) {}
     inline std::string get_type() { return "zombie"; }
     inline glm::vec3 get_bounding_box_size() { return {0.5, 1.6, 0.5}; }
     inline glm::vec3 get_head_pos() { return pos + glm::vec3(0, 1.5, 0); }
@@ -101,4 +105,17 @@ class Zombie : public MobEntity {
     void jump();
 
     EntityInstruction get_instruction();
+};
+
+class Arrow : public Entity {
+   public:
+    inline Arrow(Level& level,
+                 const std::string& id = generate_unique_id("arrow"))
+        : Entity(level, id) {}
+    inline std::string get_type() { return "arrow"; }
+
+    int ticksToDecay = 600;
+
+    void step_motion(float time);
+    void tick(float time);
 };

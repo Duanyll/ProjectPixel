@@ -109,3 +109,14 @@ class Paperman : public EntityRenderer {
 
 std::shared_ptr<EntityRenderer> get_entity_renderer(
     EntityInstruction instruction);
+
+class ArrowRenderer : public EntityRenderer {
+   public:
+    glm::mat4 get_model();
+
+    void render();
+    void update(EntityInstruction& i);
+
+   private:
+    float pitch = 0;
+};

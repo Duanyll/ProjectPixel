@@ -21,9 +21,11 @@ std::unordered_map<std::string, std::string> EmbbedAssets::texturePath{
     {"item-diamond-sword-specular", "assets/items/diamond_sword-specular.png"},
     {"item-diamond-axe", "assets/items/diamond_axe.png"},
     {"item-diamond-axe-specular", "assets/items/diamond_axe-specular.png"},
-    {"item-bow", "assets/items/bow.png"}};
+    {"item-bow", "assets/items/bow.png"},
+    {"item-arrow", "assets/items/arrow.png"},
+    {"item-arrow-specular", "assets/items/arrow-specular.png"}};
 std::vector<std::string> itemResource{"item-diamond-sword", "item-diamond-axe",
-                               "item-bow"};
+                                      "item-bow", "item-arrow"};
 std::unordered_map<std::string, std::vector<std::string>>
     EmbbedAssets::skyboxPath{
         {"default",
@@ -224,13 +226,13 @@ void EmbbedAssets::load_paperman_vaos(
     data["paperman-body"] =
         paperman_bodypart(vec3(0, 18, 0), 8, 4, 12, 16, 16, 16, 32);
     data["paperman-larm-slim"] =
-        paperman_bodypart(vec3(5.5, -4, 0), 3, 4, 12, 32, 48, 48, 48);
+        paperman_bodypart(vec3(-0.5, -4, 0), 3, 4, 12, 32, 48, 48, 48);
     data["paperman-rarm-slim"] =
-        paperman_bodypart(vec3(-5.5, -4, 0), 3, 4, 12, 40, 16, 40, 32);
+        paperman_bodypart(vec3(0.5, -4, 0), 3, 4, 12, 40, 16, 40, 32);
     data["paperman-larm"] =
-        paperman_bodypart(vec3(6, -4, 0), 4, 4, 12, 32, 48, 48, 48);
+        paperman_bodypart(vec3(0, -4, 0), 4, 4, 12, 32, 48, 48, 48);
     data["paperman-rarm"] =
-        paperman_bodypart(vec3(-6, -4, 0), 4, 4, 12, 40, 16, 40, 32);
+        paperman_bodypart(vec3(0, -4, 0), 4, 4, 12, 40, 16, 40, 32);
     data["paperman-lleg"] =
         paperman_bodypart(vec3(2, -6, 0), 4, 4, 12, 16, 48, 0, 48);
     data["paperman-rleg"] =
@@ -300,7 +302,7 @@ pVAO generate_item_vao(const std::string& texturePath) {
 }
 
 void EmbbedAssets::load_item_vaos(std::unordered_map<std::string, pVAO>& data) {
-    for (auto& i: itemResource) {
+    for (auto& i : itemResource) {
         data[i] = generate_item_vao(texturePath[i]);
     }
 }

@@ -316,3 +316,67 @@ EntityInstruction Zombie::get_instruction() {
     }
     return i;
 }
+
+void Arrow::step_motion(float time) {
+    if (glm::length(speed) == 0) return;
+    facing = horizonal_angle({0, 0, 1}, speed);
+    rotationSpeed = 0;
+
+    auto posDelta = speed * time;
+    float dis = -1;
+    if (glm::length(posDelta) > 1e-4 &&
+        level.terrain->test_line_intersection(pos, posDelta, dis)) {
+        pos += glm::normalize(posDelta) * dis;
+    } else {
+        pos += posDelta;
+    }
+    clipping = level.terrain->clip_point(pos);
+    clip_speed();
+}
+
+void Arrow::tick(float time) {
+    if (clipping != BoxClipping::None) {
+        speed = {0, 0, 0};
+    } else {
+        speed.y -= GRAVITY * time * 0.2;
+    }
+
+    if (ticksToDecay > 0) {
+        ticksToDecay--;
+    } else {
+        destroyFlag = true;
+        return;
+    }
+
+    if (glm::length(speed) != 0) {
+        auto posDelta = speed * time;
+        auto targets = level.entityRegistry.query_square_range(pos, 4);
+        std::shared_ptr<MobEntity> target;
+        float minDis = glm::length(posDelta);
+        for (auto& i : targets) {
+            if (i->id == id) continue;
+            auto e = std::dynamic_pointer_cast<MobEntity>(i);
+            if (e) {
+                auto box = e->get_bounding_box();
+                if (box.test_point_inside(pos)) {
+                    target = e;
+                    break;
+                } 
+                float d = -1;
+                if (box.test_line_intersection(pos, glm::normalize(posDelta), d)) {
+                    if (d < minDis) {
+                        minDis = d;
+                        target = e;
+                    }
+                }
+            }
+        }
+
+        if (target) {
+            target->hurt(3 + 0.2 * glm::length(speed), HurtType::Arrow);
+            target->hitback(target->pos - speed, 0.3 * glm::length(speed));
+            destroyFlag = true;
+            return;
+        }
+    }
+}

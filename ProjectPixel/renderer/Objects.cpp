@@ -2,6 +2,7 @@
 #include "Objects.h"
 
 #include "../game/Instructions.h"
+#include "../utils/Geomentry.h"
 
 FullScreenQuad::FullScreenQuad(pTexture texture) : texture(texture) {}
 
@@ -211,8 +212,13 @@ glm::mat4 Paperman::get_head_model() {
 glm::mat4 Paperman::get_body_model() { return glm::mat4(); }
 
 glm::mat4 Paperman::get_larm_model() {
-    auto base = glm::translate(glm::mat4(), {0, 22, 0});
-    if (hand == HandAction::ZombieHanging) {
+    auto base = glm::translate(glm::mat4(), {6, 22, 0});
+    if (handItem == Item::Bow &&
+        (hand == HandAction::Attacking || hand == HandAction::Holding)) {
+        base = glm::translate(base, {0, 0, 3.5});
+        base = glm::rotate(base, glm::radians(-22.5f), {0, 1, 0});
+        base = glm::rotate(base, glm::radians(-90.0f), {1, 0, 0});
+    } else if (hand == HandAction::ZombieHanging) {
         base = glm::rotate(base, glm::radians(-80.0f - 0.05f * legReal.value),
                            {1, 0, 0});
 
@@ -227,7 +233,13 @@ glm::mat4 Paperman::get_larm_model() {
 }
 
 glm::mat4 Paperman::get_rarm_model() {
-    auto base = glm::translate(glm::mat4(), {0, 22, 0});
+    auto base = glm::translate(glm::mat4(), {-6, 22, 0});
+    if (handItem == Item::Bow &&
+        (hand == HandAction::Attacking || hand == HandAction::Holding)) {
+        base = glm::rotate(base, glm::radians(30.0f), {0, 1, 0});
+        base = glm::rotate(base, glm::radians(-80.0f), {1, 0, 0});
+        return base;
+    }
     return base * get_base_rarm();
 }
 
@@ -244,14 +256,19 @@ glm::mat4 Paperman::get_rleg_model() {
 }
 
 glm::mat4 Paperman::get_item_model() {
+    glm::mat4 base;
     if (hand == HandAction::None) {
-        glm::mat4 base;
         base = glm::translate(base, {-0.5, 1.35, -0.1});
         base = glm::rotate(base, glm::radians(-90.0f), {1, 0, 0});
         base = glm::translate(base, {0, 0, -1});
-        return base;
+    } else if (handItem == Item::Bow &&
+               (hand == HandAction::Attacking || hand == HandAction::Holding)) {
+        base = glm::translate(base, {0, 0.3, 0.5});
+        base = glm::rotate(base, glm::radians(-45.0f), {1, 0, 0});
+        base = glm::translate(base, {0, 0, 1});
+        base = glm::rotate(base, glm::radians(180.0f), {0, 1, 0});
+        base = glm::rotate(base, glm::radians(90.0f), {0, 0, 1});
     } else {
-        glm::mat4 base;
         base = glm::translate(base, {-0.3, 1.2, 0});
         base = base * get_base_rarm();
         base = glm::translate(base, {0, -0.4, 0});
@@ -267,8 +284,8 @@ glm::mat4 Paperman::get_item_model() {
         base = glm::translate(base, {0, -0.2, 0.8});
         base = glm::rotate(base, glm::radians(180.0f), {0, 1, 0});
         base = glm::rotate(base, glm::radians(90.0f), {0, 0, 1});
-        return base;
     }
+    return base;
 }
 
 void Paperman::get_item_resources(Item item, pVAO& vao, Material& material) {
@@ -312,6 +329,8 @@ std::shared_ptr<EntityRenderer> get_entity_renderer(
         paperman->material = Paperman::get_material_preset("zombie");
         paperman->hand = HandAction::ZombieHanging;
         e = paperman;
+    } else if (instruction.type == "arrow") {
+        e = std::make_shared<ArrowRenderer>();
     }
 
     e->update(instruction);
@@ -351,5 +370,34 @@ void LinearAnimation::step(float time) {
         } else {
             value -= delta;
         }
+    }
+}
+
+glm::mat4 ArrowRenderer::get_model() {
+    glm::mat4 base;
+    base = glm::rotate(base, pitch - glm::radians(45.0f), {-1, 0, 0});
+    base = glm::translate(base, {0, -0.8, 0.2});
+    base = glm::rotate(base, glm::radians(180.0f), {0, 1, 0});
+    base = glm::rotate(base, glm::radians(90.0f), {0, 0, 1});
+    return EntityRenderer::get_model() * base;
+}
+
+void ArrowRenderer::render() {
+    auto shader = AssetsHub::get_shader<EntityShader>();
+    auto vao = AssetsHub::get_vao("item-arrow");
+    shader->configure({AssetsHub::get_texture_2d("item-arrow"),
+                       AssetsHub::get_texture_2d("item-arrow-specular"),
+                       AssetsHub::get_texture_2d("no-emission"), 32},
+                      get_model());
+    vao->draw();
+}
+
+void ArrowRenderer::update(EntityInstruction& i) {
+    EntityRenderer::update(i);
+    if (glm::length(speed) != 0) {
+        facing = horizonal_angle({0, 0, 1}, speed);
+        auto vSpeed = speed.y;
+        auto hSpeed = glm::length(glm::vec3(speed.x, 0, speed.z));
+        pitch = std::atan2(vSpeed, hSpeed);
     }
 }
