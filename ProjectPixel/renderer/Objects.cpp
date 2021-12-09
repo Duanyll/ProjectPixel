@@ -173,9 +173,31 @@ void Paperman::set_hand_action(HandAction action) {
             handBase.speed = 180;
             handReal.maxAcc = 720;
             break;
+        case HandAction::Sweeping:
+            break;
         default:
             break;
     }
+}
+
+glm::mat4 Paperman::get_base_rarm() {
+    glm::mat4 base;
+    if (hand == HandAction::ZombieHanging) {
+        base = glm::rotate(base, glm::radians(-80.0f + 0.05f * legReal.value),
+                           {1, 0, 0});
+    } else if (hand == HandAction::Holding || hand == HandAction::Sweeping) {
+        base = glm::rotate(base, glm::radians(-45.0f + 0.05f * legReal.value),
+                           {1, 0, 0});
+    } else if (hand == HandAction::Attacking) {
+        base = glm::rotate(base, glm::radians(-45.0f - handReal.value * 2),
+                           {1, 0, 0});
+    } else if (hand == HandAction::ZombieAttacking) {
+        base =
+            glm::rotate(base, glm::radians(-80.0f - handReal.value), {1, 0, 0});
+    } else {
+        base = glm::rotate(base, glm::radians(0.8f * legReal.value), {1, 0, 0});
+    }
+    return base;
 }
 
 glm::mat4 Paperman::get_head_model() {
@@ -195,8 +217,8 @@ glm::mat4 Paperman::get_larm_model() {
                            {1, 0, 0});
 
     } else if (hand == HandAction::ZombieAttacking) {
-        base = glm::rotate(base, glm::radians(-80.0f - handReal.value),
-                           {1, 0, 0});
+        base =
+            glm::rotate(base, glm::radians(-80.0f - handReal.value), {1, 0, 0});
     } else {
         base =
             glm::rotate(base, glm::radians(-0.8f * legReal.value), {1, 0, 0});
@@ -206,22 +228,7 @@ glm::mat4 Paperman::get_larm_model() {
 
 glm::mat4 Paperman::get_rarm_model() {
     auto base = glm::translate(glm::mat4(), {0, 22, 0});
-    if (hand == HandAction::ZombieHanging) {
-        base = glm::rotate(base, glm::radians(-80.0f + 0.05f * legReal.value),
-                           {1, 0, 0});
-    } else if (hand == HandAction::Holding) {
-        base = glm::rotate(base, glm::radians(-45.0f + 0.05f * legReal.value),
-                           {1, 0, 0});
-    } else if (hand == HandAction::Attacking) {
-        base = glm::rotate(base, glm::radians(-45.0f - handReal.value * 2),
-                           {1, 0, 0});
-    } else if (hand == HandAction::ZombieAttacking) {
-        base =
-            glm::rotate(base, glm::radians(-80.0f - handReal.value), {1, 0, 0});
-    } else {
-        base = glm::rotate(base, glm::radians(0.8f * legReal.value), {1, 0, 0});
-    }
-    return base;
+    return base * get_base_rarm();
 }
 
 glm::mat4 Paperman::get_lleg_model() {
@@ -246,21 +253,16 @@ glm::mat4 Paperman::get_item_model() {
     } else {
         glm::mat4 base;
         base = glm::translate(base, {-0.3, 1.2, 0});
-        if (hand == HandAction::ZombieHanging) {
-            base = glm::rotate(
-                base, glm::radians(-80.0f + 0.05f * legReal.value), {1, 0, 0});
-        } else if (hand == HandAction::Holding) {
-            base = glm::rotate(
-                base, glm::radians(-45.0f + 0.05f * legReal.value), {1, 0, 0});
-        } else if (hand == HandAction::Attacking) {
-            base = glm::rotate(base, glm::radians(-45.0f - handReal.value * 2),
-                               {1, 0, 0});
-        } else if (hand == HandAction::ZombieAttacking) {
-            base = glm::rotate(base, glm::radians(-80.0f - handReal.value),
-                               {1, 0, 0});
-        }
+        base = base * get_base_rarm();
         base = glm::translate(base, {0, -0.4, 0});
-        base = glm::rotate(base, glm::radians(handReal.value - 75), {-1, 0, 0});
+        if (hand != HandAction::Sweeping) {
+            base = glm::rotate(base, glm::radians(handReal.value - 75),
+                               {-1, 0, 0});
+        } else {
+            base = glm::rotate(base, glm::radians(45.0f), {1, 0, 0});
+            base = glm::rotate(base, glm::radians(90.0f), {0, 0, 1});
+            base = glm::rotate(base, glm::radians(45.0f), {1, 0, 0});
+        }
         base = glm::rotate(base, glm::radians(10.0f), {0, 1, 0});
         base = glm::translate(base, {0, -0.2, 0.8});
         base = glm::rotate(base, glm::radians(180.0f), {0, 1, 0});

@@ -57,8 +57,9 @@ class Player : public MobEntity {
     inline glm::vec3 get_bounding_box_size() { return {0.5, 1.6, 0.5}; }
     inline glm::vec3 get_head_pos() { return pos + glm::vec3(0, 1.5, 0); }
 
-    int ticksToJump = 0;
     bool isAiming = false;
+    bool isSweeping = false;
+    int ticksToJump = 0;
     int ticksAttackHold = 0;
     int ticksToAttack = 0;
 
@@ -70,6 +71,8 @@ class Player : public MobEntity {
 
     void tick(float time);
     void jump();
+    void attack();
+    void sweep();
 
     EntityInstruction get_instruction();
 };
@@ -83,7 +86,7 @@ class Zombie : public MobEntity {
     inline glm::vec3 get_bounding_box_size() { return {0.5, 1.6, 0.5}; }
     inline glm::vec3 get_head_pos() { return pos + glm::vec3(0, 1.5, 0); }
 
-    inline const static float moveSpeed = 2;
+    inline const static float moveSpeed = 1.6;
     inline const static float maxAcceleration = 10.0f;
     inline const static int jumpCooldown = 8;
     inline const static float jumpSpeed = 6;

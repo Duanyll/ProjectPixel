@@ -8,7 +8,14 @@ enum class LegAction : char {
     Walking,
     Running,
 };
-enum class HandAction : char { None, ZombieHanging, Holding, Attacking, ZombieAttacking };
+enum class HandAction : char {
+    None,
+    ZombieHanging,
+    Holding,
+    Attacking,
+    ZombieAttacking,
+    Sweeping
+};
 enum class Item : char { None, DiamondSword, DiamondAxe, Bow };
 
 struct EntityInstruction {

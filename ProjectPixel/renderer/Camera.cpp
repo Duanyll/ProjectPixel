@@ -138,7 +138,7 @@ glm::vec3 ThirdPersonCamera::resolve_cursor_pos() {
                              cursorPosWorld4.z / cursorPosWorld4.w};
     glm::vec3 cursorDirWorld = glm::normalize(cursorPosWorld - pos);
     float d = -1;
-    if (test_line_plane_intersection(pos, cursorDirWorld, {0, 1, 0}, {0, 0, 0},
+    if (test_line_plane_intersection(pos, cursorDirWorld, {0, 1, 0}, {0, 1, 0},
                                      d)) {
         auto res = pos + d * cursorDirWorld;
         return {res.x, 0, res.z};

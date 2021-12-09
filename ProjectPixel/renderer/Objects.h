@@ -94,6 +94,8 @@ class Paperman : public EntityRenderer {
     AccelerateAdapter handReal{.maxAcc = 1440};
 
    private:
+    glm::mat4 get_base_rarm();
+
     glm::mat4 get_head_model();
     glm::mat4 get_body_model();
     glm::mat4 get_larm_model();

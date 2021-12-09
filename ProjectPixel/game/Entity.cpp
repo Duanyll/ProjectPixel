@@ -113,7 +113,9 @@ void MobEntity::turn(float time, float angle, float maxSpeed) {
 }
 
 void MobEntity::hitback(glm::vec3 source, float strength) {
-    speed += strength * (glm::normalize(pos - source) + glm::vec3(0, 0.5, 0));
+    auto dir = (pos - source);
+    speed += strength * glm::normalize(glm::vec3(dir.x, 0, dir.z)) +
+             glm::vec3(0, 2, 0);
 }
 
 bool MobEntity::hurt(int hits, HurtType type) {
@@ -156,9 +158,59 @@ void Player::jump() {
     }
 }
 
+void Player::attack() {
+    if (ticksToAttack == 0) {
+        ticksToAttack = 5;
+        auto targets = level.entityRegistry.query_square_range(pos, 2);
+        std::shared_ptr<MobEntity> target;
+        float minAngle = 20.0f;
+        for (auto& i : targets) {
+            if (i->id == id) continue;
+            auto e = std::dynamic_pointer_cast<MobEntity>(i);
+            if (e) {
+                if (glm::length(e->pos - pos) > 2) continue;
+                auto cur = abs(horizonal_angle(get_front(), e->pos - pos));
+                if (cur < minAngle) {
+                    minAngle = cur;
+                    target = e;
+                }
+            }
+        }
+        if (target) {
+            float baseHurt = 5;
+            if (!isAiming) baseHurt *= 0.8;
+            if (speed.y < 0) baseHurt *= 1.2;
+            if (target->hurt(baseHurt, HurtType::Melee)) {
+                target->hitback(pos, baseHurt);
+            }
+        }
+    }
+}
+
+void Player::sweep() {
+    ticksToAttack = 5;
+    auto targets = level.entityRegistry.query_square_range(pos, 2.5);
+    float minAngle = 30.0f;
+    for (auto& i : targets) {
+        if (i->id == id) continue;
+        auto e = std::dynamic_pointer_cast<MobEntity>(i);
+        if (e) {
+            if (glm::length(e->pos - pos) > 2.5) continue;
+            auto cur = abs(horizonal_angle(get_front(), e->pos - pos));
+            if (cur < minAngle) {
+                if (e->hurt(3, HurtType::Melee)) {
+                    e->hitback(pos, 5.5);
+                }
+            }
+        }
+    }
+}
+
 EntityInstruction Player::get_instruction() {
     auto i = Entity::get_instruction();
-    if (ticksToAttack > 0) {
+    if (isSweeping) {
+        i.state[1] = (char)HandAction::Sweeping;
+    } else if (ticksToAttack > 0) {
         i.state[1] = (char)HandAction::Attacking;
     } else if (isAiming) {
         i.state[1] = (char)HandAction::Holding;
@@ -215,7 +267,7 @@ void Zombie::tick(float time) {
                     ticksToAttack = 15;
                 }
             }
-            if (dis < 2 && ticksToAttack == 0) {
+            if (dis < 1.8 && ticksToAttack == 0) {
                 ticksToAttack = 30;
             }
         } else {
