@@ -90,8 +90,10 @@ class Paperman : public EntityRenderer {
    protected:
     SineAnimation legBase;
     AccelerateAdapter legReal{.maxAcc = 360};
-    LinearAnimation handBase{.speed = 360};
+    LinearAnimation handBase{.speed = 240};
     AccelerateAdapter handReal{.maxAcc = 1440};
+
+    float pullBowTime = 0;
 
    private:
     glm::mat4 get_base_rarm();

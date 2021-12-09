@@ -78,6 +78,8 @@ class Player : public MobEntity {
     void attack();
     void sweep();
 
+    void handle_attack_input(bool hold);
+
     EntityInstruction get_instruction();
 };
 

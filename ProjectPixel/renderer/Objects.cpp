@@ -63,6 +63,10 @@ void Paperman::step(float time) {
     legReal.step_to(time, legBase.value);
     handBase.step(time);
     handReal.step_to(time, handBase.value);
+
+    if (handItem == Item::Bow && hand == HandAction::Attacking) {
+        pullBowTime += time;
+    }
 }
 
 void Paperman::render() {
@@ -157,6 +161,7 @@ void Paperman::set_leg_action(LegAction action) {
 void Paperman::set_hand_action(HandAction action) {
     if (hand == action) return;
     hand = action;
+    pullBowTime = 0;
     switch (action) {
         case HandAction::None:
             break;
@@ -166,7 +171,7 @@ void Paperman::set_hand_action(HandAction action) {
             break;
         case HandAction::Attacking:
             handBase.value = 60;
-            handBase.speed = 360;
+            handBase.speed = 240;
             handReal.maxAcc = 1440;
             break;
         case HandAction::ZombieAttacking:
@@ -289,6 +294,7 @@ glm::mat4 Paperman::get_item_model() {
 }
 
 void Paperman::get_item_resources(Item item, pVAO& vao, Material& material) {
+     std::string resid;
     switch (item) {
         case Item::None:
             break;
@@ -306,8 +312,17 @@ void Paperman::get_item_resources(Item item, pVAO& vao, Material& material) {
                         AssetsHub::get_texture_2d("no-emission"), 32};
             break;
         case Item::Bow:
-            vao = AssetsHub::get_vao("item-bow");
-            material = {AssetsHub::get_texture_2d("item-bow"),
+            if (pullBowTime == 0) {
+                resid = "item-bow";
+            } else if (pullBowTime <= 0.3) {
+                resid = "item-bow1";
+            } else if (pullBowTime <= 0.6) {
+                resid = "item-bow2";
+            } else {
+                resid = "item-bow3";
+            }
+            vao = AssetsHub::get_vao(resid);
+            material = {AssetsHub::get_texture_2d(resid),
                         AssetsHub::get_texture_2d("no-specular"),
                         AssetsHub::get_texture_2d("no-emission"), 32};
             break;
@@ -321,7 +336,7 @@ std::shared_ptr<EntityRenderer> get_entity_renderer(
     std::shared_ptr<EntityRenderer> e;
     if (instruction.type == "player") {
         auto paperman = std::make_shared<Paperman>();
-        paperman->material = Paperman::get_material_preset("droid");
+        paperman->material = Paperman::get_material_preset("default");
         paperman->handItem = Item::DiamondSword;
         e = paperman;
     } else if (instruction.type == "zombie") {
@@ -376,7 +391,7 @@ void LinearAnimation::step(float time) {
 glm::mat4 ArrowRenderer::get_model() {
     glm::mat4 base;
     base = glm::rotate(base, pitch - glm::radians(45.0f), {-1, 0, 0});
-    base = glm::translate(base, {0, -0.8, 0.2});
+    base = glm::translate(base, {0, -0.7, 0.3});
     base = glm::rotate(base, glm::radians(180.0f), {0, 1, 0});
     base = glm::rotate(base, glm::radians(90.0f), {0, 0, 1});
     return EntityRenderer::get_model() * base;

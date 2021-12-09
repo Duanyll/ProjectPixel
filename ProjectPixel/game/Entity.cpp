@@ -161,9 +161,9 @@ void Player::jump() {
 void Player::attack() {
     if (ticksToAttack == 0) {
         if (weapon == Item::DiamondAxe) {
-            ticksToAttack = 8;
+            ticksToAttack = 12;
         } else {
-            ticksToAttack = 5;
+            ticksToAttack = 8;
         }
         auto targets = level.entityRegistry.query_square_range(pos, 2);
         std::shared_ptr<MobEntity> target;
@@ -223,11 +223,39 @@ void Player::sweep() {
     }
 }
 
+void Player::handle_attack_input(bool hold) {
+    if (hold) {
+        if (weapon != Item::Bow) {
+            if (ticksAttackHold == 0) {
+                attack();
+            } else if (weapon == Item::DiamondSword && ticksAttackHold > 2 &&
+                       abs(rotationSpeed) >= 0.8 * Player::maxRotationSpeed) {
+                isSweeping = true;
+                sweep();
+            }
+        }
+        ticksAttackHold++;
+    } else {
+        if (weapon == Item::Bow) {
+            if (ticksAttackHold > 3) {
+                float arrowSpeed = std::clamp(ticksAttackHold, 3, 12) * 1.25;
+                auto arrow =
+                    level.add_entity<Arrow>(generate_unique_id("arrow"));
+                arrow->pos = pos + glm::vec3{0, 1, 0} + get_front() * 0.5f;
+                arrow->speed = get_front() * arrowSpeed + glm::vec3{0, 1, 0};
+            }
+        }
+        ticksAttackHold = 0;
+        isSweeping = false;
+    }
+}
+
 EntityInstruction Player::get_instruction() {
     auto i = Entity::get_instruction();
     if (isSweeping) {
         i.state[1] = (char)HandAction::Sweeping;
-    } else if (ticksToAttack > 0) {
+    } else if (ticksToAttack > 0 ||
+               (weapon == Item::Bow && ticksAttackHold > 0)) {
         i.state[1] = (char)HandAction::Attacking;
     } else if (isAiming) {
         i.state[1] = (char)HandAction::Holding;
@@ -361,9 +389,10 @@ void Arrow::tick(float time) {
                 if (box.test_point_inside(pos)) {
                     target = e;
                     break;
-                } 
+                }
                 float d = -1;
-                if (box.test_line_intersection(pos, glm::normalize(posDelta), d)) {
+                if (box.test_line_intersection(pos, glm::normalize(posDelta),
+                                               d)) {
                     if (d < minDis) {
                         minDis = d;
                         target = e;
@@ -374,7 +403,7 @@ void Arrow::tick(float time) {
 
         if (target) {
             target->hurt(3 + 0.2 * glm::length(speed), HurtType::Arrow);
-            target->hitback(target->pos - speed, 0.3 * glm::length(speed));
+            target->hitback(target->pos - speed, 0.4 * glm::length(speed));
             destroyFlag = true;
             return;
         }

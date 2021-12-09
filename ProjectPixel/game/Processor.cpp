@@ -69,31 +69,7 @@ void LevelProcessor::handle_user_input(float duration) {
                          Player::maxRotationSpeed);
         }
 
-        if (flags.contains("attack")) {
-            if (player->weapon != Item::Bow) {
-                if (player->ticksAttackHold == 0) {
-                    player->attack();
-                } else if (player->weapon == Item::DiamondSword &&
-                           player->ticksAttackHold > 2 &&
-                           abs(player->rotationSpeed) >=
-                               0.8 * Player::maxRotationSpeed) {
-                    player->isSweeping = true;
-                    player->sweep();
-                }
-            } else {
-                if (player->ticksAttackHold == 0) {
-                    auto arrow =
-                        level.add_entity<Arrow>(generate_unique_id("arrow"));
-                    arrow->pos =
-                        player->pos + glm::vec3{0, 1, 0} + player->get_front() * 0.7f;
-                    arrow->speed = player->get_front() * 15.0f + glm::vec3{0, 1, 0};
-                }
-            }
-            player->ticksAttackHold++;
-        } else {
-            player->ticksAttackHold = 0;
-            player->isSweeping = false;
-        }
+        player->handle_attack_input(flags.contains("attack"));
 
         while (!events.empty()) {
             auto i = events.front();
