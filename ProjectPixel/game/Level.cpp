@@ -22,4 +22,9 @@ Level::Level(LevelConfig& config) : config(config), entityRegistry(4, config.xSi
         auto zombie = add_entity<Zombie>(generate_unique_id("zombie"));
         zombie->pos = pos;
     }
+
+    for (auto& pos : config.mobs["skeleton"]) {
+        auto skeleton = add_entity<Skeleton>(generate_unique_id("skeleton"));
+        skeleton->pos = pos;
+    }
 }

@@ -46,9 +46,11 @@ class MobEntity : public Entity {
     void turn(float time, float angle, float maxSpeed);
 
     int ticksToHurt = 0;
+    int ticksToJump = 0;
 
     virtual void hitback(glm::vec3 source, float strength);
     virtual bool hurt(int hits, HurtType type);
+    virtual void jump();
 };
 
 class Player : public MobEntity {
@@ -61,7 +63,6 @@ class Player : public MobEntity {
 
     bool isAiming = false;
     bool isSweeping = false;
-    int ticksToJump = 0;
     int ticksAttackHold = 0;
     int ticksToAttack = 0;
 
@@ -69,12 +70,9 @@ class Player : public MobEntity {
 
     inline const static float moveSpeed = 2.5;
     inline const static float maxAcceleration = 20.0f;
-    inline const static int jumpCooldown = 5;
-    inline const static float jumpSpeed = 6;
     inline const static float maxRotationSpeed = 720;
 
     void tick(float time);
-    void jump();
     void attack();
     void sweep();
 
@@ -96,15 +94,37 @@ class Zombie : public MobEntity {
 
     inline const static float moveSpeed = 1.6;
     inline const static float maxAcceleration = 10.0f;
+    inline const static float maxRotationSpeed = 720;
+
+    int ticksToAttack = 0;
+
+    void tick(float time);
+
+    EntityInstruction get_instruction();
+};
+
+class Skeleton : public MobEntity {
+   public:
+    inline Skeleton(Level& level,
+                  const std::string& id = generate_unique_id("skeleton"))
+        : MobEntity(level, id) {}
+    inline std::string get_type() { return "skeleton"; }
+    inline glm::vec3 get_bounding_box_size() { return {0.5, 1.6, 0.5}; }
+    inline glm::vec3 get_head_pos() { return pos + glm::vec3(0, 1.5, 0); }
+
+    inline const static float moveSpeed = 1.6;
+    inline const static float maxAcceleration = 10.0f;
     inline const static int jumpCooldown = 8;
     inline const static float jumpSpeed = 6;
     inline const static float maxRotationSpeed = 720;
 
-    int ticksToJump = 0;
-    int ticksToAttack = 0;
+    bool isAiming = false;
+    int ticksAttackHold = 0;
+    int ticksToChangeMovement = 0;
+    int ticksToShoot = 0;
+    glm::vec3 randomMovement;
 
     void tick(float time);
-    void jump();
 
     EntityInstruction get_instruction();
 };

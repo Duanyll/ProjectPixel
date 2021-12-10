@@ -115,15 +115,20 @@ void Paperman::render() {
 }
 
 PapermanMatraial Paperman::get_material_preset(const std::string& key) {
-    if (key == "droid") {
-        return {AssetsHub::get_texture_2d("paperman-droid-diffuse"),
-                AssetsHub::get_texture_2d("paperman-droid-specular"),
-                AssetsHub::get_texture_2d("paperman-droid-emission"), 64,
+    if (key == "player") {
+        return {AssetsHub::get_texture_2d("paperman-player-diffuse"),
+                AssetsHub::get_texture_2d("paperman-player-specular"),
+                AssetsHub::get_texture_2d("paperman-player-emission"), 64,
                 false};
     } else if (key == "zombie") {
         return {AssetsHub::get_texture_2d("paperman-zombie-diffuse"),
                 AssetsHub::get_texture_2d("paperman-zombie-specular"),
                 AssetsHub::get_texture_2d("no-emission"), 32, false};
+    } else if (key == "skeleton") {
+        return {AssetsHub::get_texture_2d("paperman-skeleton-diffuse"),
+                AssetsHub::get_texture_2d("paperman-skeleton-specular"),
+                AssetsHub::get_texture_2d("paperman-skeleton-emission"), 64,
+                false};
     }
     return {AssetsHub::get_texture_2d("paperman-default"),
             AssetsHub::get_texture_2d("no-specular"),
@@ -264,12 +269,14 @@ glm::mat4 Paperman::get_item_model() {
     glm::mat4 base;
     if (hand == HandAction::None) {
         base = glm::translate(base, {-0.5, 1.35, -0.1});
+        base = glm::scale(base, {0.8, 0.8, 0.8});
         base = glm::rotate(base, glm::radians(-90.0f), {1, 0, 0});
         base = glm::translate(base, {0, 0, -1});
     } else if (handItem == Item::Bow &&
                (hand == HandAction::Attacking || hand == HandAction::Holding)) {
-        base = glm::translate(base, {0, 0.3, 0.5});
+        base = glm::translate(base, {0, 0.4, 0.5});
         base = glm::rotate(base, glm::radians(-45.0f), {1, 0, 0});
+        base = glm::scale(base, {0.8, 0.8, 0.8});
         base = glm::translate(base, {0, 0, 1});
         base = glm::rotate(base, glm::radians(180.0f), {0, 1, 0});
         base = glm::rotate(base, glm::radians(90.0f), {0, 0, 1});
@@ -286,6 +293,7 @@ glm::mat4 Paperman::get_item_model() {
             base = glm::rotate(base, glm::radians(45.0f), {1, 0, 0});
         }
         base = glm::rotate(base, glm::radians(10.0f), {0, 1, 0});
+        base = glm::scale(base, {0.8, 0.8, 0.8});
         base = glm::translate(base, {0, -0.2, 0.8});
         base = glm::rotate(base, glm::radians(180.0f), {0, 1, 0});
         base = glm::rotate(base, glm::radians(90.0f), {0, 0, 1});
@@ -336,13 +344,15 @@ std::shared_ptr<EntityRenderer> get_entity_renderer(
     std::shared_ptr<EntityRenderer> e;
     if (instruction.type == "player") {
         auto paperman = std::make_shared<Paperman>();
-        paperman->material = Paperman::get_material_preset("default");
-        paperman->handItem = Item::DiamondSword;
+        paperman->material = Paperman::get_material_preset("player");
         e = paperman;
     } else if (instruction.type == "zombie") {
         auto paperman = std::make_shared<Paperman>();
         paperman->material = Paperman::get_material_preset("zombie");
-        paperman->hand = HandAction::ZombieHanging;
+        e = paperman;
+    } else if (instruction.type == "skeleton") {
+        auto paperman = std::make_shared<Paperman>();
+        paperman->material = Paperman::get_material_preset("skeleton");
         e = paperman;
     } else if (instruction.type == "arrow") {
         e = std::make_shared<ArrowRenderer>();
@@ -391,6 +401,7 @@ void LinearAnimation::step(float time) {
 glm::mat4 ArrowRenderer::get_model() {
     glm::mat4 base;
     base = glm::rotate(base, pitch - glm::radians(45.0f), {-1, 0, 0});
+    base = glm::scale(base, {0.8, 0.8, 0.8});
     base = glm::translate(base, {0, -0.7, 0.3});
     base = glm::rotate(base, glm::radians(180.0f), {0, 1, 0});
     base = glm::rotate(base, glm::radians(90.0f), {0, 0, 1});

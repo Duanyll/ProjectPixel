@@ -27,7 +27,7 @@ class LocationBuffer {
         zGridCount = (zSize + gridSize - 1) / gridSize;
     }
     std::vector<std::shared_ptr<T>> query_square_range(glm::vec3 center,
-        float range) {
+                                                       float range) {
         int xGridMin = (center.x - range) / gridSize;
         int xGridMax = (center.x + range) / gridSize;
         int zGridMin = (center.z - range) / gridSize;
@@ -59,7 +59,6 @@ class LocationBuffer {
     int get_grid_id(int x, int z) {
         return (x / gridSize) + (z / gridSize) * xGridCount;
     }
-
 };
 
 class Entity;
@@ -69,6 +68,9 @@ class Level {
     std::unordered_map<std::string, std::shared_ptr<Entity>> entities;
     LocationBuffer<Entity> entityRegistry;
     LevelConfig& config;
+
+    std::mt19937 random{
+        std::chrono::steady_clock::now().time_since_epoch().count()};
 
     Level(LevelConfig& config);
 
