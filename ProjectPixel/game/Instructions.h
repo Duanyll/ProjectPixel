@@ -31,4 +31,6 @@ struct SceneInstruction {
     TimeStamp creationTime;
     std::vector<EntityInstruction> entities;
     std::vector<std::string> deletedEntities;
+
+    int playerHP = 0;
 };

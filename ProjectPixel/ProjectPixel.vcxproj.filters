@@ -45,7 +45,7 @@
     <ClCompile Include="driver\EmbbedAssets.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="driver\Text.cpp">
+    <ClCompile Include="driver\UI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="driver\Uniform.cpp">
@@ -70,6 +70,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="game\Game.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="game\HUD.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -116,7 +119,7 @@
     <ClInclude Include="driver\EmbbedAssets.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="driver\Text.h">
+    <ClInclude Include="driver\UI.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="driver\Uniform.h">
@@ -150,6 +153,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="utils\Geomentry.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="game\HUD.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -57,6 +57,7 @@ void Uniform::init_members() {
     prefix("Lights", "spotLight.",
            {"position", "direction", "cutOff", "outerCutOff", "constant",
             "linear", "quadratic", "diffuse", "specular"});
+    uniformBlockMembers["Screen"] = {"projection2d"};
 }
 
 void Uniform::bind_block(GLuint programId, const std::string& blockName) {

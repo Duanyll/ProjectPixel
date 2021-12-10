@@ -1,11 +1,9 @@
 #include "pch.h"
-#include "Text.h"
+#include "UI.h"
 #include "../utils/Window.h"
+#include "Uniform.h"
 
-TextPrinter::TextPrinter(const std::string& font_path, int screen_width,
-                         int screen_height) {
-    on_screen_size_changed(screen_width, screen_height);
-
+TextPrinter::TextPrinter(const std::string& font_path) {
     // FreeType
     FT_Library ft;
     // All functions return a value different than 0 whenever an error occurred
@@ -56,21 +54,8 @@ TextPrinter::TextPrinter(const std::string& font_path, int screen_width,
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
 
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL,
-                 GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-}
-
-void TextPrinter::on_screen_size_changed(int new_w, int new_h) {
-    projection = glm::ortho(0.0f, static_cast<GLfloat>(new_w), 0.0f,
-                            static_cast<GLfloat>(new_h));
+    vao = std::make_shared<VAO>();
+    vao->load_interleave_vbo(nullptr, sizeof(float) * 6 * 4, {4});
 }
 
 void TextPrinter::print(const std::string& text, GLfloat x, GLfloat y,
@@ -80,9 +65,8 @@ void TextPrinter::print(const std::string& text, GLfloat x, GLfloat y,
     glDisable(GL_DEPTH_TEST);
 
     auto shader = AssetsHub::get_shader<TextShader>();
-    shader->configure(projection, color);
+    shader->configure(color);
     glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(VAO);
 
     // Iterate through all characters
     std::string::const_iterator c;
@@ -106,24 +90,18 @@ void TextPrinter::print(const std::string& text, GLfloat x, GLfloat y,
             { xpos + w, ypos + h,   1.0, 0.0 }
         };
         // clang-format on
-        // Render glyph texture over quad
         glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-        // Update content of VBO memory
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferSubData(
-            GL_ARRAY_BUFFER, 0, sizeof(vertices),
-            vertices);  // Be sure to use glBufferSubData and not glBufferData
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        // Render glyph texture over quad
+        vao->update_vbo(reinterpret_cast<float*>(vertices), 0,
+                        sizeof(vertices));
         // Render quad
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        vao->draw();
         // Now advance cursors for next glyph (note that advance is number of
         // 1/64 pixels)
         x += (ch.Advance >> 6) *
              scale;  // Bitshift by 6 to get value in pixels (2^6 = 64 (divide
                      // amount of 1/64th pixels by 64 to get amount of pixels))
     }
-    glBindVertexArray(0);
-    glBindTexture(GL_TEXTURE_2D, 0);
 
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
@@ -138,14 +116,25 @@ struct TextLog {
 std::list<TextLog> logs;
 const int MAX_LOGS = 10;
 const int LOG_DECAY = 5;
-void Logger::init(const std::string& font_path, int screen_width,
-                  int screen_height) {
-    printer =
-        std::make_shared<TextPrinter>(font_path, screen_width, screen_height);
+
+void reset_projection2d() {
+    auto projection = glm::ortho(0.0f, static_cast<GLfloat>(Window::width),
+                                 0.0f, static_cast<GLfloat>(Window::height));
+    Uniform::set_data("Screen", "projection2d", projection);
+}
+
+pVAO imageVAO;
+void UI::init(const std::string& font_path) {
+    printer = std::make_shared<TextPrinter>(font_path);
+    reset_projection2d();
+    Window::register_command("frame-resize",
+                             [](float _) { reset_projection2d(); });
+    imageVAO = std::make_shared<VAO>();
+    imageVAO->load_interleave_vbo(nullptr, sizeof(float) * 6 * 4, {4});
 }
 
 void base_log(const std::string& str, const std::string& level,
-    glm::vec3 color) {
+              glm::vec3 color) {
     std::cout << "[" << level << "]: " << str << std::endl;
     TextLog log;
     log.str = str;
@@ -157,20 +146,49 @@ void base_log(const std::string& str, const std::string& level,
     }
 }
 
-void Logger::info(const std::string& str) {
-    base_log(str, "INFO", glm::vec3(0.0, 1.0, 0.0));
+void UI::log_info(const std::string& str) {
+    base_log(str, "INFO", glm::vec3(0.8, 0.8, 0.8));
 }
 
-void Logger::error(const std::string& str) {
+void UI::log_error(const std::string& str) {
     base_log(str, "ERROR", glm::vec3(1.0, 0.0, 0.0));
 }
 
-void Logger::flush() {
-    printer->on_screen_size_changed(Window::width, Window::height);
-    int ypos = 25;
+void UI::print_text(const std::string& text, GLfloat x, GLfloat y,
+                    GLfloat scale, glm::vec3 color) {
+    printer->print(text, x, y, scale, color);
+}
+
+void UI::print_image2d(pTexture texture, GLfloat xpos, GLfloat ypos, GLfloat w,
+                       GLfloat h) {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_DEPTH_TEST);
+    auto shader = AssetsHub::get_shader<HUDShader>();
+    shader->configure(texture);
+    // clang-format off
+    GLfloat vertices[6][4] = {
+        { xpos,     ypos + h,   0.0, 0.0 },
+        { xpos,     ypos,       0.0, 1.0 },
+        { xpos + w, ypos,       1.0, 1.0 },
+
+        { xpos,     ypos + h,   0.0, 0.0 },
+        { xpos + w, ypos,       1.0, 1.0 },
+        { xpos + w, ypos + h,   1.0, 0.0 }
+    };
+    // clang-format on
+    imageVAO->update_vbo(reinterpret_cast<float*>(vertices), 0, sizeof(vertices));
+    // Render quad
+    imageVAO->draw();
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+}
+
+void UI::print_logs() {
+    int ypos = 100;
     for (auto i : logs) {
-        printer->print(i.str, 25, ypos, 1.0f, i.color);
-        ypos += 50;
+        printer->print(i.str, 25, ypos, 0.6f, i.color);
+        ypos += 30;
     }
     if (!logs.empty() && logs.back().timeToDecay < glfwGetTime()) {
         logs.pop_back();

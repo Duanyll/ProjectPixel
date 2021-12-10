@@ -171,9 +171,9 @@ void Player::tick(float time) {
 void Player::attack() {
     if (ticksToAttack == 0) {
         if (weapon == Item::DiamondAxe) {
-            ticksToAttack = 12;
+            ticksToAttack = 7;
         } else {
-            ticksToAttack = 6;
+            ticksToAttack = 4;
         }
         auto targets = level.entityRegistry.query_square_range(pos, 3);
         std::shared_ptr<MobEntity> target;
@@ -182,7 +182,7 @@ void Player::attack() {
             if (i->id == id) continue;
             auto e = std::dynamic_pointer_cast<MobEntity>(i);
             if (e) {
-                if (glm::length(e->pos - pos) > 2) continue;
+                if (glm::length(e->pos - pos) > 2.5) continue;
                 auto cur = abs(horizonal_angle(get_front(), e->pos - pos));
                 if (cur < minAngle) {
                     minAngle = cur;
@@ -227,13 +227,13 @@ void Player::attack() {
 
 void Player::sweep() {
     ticksToAttack = 0;
-    auto targets = level.entityRegistry.query_square_range(pos, 2.5);
+    auto targets = level.entityRegistry.query_square_range(pos, 2.8);
     float minAngle = 30.0f;
     for (auto& i : targets) {
         if (i->id == id) continue;
         auto e = std::dynamic_pointer_cast<MobEntity>(i);
         if (e) {
-            if (glm::length(e->pos - pos) > 2.5) continue;
+            if (glm::length(e->pos - pos) > 2.8) continue;
             auto cur = abs(horizonal_angle(get_front(), e->pos - pos));
             if (cur < minAngle) {
                 if (e->hurt(3, HurtType::Melee)) {

@@ -6,7 +6,7 @@
 #include "utils/Window.h"
 #include "utils/FrameTimer.h"
 
-#include "driver/Text.h"
+#include "driver/UI.h"
 #include "game/Level.h"
 #include "game/Game.h"
 
@@ -36,7 +36,7 @@ int main() {
     });
 
     AssetsHub::load_all();
-    Logger::init();
+    UI::init();
 
     std::ifstream levelFile("levels/default.json");
     json configJson;
@@ -61,7 +61,7 @@ int main() {
         glViewport(0, 0, Window::width, Window::height);
         quad.render();
 
-        Logger::flush();
+        UI::print_logs();
 
         glfwSwapBuffers(Window::handle);
         glfwPollEvents();

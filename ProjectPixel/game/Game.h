@@ -5,6 +5,7 @@
 #include "Terrain.h"
 #include "Processor.h"
 #include "Objects.h"
+#include "HUD.h"
 #include "../driver/AssetsHub.h"
 #include "../utils/Utils.h"
 #include "../utils/Window.h"
@@ -32,6 +33,8 @@ class Game {
     LevelProcessor processor;
 
     TimeStamp updateTime;
+
+    GameHUD hud;
 
     void update();
 };

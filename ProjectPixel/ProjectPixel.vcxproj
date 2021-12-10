@@ -155,6 +155,7 @@
   <ItemGroup>
     <ClCompile Include="game\Entity.cpp" />
     <ClCompile Include="game\Game.cpp" />
+    <ClCompile Include="game\HUD.cpp" />
     <ClCompile Include="game\Level.cpp" />
     <ClCompile Include="game\Processor.cpp" />
     <ClCompile Include="game\Terrain.cpp" />
@@ -175,12 +176,13 @@
     <ClCompile Include="driver\Uniform.cpp" />
     <ClCompile Include="driver\VAO.cpp" />
     <ClCompile Include="utils\FrameTimer.cpp" />
-    <ClCompile Include="driver\Text.cpp" />
+    <ClCompile Include="driver\UI.cpp" />
     <ClCompile Include="utils\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game\Entity.h" />
     <ClInclude Include="game\Game.h" />
+    <ClInclude Include="game\HUD.h" />
     <ClInclude Include="game\Level.h" />
     <ClInclude Include="game\pch.h" />
     <ClInclude Include="game\Processor.h" />
@@ -201,7 +203,7 @@
     <ClInclude Include="utils\FrameTimer.h" />
     <ClInclude Include="utils\Geomentry.h" />
     <ClInclude Include="utils\pch.h" />
-    <ClInclude Include="driver\Text.h" />
+    <ClInclude Include="driver\UI.h" />
     <ClInclude Include="utils\Threading.h" />
     <ClInclude Include="utils\Utils.h" />
     <ClInclude Include="utils\Window.h" />

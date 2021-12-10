@@ -2,7 +2,7 @@
 #include "FrameTimer.h"
 
 #include "Window.h"
-#include "Text.h";
+#include "../driver/UI.h";
 
 TimeStamp lastFrame;
 TimeDuration deltaTime;
@@ -17,7 +17,7 @@ float fps;
 void FrameTimer::begin_frame_stats() {
     lastFrame = std::chrono::steady_clock::now();
     Window::register_command("framerate", [](float _) {
-        Logger::info(std::format("Framerate: {:.2f}FPS", get_average_framerate()));
+        UI::log_info(std::format("Framerate: {:.2f}FPS", get_average_framerate()));
     });
 }
 

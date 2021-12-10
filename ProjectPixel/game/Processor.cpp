@@ -94,17 +94,20 @@ void LevelProcessor::clip_speed() {
 }
 
 void LevelProcessor::emit_instructions(TimeStamp time) {
-    auto instructions = std::make_unique<SceneInstruction>();
-    instructions->creationTime = time;
-    instructions->entities.reserve(level.entities.size());
+    auto ins = std::make_unique<SceneInstruction>();
+    ins->creationTime = time;
+    ins->entities.reserve(level.entities.size());
     for (auto& i : level.entities) {
         if (i.second->destroyFlag) {
-            instructions->deletedEntities.push_back(i.second->id);
+            ins->deletedEntities.push_back(i.second->id);
         } else {
-            instructions->entities.push_back(i.second->get_instruction());
+            ins->entities.push_back(i.second->get_instruction());
+            if (i.first == "player1") {
+                ins->playerHP = std::static_pointer_cast<Player>(i.second)->hp;
+            }
         }
     }
-    for (auto& i : instructions->deletedEntities) {
+    for (auto& i : ins->deletedEntities) {
         if (i == "player1") {
             shouldStop = true;
             input.isEnabled = false;
@@ -112,5 +115,5 @@ void LevelProcessor::emit_instructions(TimeStamp time) {
         }
         level.entities.erase(i);
     }
-    output.update(instructions);
+    output.update(ins);
 }

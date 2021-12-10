@@ -3,7 +3,7 @@
 
 #include "../utils/Utils.h"
 #include "../utils/Geomentry.h"
-#include "../driver/Text.h"
+#include "../driver/UI.h"
 
 Game::Game(LevelConfig& config)
     : config(config),
@@ -78,13 +78,13 @@ void Game::apply_to_window() {
         auto it = entities.find("player1");
         if (it != entities.end()) {
             auto pos = it->second->position;
-            Logger::info(
+            UI::log_info(
                 std::format("X{:.2f} Y{:.2f} Z{:.2f}", pos.x, pos.y, pos.z));
         } else {
-            Logger::error(std::format("NO PLAYER!"));
+            UI::log_error(std::format("NO PLAYER!"));
         }
         auto cursor = camera.resolve_cursor_pos();
-        Logger::info(std::format("Cursor X{:.2f} Z{:.2f}", cursor.x, cursor.z));
+        UI::log_info(std::format("Cursor X{:.2f} Z{:.2f}", cursor.x, cursor.z));
     });
     Window::register_command(
         "slot-1", [this](float _) { processor.input.add_event("slot-1"); });
@@ -124,16 +124,18 @@ void Game::render() {
 
     terrainRenderer.render();
     skybox.render();
+
+    hud.render();
 }
 
 void Game::stop() { processor.stop(); }
 
 void Game::update() {
     if (!processor.isRunning) return;
-    auto instructions = processor.output.try_get();
-    if (instructions) {
-        updateTime = instructions->creationTime;
-        for (auto& i : instructions->entities) {
+    auto ins = processor.output.try_get();
+    if (ins) {
+        updateTime = ins->creationTime;
+        for (auto& i : ins->entities) {
             auto it = entities.find(i.id);
             if (it == entities.end()) {
                 entities[i.id] = get_entity_renderer(i);
@@ -141,9 +143,10 @@ void Game::update() {
                 it->second->update(i);
             }
         }
-        for (auto& i : instructions->deletedEntities) {
+        for (auto& i : ins->deletedEntities) {
             entities.erase(i);
         }
+        hud.update(*ins);
     }
     TimeStamp now = std::chrono::steady_clock::now();
     float delta = to_float_duration(now - updateTime);

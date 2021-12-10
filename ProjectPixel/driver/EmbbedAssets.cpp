@@ -29,7 +29,12 @@ std::unordered_map<std::string, std::string> EmbbedAssets::texturePath{
     {"item-bow2", "assets/items/bow_pulling_1.png"},
     {"item-bow3", "assets/items/bow_pulling_2.png"},
     {"item-arrow", "assets/items/arrow.png"},
-    {"item-arrow-specular", "assets/items/arrow-specular.png"}};
+    {"item-arrow-specular", "assets/items/arrow-specular.png"},
+    {"ui-heart-empty", "assets/ui/heart-empty.png"},
+    {"ui-heart-flashing", "assets/ui/heart-flashing.png"},
+    {"ui-heart-half", "assets/ui/heart-half.png"},
+    {"ui-heart-full", "assets/ui/heart-full.png"},
+};
 std::vector<std::string> itemResource{
     "item-diamond-sword", "item-diamond-axe", "item-bow",  "item-bow1",
     "item-bow2",          "item-bow3",        "item-arrow"};

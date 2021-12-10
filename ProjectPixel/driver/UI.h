@@ -5,9 +5,7 @@
 
 class TextPrinter {
    public:
-    TextPrinter(const std::string& font_path, int screen_width,
-                int screen_height);
-    void on_screen_size_changed(int new_w, int new_h);
+    TextPrinter(const std::string& font_path);
     void print(const std::string& text, GLfloat x, GLfloat y, GLfloat scale,
                glm::vec3 color);
 
@@ -24,15 +22,17 @@ class TextPrinter {
     };
 
     std::unordered_map<GLchar, Character> Characters;
-    GLuint VAO, VBO;
+    pVAO vao;
 };
 
 typedef std::shared_ptr<TextPrinter> pTextPrinter;
 
-namespace Logger {
-void init(const std::string& font_path = "assets/CaskaydiaCoveNF.ttf",
-          int screen_width = 1920, int screen_height = 1080);
-void info(const std::string& str);
-void error(const std::string& str);
-void flush();
+namespace UI {
+void init(const std::string& font_path = "assets/CaskaydiaCoveNF.ttf");
+void log_info(const std::string& str);
+void log_error(const std::string& str);
+void print_text(const std::string& text, GLfloat x, GLfloat y, GLfloat scale = 1.0f,
+                glm::vec3 color = glm::vec3(1.0, 1.0, 1.0));
+void print_image2d(pTexture texture, GLfloat x, GLfloat y, GLfloat w, GLfloat h);
+void print_logs();
 }  // namespace logger

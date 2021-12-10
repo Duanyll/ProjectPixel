@@ -150,14 +150,13 @@ void QuadShader::configure(pTexture texture) {
 TextShader::TextShader() {
     compile_from_file("shaders/text.vert", "shaders/text.frag");
     use();
-    projection_pos = glGetUniformLocation(id, "projection2d");
+    Uniform::bind_block(id, "Screen");    
     textColor_pos = glGetUniformLocation(id, "textColor");
     text_pos = glGetUniformLocation(id, "text");
 }
 
-void TextShader::configure(glm::mat4 projection, glm::vec3 textColor) { 
+void TextShader::configure(glm::vec3 textColor) { 
     use(); 
-    glUniformMatrix4fv(projection_pos, 1, false, glm::value_ptr(projection));
     glUniform3fv(textColor_pos, 1, glm::value_ptr(textColor));
     glUniform1i(text_pos, 0);
 }
@@ -198,4 +197,16 @@ void EntityShader::configure(const Material& material, glm::mat4 model) {
     glUniformMatrix3fv(
         normal_pos, 1, false,
         glm::value_ptr(glm::mat3(glm::transpose(glm::inverse(model)))));
+}
+
+HUDShader::HUDShader() {
+    compile_from_file("shaders/hud.vert", "shaders/hud.frag");
+    use();
+    Uniform::bind_block(id, "Screen");
+    img_pos = glGetUniformLocation(id, "img");
+}
+
+void HUDShader::configure(pTexture img) {
+    use();
+    bind_texture(img_pos, 0, img);
 }

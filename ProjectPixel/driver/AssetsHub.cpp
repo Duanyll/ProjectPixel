@@ -16,6 +16,7 @@ void AssetsHub::load_all() {
     register_shader<TextShader>();
     register_shader<SkyboxShader>();
     register_shader<EntityShader>();
+    register_shader<HUDShader>();
 
     vaoStore["quad"] = load_quad_vao();
     vaoStore["box"] = load_box_vao();

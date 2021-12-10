@@ -43,12 +43,11 @@ class QuadShader : public ShaderProgram {
 class TextShader : public ShaderProgram {
    public:
     TextShader();
-    void configure(glm::mat4 projection, glm::vec3 textColor);
+    void configure(glm::vec3 textColor);
 
     const static int storeId = 2;
 
    private:
-    GLint projection_pos;
     GLint textColor_pos;
     GLint text_pos;
 };
@@ -80,4 +79,15 @@ class EntityShader : public ShaderProgram {
    private:
     GLint diffuse_pos, specular_pos, emission_pos, shininess_pos;
     GLint model_pos, normal_pos;
+};
+
+class HUDShader : public ShaderProgram {
+   public:
+    HUDShader();
+    void configure(pTexture texture);
+
+    const static int storeId = 5;
+
+   private:
+    GLint img_pos;
 };
