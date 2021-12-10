@@ -72,6 +72,15 @@ void MobEntity::tick(float time) {
         }
     }
 
+    if (hp <= 0) {
+        if (ticksToRemove > 0) {
+            ticksToRemove--;
+        } else {
+            destroyFlag = true;
+            return;
+        }
+    }
+
     if (ticksToHurt > 0) ticksToHurt--;
     if (ticksToJump > 0) ticksToJump--;
 }
@@ -113,8 +122,16 @@ void MobEntity::hitback(glm::vec3 source, float strength) {
 }
 
 bool MobEntity::hurt(int hits, HurtType type) {
+    if (hp <= 0) return false;
     if (ticksToHurt > 0) return false;
     ticksToHurt = 5;
+
+    hp -= hits;
+    if (hp <= 0) {
+        ticksToRemove = 20;
+        hp = 0;
+    }
+
     return true;
 }
 
@@ -270,7 +287,9 @@ EntityInstruction Player::get_instruction() {
         i.state[1] = (char)HandAction::None;
     }
     i.state[2] = (char)weapon;
-    if (clipping & BoxClipping::NegY) {
+    if (hp <= 0) {
+        i.state[0] = (char)LegAction::Lying;
+    } else if (clipping & BoxClipping::NegY) {
         if (glm::length(speed) > 3) {
             i.state[0] = (char)LegAction::Running;
         } else if (glm::length(speed) > 1) {
@@ -292,6 +311,7 @@ EntityInstruction Player::get_instruction() {
 
 void Zombie::tick(float time) {
     MobEntity::tick(time);
+    if (hp <= 0) return;
     if (ticksToAttack > 0) ticksToAttack--;
     auto it = level.entities.find("player1");
     if (it != level.entities.end()) {
@@ -336,7 +356,9 @@ EntityInstruction Zombie::get_instruction() {
         i.state[1] = (char)HandAction::ZombieHanging;
     }
     i.state[2] = (char)Item::DiamondAxe;
-    if (glm::length(speed) > 1) {
+    if (hp <= 0) {
+        i.state[0] = (char)LegAction::Lying;
+    } else if (glm::length(speed) > 1) {
         i.state[0] = (char)LegAction::Walking;
     } else {
         i.state[0] = (char)LegAction::Standing;
@@ -411,6 +433,7 @@ void Arrow::tick(float time) {
 
 void Skeleton::tick(float time) {
     MobEntity::tick(time);
+    if (hp <= 0) return;
     if (ticksToChangeMovement > 0) ticksToChangeMovement--;
     if (ticksToShoot > 0) ticksToShoot--;
     auto it = level.entities.find("player1");
@@ -482,7 +505,9 @@ EntityInstruction Skeleton::get_instruction() {
         i.state[1] = (char)HandAction::None;
     }
     i.state[2] = (char)Item::Bow;
-    if (clipping & BoxClipping::NegY) {
+    if (hp <= 0) {
+        i.state[0] = (char)LegAction::Lying;
+    } else if (clipping & BoxClipping::NegY) {
         if (glm::length(speed) > 3) {
             i.state[0] = (char)LegAction::Running;
         } else if (glm::length(speed) > 1) {

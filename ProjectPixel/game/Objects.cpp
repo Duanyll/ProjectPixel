@@ -54,7 +54,11 @@ void EntityRenderer::update(EntityInstruction& instruction) {
 }
 
 glm::mat4 Paperman::get_model() {
-    return glm::scale(EntityRenderer::get_model(), {0.05, 0.05, 0.05});
+    auto base = EntityRenderer::get_model();
+    if (leg == LegAction::Lying) {
+        base = glm::rotate(base, glm::radians(90 - lieBase.value), {0, 0, 1});
+    }
+    return base;
 }
 
 void Paperman::step(float time) {
@@ -63,6 +67,7 @@ void Paperman::step(float time) {
     legReal.step_to(time, legBase.value);
     handBase.step(time);
     handReal.step_to(time, handBase.value);
+    lieBase.step(time);
 
     if (handItem == Item::Bow && hand == HandAction::Attacking) {
         pullBowTime += time;
@@ -89,7 +94,7 @@ void Paperman::render() {
     shader->configure(material, baseModel * get_head_model());
     headVAO->draw();
 
-    shader->configure(material, baseModel);
+    shader->configure(material, baseModel * get_body_model());
     bodyVAO->draw();
 
     shader->configure(material, baseModel * get_larm_model());
@@ -108,8 +113,7 @@ void Paperman::render() {
         pVAO itemVAO;
         Material itemMaterial;
         get_item_resources(handItem, itemVAO, itemMaterial);
-        shader->configure(itemMaterial,
-                          EntityRenderer::get_model() * get_item_model());
+        shader->configure(itemMaterial, baseModel * get_item_model());
         itemVAO->draw();
     }
 }
@@ -157,6 +161,9 @@ void Paperman::set_leg_action(LegAction action) {
         case LegAction::Running:
             legBase.amplitude = 60;
             legBase.peirod = 0.5;
+            break;
+        case LegAction::Lying:
+            lieBase.value = 90;
             break;
         default:
             break;
@@ -213,16 +220,21 @@ glm::mat4 Paperman::get_base_rarm() {
 
 glm::mat4 Paperman::get_head_model() {
     return glm::rotate(
-        glm::rotate(glm::translate(glm::mat4(), {0, 28, 0}),
+        glm::rotate(glm::translate(glm::scale(glm::mat4(), {0.05, 0.05, 0.05}),
+                                   {0, 28, 0}),
                     glm::radians(glm::clamp(headYaw, -90.0f, 90.0f)),
                     {0.0, -1.0, 0.0}),
         glm::radians(glm::clamp(headPitch, -75.0f, 75.0f)), {-1.0, 0.0, 0.0});
 }
 
-glm::mat4 Paperman::get_body_model() { return glm::mat4(); }
+glm::mat4 Paperman::get_body_model() {
+    return glm::scale(glm::mat4(), {0.05, 0.05, 0.05});
+}
 
 glm::mat4 Paperman::get_larm_model() {
-    auto base = glm::translate(glm::mat4(), {6, 22, 0});
+    glm::mat4 base;
+    base = glm::scale(base, {0.05, 0.05, 0.05});
+    base = glm::translate(base, {6, 22, 0});
     if (handItem == Item::Bow &&
         (hand == HandAction::Attacking || hand == HandAction::Holding)) {
         base = glm::translate(base, {0, 0, 3.5});
@@ -243,7 +255,9 @@ glm::mat4 Paperman::get_larm_model() {
 }
 
 glm::mat4 Paperman::get_rarm_model() {
-    auto base = glm::translate(glm::mat4(), {-6, 22, 0});
+    glm::mat4 base;
+    base = glm::scale(base, {0.05, 0.05, 0.05});
+    base = glm::translate(base, {-6, 22, 0});
     if (handItem == Item::Bow &&
         (hand == HandAction::Attacking || hand == HandAction::Holding)) {
         base = glm::rotate(base, glm::radians(30.0f), {0, 1, 0});
@@ -254,13 +268,17 @@ glm::mat4 Paperman::get_rarm_model() {
 }
 
 glm::mat4 Paperman::get_lleg_model() {
-    auto base = glm::translate(glm::mat4(), {0, 12, 0});
+    glm::mat4 base; 
+    base = glm::scale(base, {0.05, 0.05, 0.05});
+    base = glm::translate(base, {0, 12, 0});
     base = glm::rotate(base, glm::radians(legReal.value), {1, 0, 0});
     return base;
 }
 
 glm::mat4 Paperman::get_rleg_model() {
-    auto base = glm::translate(glm::mat4(), {0, 12, 0});
+    glm::mat4 base;
+    base = glm::scale(base, {0.05, 0.05, 0.05});
+    base = glm::translate(base, {0, 12, 0});
     base = glm::rotate(base, glm::radians(-legReal.value), {1, 0, 0});
     return base;
 }
@@ -302,7 +320,7 @@ glm::mat4 Paperman::get_item_model() {
 }
 
 void Paperman::get_item_resources(Item item, pVAO& vao, Material& material) {
-     std::string resid;
+    std::string resid;
     switch (item) {
         case Item::None:
             break;

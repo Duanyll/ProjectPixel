@@ -34,7 +34,8 @@ enum class HurtType { Melee, Arrow };
 
 class MobEntity : public Entity {
    public:
-    inline MobEntity(Level& level, const std::string& id) : Entity(level, id) {}
+    inline MobEntity(Level& level, const std::string& id, int hp)
+        : Entity(level, id), hp(hp) {}
 
     virtual glm::vec3 get_bounding_box_size() = 0;
     virtual TileBoundingBox get_bounding_box();
@@ -47,6 +48,9 @@ class MobEntity : public Entity {
 
     int ticksToHurt = 0;
     int ticksToJump = 0;
+    int ticksToRemove = 0;
+
+    int hp = 20;
 
     virtual void hitback(glm::vec3 source, float strength);
     virtual bool hurt(int hits, HurtType type);
@@ -55,7 +59,7 @@ class MobEntity : public Entity {
 
 class Player : public MobEntity {
    public:
-    inline Player(Level& level, const std::string& id) : MobEntity(level, id) {}
+    inline Player(Level& level, const std::string& id) : MobEntity(level, id, 50) {}
 
     inline std::string get_type() { return "player"; }
     inline glm::vec3 get_bounding_box_size() { return {0.5, 1.6, 0.5}; }
@@ -87,7 +91,7 @@ class Zombie : public MobEntity {
    public:
     inline Zombie(Level& level,
                   const std::string& id = generate_unique_id("zombie"))
-        : MobEntity(level, id) {}
+        : MobEntity(level, id, 20) {}
     inline std::string get_type() { return "zombie"; }
     inline glm::vec3 get_bounding_box_size() { return {0.5, 1.6, 0.5}; }
     inline glm::vec3 get_head_pos() { return pos + glm::vec3(0, 1.5, 0); }
@@ -106,8 +110,8 @@ class Zombie : public MobEntity {
 class Skeleton : public MobEntity {
    public:
     inline Skeleton(Level& level,
-                  const std::string& id = generate_unique_id("skeleton"))
-        : MobEntity(level, id) {}
+                    const std::string& id = generate_unique_id("skeleton"))
+        : MobEntity(level, id, 20) {}
     inline std::string get_type() { return "skeleton"; }
     inline glm::vec3 get_bounding_box_size() { return {0.5, 1.6, 0.5}; }
     inline glm::vec3 get_head_pos() { return pos + glm::vec3(0, 1.5, 0); }

@@ -45,7 +45,7 @@ void LevelProcessor::handle_user_input(float duration) {
     std::unordered_set<std::string> flags;
     input.poll(o, events, flags);
     auto player = std::dynamic_pointer_cast<Player>(level.entities["player1"]);
-    if (player) {
+    if (player && player->hp > 0) {
         glm::vec3 controlSpeed{o["speed-x"], 0, o["speed-z"]};
         if (flags.contains("aim")) {
             player->walk(duration, controlSpeed, Player::moveSpeed * 0.6,
@@ -105,6 +105,11 @@ void LevelProcessor::emit_instructions(TimeStamp time) {
         }
     }
     for (auto& i : instructions->deletedEntities) {
+        if (i == "player1") {
+            shouldStop = true;
+            input.isEnabled = false;
+            return;
+        }
         level.entities.erase(i);
     }
     output.update(instructions);

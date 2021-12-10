@@ -7,6 +7,7 @@ enum class LegAction : char {
     Standing,
     Walking,
     Running,
+    Lying
 };
 enum class HandAction : char {
     None,

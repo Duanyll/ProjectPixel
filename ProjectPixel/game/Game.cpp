@@ -129,6 +129,7 @@ void Game::render() {
 void Game::stop() { processor.stop(); }
 
 void Game::update() {
+    if (!processor.isRunning) return;
     auto instructions = processor.output.try_get();
     if (instructions) {
         updateTime = instructions->creationTime;

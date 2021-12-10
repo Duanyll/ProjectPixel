@@ -93,6 +93,8 @@ class Paperman : public EntityRenderer {
     LinearAnimation handBase{.speed = 240};
     AccelerateAdapter handReal{.maxAcc = 1440};
 
+    LinearAnimation lieBase{.speed = 180};
+
     float pullBowTime = 0;
 
    private:

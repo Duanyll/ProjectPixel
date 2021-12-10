@@ -55,26 +55,31 @@ class ConcurrenceQueue {
 class InputForwarder {
    public:
     inline void add(const std::string& command, float time) {
+        if (!isEnabled) return;
         std::lock_guard<std::mutex> lg(mtx);
         keyTime[command] += time;
     }
 
     inline void set(const std::string& command, float time) {
+        if (!isEnabled) return;
         std::lock_guard<std::mutex> lg(mtx);
         keyTime[command] = time;
     }
 
     inline void add_event(const std::string& command) {
+        if (!isEnabled) return;
         std::lock_guard<std::mutex> lg(mtx);
         keyEvents.push(command);
     }
 
     inline void set_flag(const std::string& f) {
+        if (!isEnabled) return;
         std::lock_guard<std::mutex> lg(mtx);
         flags.insert(f);
     }
 
     inline void clear_flag(const std::string& f) {
+        if (!isEnabled) return;
         std::lock_guard<std::mutex> lg(mtx);
         flags.erase(f);
     }
@@ -82,6 +87,7 @@ class InputForwarder {
     inline void poll(std::unordered_map<std::string, float>& outKeyTime,
                      std::queue<std::string>& outKeyEvents,
                      std::unordered_set<std::string>& outFlags) {
+        if (!isEnabled) return;
         std::lock_guard<std::mutex> lg(mtx);
         for (auto& i : keyTime) {
             outKeyTime[i.first] += i.second;
@@ -95,6 +101,8 @@ class InputForwarder {
             outFlags.insert(i);
         }
     }
+
+    mutable std::atomic_bool isEnabled = true;
 
    private:
     mutable std::mutex mtx;
@@ -152,10 +160,11 @@ class WorkerThread {
         condStop.wait(lock, [this] { return !isRunning; });
     }
 
+    mutable std::atomic<bool> isRunning = false;
+
    protected:
     virtual void work() = 0;
     mutable std::atomic<bool> shouldStop = false;
-    mutable std::atomic<bool> isRunning = false;
 
     mutable std::mutex mtxStop;
     std::condition_variable condStop;
