@@ -2,8 +2,8 @@
 #include "Game.h"
 
 #include "../utils/Utils.h"
-#include "../utils/Text.h"
 #include "../utils/Geomentry.h"
+#include "../driver/Text.h"
 
 Game::Game(LevelConfig& config)
     : config(config),

@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Text.h"
-#include "Window.h"
+#include "../utils/Window.h"
 
 TextPrinter::TextPrinter(const std::string& font_path, int screen_width,
                          int screen_height) {

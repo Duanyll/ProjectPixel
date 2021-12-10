@@ -100,14 +100,7 @@ void MobEntity::walk(float time, glm::vec3 dir, float walkSpeed,
 void MobEntity::turn(float time, float angle, float maxSpeed) {
     auto rotationAcc = maxSpeed * time;
     if (!std::isnan(angle) && std::fabsf(angle) > 1) {
-        if (angle > rotationAcc) {
-            rotationSpeed = maxSpeed;
-        } else if (angle < -rotationAcc) {
-            rotationSpeed = -maxSpeed;
-        } else {
-            rotationSpeed = 0;
-            facing += angle;
-        }
+        rotationSpeed = glm::clamp(angle / time, -maxSpeed, maxSpeed);
     } else {
         rotationSpeed = 0;
     }
@@ -165,7 +158,7 @@ void Player::attack() {
         } else {
             ticksToAttack = 6;
         }
-        auto targets = level.entityRegistry.query_square_range(pos, 2.5);
+        auto targets = level.entityRegistry.query_square_range(pos, 3);
         std::shared_ptr<MobEntity> target;
         float minAngle = 20.0f;
         for (auto& i : targets) {
@@ -182,14 +175,14 @@ void Player::attack() {
 
             auto arrow = std::dynamic_pointer_cast<Arrow>(i);
             if (arrow && arrow->clipping == BoxClipping::None) {
-                if (glm::length(arrow->pos - pos) > 2.5) continue;
+                if (glm::length(arrow->pos - pos) > 3) continue;
                 auto cur = abs(horizonal_angle(get_front(), arrow->pos - pos));
                 if (abs(cur) <= 30) {
                     auto newSpeed = glm::normalize(arrow->pos - pos) * 9.0f;
                     arrow->speed.x = newSpeed.x;
                     arrow->speed.z = newSpeed.z;
                 }
-            } 
+            }
         }
         if (target) {
             float baseHurt, baseHitback = 5;
@@ -216,7 +209,7 @@ void Player::attack() {
 }
 
 void Player::sweep() {
-    ticksToAttack = 5;
+    ticksToAttack = 0;
     auto targets = level.entityRegistry.query_square_range(pos, 2.5);
     float minAngle = 30.0f;
     for (auto& i : targets) {
@@ -240,9 +233,12 @@ void Player::handle_attack_input(bool hold) {
             if (ticksAttackHold == 0) {
                 attack();
             } else if (weapon == Item::DiamondSword && ticksAttackHold > 2 &&
-                       abs(rotationSpeed) >= 0.8 * Player::maxRotationSpeed) {
+                       ticksAttackHold < 20 &&
+                       abs(rotationSpeed) >= 0.5 * Player::maxRotationSpeed) {
                 isSweeping = true;
                 sweep();
+            } else {
+                isSweeping = false;
             }
         }
         ticksAttackHold++;
@@ -449,7 +445,8 @@ void Skeleton::tick(float time) {
 
             bool canSee = level.terrain->test_connectivity(
                 get_head_pos(), player->get_head_pos());
-            if (canSee && ticksAttackHold < 15 && dis > 2 && ticksToShoot == 0) {
+            if (canSee && ticksAttackHold < 15 && dis > 2 &&
+                ticksToShoot == 0) {
                 isAiming = true;
                 ticksAttackHold++;
             } else {
@@ -460,7 +457,8 @@ void Skeleton::tick(float time) {
                         level.add_entity<Arrow>(generate_unique_id("arrow"));
                     arrow->pos = pos + glm::vec3{0, 1, 0} + get_front() * 0.5f;
                     arrow->speed =
-                        get_front() * arrowSpeed + glm::vec3{0, 2, 0};
+                        glm::normalize(player->pos - pos) * arrowSpeed +
+                        glm::vec3{0, 2, 0};
                     arrow->ticksToDecay = 150;
                     ticksToShoot = 20;
                 }

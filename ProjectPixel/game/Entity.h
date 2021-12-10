@@ -70,7 +70,7 @@ class Player : public MobEntity {
 
     inline const static float moveSpeed = 2.5;
     inline const static float maxAcceleration = 20.0f;
-    inline const static float maxRotationSpeed = 720;
+    inline const static float maxRotationSpeed = 1080;
 
     void tick(float time);
     void attack();

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "pch.h"
-#include "AssetsHub.h"
+#include "../driver/AssetsHub.h"
 #include "../game/Instructions.h"
 
 class RenderObject {

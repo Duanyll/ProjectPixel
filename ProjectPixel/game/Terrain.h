@@ -1,9 +1,9 @@
 #pragma once
 
 #include "pch.h"
-#include "../renderer/VAO.h"
-#include "../renderer/Texture.h"
-#include "../renderer/Objects.h"
+#include "../driver/VAO.h"
+#include "../driver/Texture.h"
+#include "Objects.h"
 #include "../utils/Geomentry.h"
 
 enum class Tile : unsigned char { Air = 0, Stone = 1, Box = 2 };

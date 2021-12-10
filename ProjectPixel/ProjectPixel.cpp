@@ -6,12 +6,7 @@
 #include "utils/Window.h"
 #include "utils/FrameTimer.h"
 
-#include "renderer/AssetsHub.h"
-#include "renderer/Camera.h"
-#include "renderer/Uniform.h"
-#include "renderer/Light.h"
-#include "renderer/Objects.h"
-#include "utils/Text.h"
+#include "driver/Text.h"
 #include "game/Level.h"
 #include "game/Game.h"
 

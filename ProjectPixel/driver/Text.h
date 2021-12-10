@@ -1,7 +1,7 @@
 #pragma once
 
 #include "pch.h"
-#include "../renderer/AssetsHub.h"
+#include "AssetsHub.h"
 
 class TextPrinter {
    public:

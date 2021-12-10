@@ -4,12 +4,12 @@
 #include "Level.h"
 #include "Terrain.h"
 #include "Processor.h"
-#include "../renderer/Objects.h"
-#include "../renderer/AssetsHub.h"
+#include "Objects.h"
+#include "../driver/AssetsHub.h"
 #include "../utils/Utils.h"
 #include "../utils/Window.h"
-#include "../renderer/Camera.h"
-#include "../renderer/Light.h"
+#include "../utils/Camera.h"
+#include "../driver/Light.h"
 
 class Game {
    public:

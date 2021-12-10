@@ -2,8 +2,7 @@
 #include "Terrain.h"
 
 #include "../utils/Utils.h"
-#include "../renderer/AssetsHub.h"
-#include <cctype>
+#include "../driver/AssetsHub.h"
 
 BoxStackTerrain::BoxStackTerrain(int xSize, int zSize, const std::string& data)
     : xSize(xSize), zSize(zSize) {

@@ -165,17 +165,17 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ProjectPixel.cpp" />
-    <ClCompile Include="renderer\AssetsHub.cpp" />
-    <ClCompile Include="renderer\Camera.cpp" />
-    <ClCompile Include="renderer\EmbbedAssets.cpp" />
-    <ClCompile Include="renderer\Light.cpp" />
-    <ClCompile Include="renderer\Objects.cpp" />
-    <ClCompile Include="renderer\ShaderProgram.cpp" />
-    <ClCompile Include="renderer\Texture.cpp" />
-    <ClCompile Include="renderer\Uniform.cpp" />
-    <ClCompile Include="renderer\VAO.cpp" />
+    <ClCompile Include="driver\AssetsHub.cpp" />
+    <ClCompile Include="utils\Camera.cpp" />
+    <ClCompile Include="driver\EmbbedAssets.cpp" />
+    <ClCompile Include="driver\Light.cpp" />
+    <ClCompile Include="game\Objects.cpp" />
+    <ClCompile Include="driver\ShaderProgram.cpp" />
+    <ClCompile Include="driver\Texture.cpp" />
+    <ClCompile Include="driver\Uniform.cpp" />
+    <ClCompile Include="driver\VAO.cpp" />
     <ClCompile Include="utils\FrameTimer.cpp" />
-    <ClCompile Include="utils\Text.cpp" />
+    <ClCompile Include="driver\Text.cpp" />
     <ClCompile Include="utils\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -187,21 +187,21 @@
     <ClInclude Include="game\Instructions.h" />
     <ClInclude Include="game\Terrain.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="renderer\AssetsHub.h" />
-    <ClInclude Include="renderer\Camera.h" />
-    <ClInclude Include="renderer\EmbbedAssets.h" />
-    <ClInclude Include="renderer\Light.h" />
-    <ClInclude Include="renderer\Objects.h" />
-    <ClInclude Include="renderer\pch.h" />
-    <ClInclude Include="renderer\ShaderProgram.h" />
-    <ClInclude Include="renderer\Texture.h" />
-    <ClInclude Include="renderer\Uniform.h" />
-    <ClInclude Include="renderer\VAO.h" />
+    <ClInclude Include="driver\AssetsHub.h" />
+    <ClInclude Include="utils\Camera.h" />
+    <ClInclude Include="driver\EmbbedAssets.h" />
+    <ClInclude Include="driver\Light.h" />
+    <ClInclude Include="game\Objects.h" />
+    <ClInclude Include="driver\pch.h" />
+    <ClInclude Include="driver\ShaderProgram.h" />
+    <ClInclude Include="driver\Texture.h" />
+    <ClInclude Include="driver\Uniform.h" />
+    <ClInclude Include="driver\VAO.h" />
     <ClInclude Include="utils\Debug.h" />
     <ClInclude Include="utils\FrameTimer.h" />
     <ClInclude Include="utils\Geomentry.h" />
     <ClInclude Include="utils\pch.h" />
-    <ClInclude Include="utils\Text.h" />
+    <ClInclude Include="driver\Text.h" />
     <ClInclude Include="utils\Threading.h" />
     <ClInclude Include="utils\Utils.h" />
     <ClInclude Include="utils\Window.h" />
