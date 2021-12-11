@@ -4,46 +4,47 @@
 #include "ShaderProgram.h"
 
 std::unordered_map<std::string, std::string> EmbbedAssets::texturePath{
-    {"default", "assets/container.jpg"},
     {"no-specular", "assets/all-black.png"},
     {"no-emission", "assets/all-black.png"},
-    {"paperman-default", "assets/duanyll-skin.png"},
-    {"paperman-player-diffuse", "assets/player-diffuse.png"},
-    {"paperman-player-specular", "assets/player-specular.png"},
-    {"paperman-player-emission", "assets/player-emission.png"},
-    {"paperman-zombie-diffuse", "assets/zombie-diffuse.png"},
-    {"paperman-zombie-specular", "assets/zombie-specular.png"},
-    {"paperman-skeleton-diffuse",  "assets/skeleton-diffuse.png"},
-    {"paperman-skeleton-specular", "assets/skeleton-specular.png"},
-    {"paperman-skeleton-emission", "assets/skeleton-emission.png"},
-    {"terrain-stone-diffuse", "assets/terrain/smooth_stone.png"},
-    {"terrain-stone-specular", "assets/terrain/smooth_stone-specular.png"},
-    {"terrain-planks-diffuse", "assets/terrain/oak_planks.png"},
-    {"terrain-planks-specular", "assets/terrain/oak_planks-specular.png"},
-    {"item-diamond-sword", "assets/items/diamond_sword.png"},
-    {"item-diamond-sword-specular", "assets/items/diamond_sword-specular.png"},
-    {"item-diamond-axe", "assets/items/diamond_axe.png"},
-    {"item-diamond-axe-specular", "assets/items/diamond_axe-specular.png"},
-    {"item-bow", "assets/items/bow.png"},
-    {"item-bow1", "assets/items/bow_pulling_0.png"},
-    {"item-bow2", "assets/items/bow_pulling_1.png"},
-    {"item-bow3", "assets/items/bow_pulling_2.png"},
-    {"item-arrow", "assets/items/arrow.png"},
-    {"item-arrow-specular", "assets/items/arrow-specular.png"},
-    {"ui-heart-empty", "assets/ui/heart-empty.png"},
-    {"ui-heart-flashing", "assets/ui/heart-flashing.png"},
-    {"ui-heart-half", "assets/ui/heart-half.png"},
-    {"ui-heart-full", "assets/ui/heart-full.png"},
+    {"player", "assets/player-diffuse.png"},
+    {"player-specular", "assets/player-specular.png"},
+    {"player-emission", "assets/player-emission.png"},
+    {"zombie", "assets/zombie-diffuse.png"},
+    {"zombie-specular", "assets/zombie-specular.png"},
+    {"skeleton", "assets/skeleton-diffuse.png"},
+    {"skeleton-specular", "assets/skeleton-specular.png"},
+    {"skeleton-emission", "assets/skeleton-emission.png"},
+    {"stone", "assets/terrain/smooth_stone.png"},
+    {"stone-specular", "assets/terrain/smooth_stone-specular.png"},
+    {"planks", "assets/terrain/oak_planks.png"},
+    {"planks-specular", "assets/terrain/oak_planks-specular.png"},
+    {"diamond-sword", "assets/items/diamond_sword.png"},
+    {"diamond-sword-specular", "assets/items/diamond_sword-specular.png"},
+    {"diamond-axe", "assets/items/diamond_axe.png"},
+    {"diamond-axe-specular", "assets/items/diamond_axe-specular.png"},
+    {"bow", "assets/items/bow.png"},
+    {"bow1", "assets/items/bow_pulling_0.png"},
+    {"bow2", "assets/items/bow_pulling_1.png"},
+    {"bow3", "assets/items/bow_pulling_2.png"},
+    {"arrow", "assets/items/arrow.png"},
+    {"arrow-specular", "assets/items/arrow-specular.png"},
+    {"life-potion", "assets/items/life-potion.png"},
+    {"heart-empty", "assets/ui/heart-empty.png"},
+    {"heart-flashing", "assets/ui/heart-flashing.png"},
+    {"heart-half", "assets/ui/heart-half.png"},
+    {"heart-full", "assets/ui/heart-full.png"},
 };
-std::vector<std::string> itemResource{
-    "item-diamond-sword", "item-diamond-axe", "item-bow",  "item-bow1",
-    "item-bow2",          "item-bow3",        "item-arrow"};
+std::vector<std::string> itemVAOToLoad{
+    "diamond-sword", "diamond-axe", "bow", "bow1", "bow2", "bow3", "arrow"};
 std::unordered_map<std::string, std::vector<std::string>>
     EmbbedAssets::skyboxPath{
         {"default",
          {"assets/skybox/right.jpg", "assets/skybox/left.jpg",
           "assets/skybox/top.jpg", "assets/skybox/bottom.jpg",
           "assets/skybox/front.jpg", "assets/skybox/back.jpg"}}};
+std::vector<std::string> EmbbedAssets::materialPresets{
+    "player",      "zombie", "skeleton", "stone", "planks", "diamond-sword",
+    "diamond-axe", "bow",    "bow1",     "bow2",  "bow3",   "arrow"};
 
 pVAO EmbbedAssets::load_quad_vao() {
     auto res = std::make_shared<VAO>();
@@ -314,7 +315,7 @@ pVAO generate_item_vao(const std::string& texturePath) {
 }
 
 void EmbbedAssets::load_item_vaos(std::unordered_map<std::string, pVAO>& data) {
-    for (auto& i : itemResource) {
+    for (auto& i : itemVAOToLoad) {
         data[i] = generate_item_vao(texturePath[i]);
     }
 }

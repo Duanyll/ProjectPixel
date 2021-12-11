@@ -39,10 +39,6 @@ class EntityRenderer : public RenderObject {
     virtual void update(EntityInstruction& instruction);
 };
 
-struct PapermanMatraial : Material {
-    bool is_slim;
-};
-
 class LinearAnimation {
    public:
     float value = 0;
@@ -67,22 +63,34 @@ class AccelerateAdapter {
     void step_to(float time, float target);
 };
 
+class ItemRenderer : public EntityRenderer {
+   public:
+    glm::mat4 get_model();
+
+    void render();
+    void update(EntityInstruction& i);
+
+    ItemType type;
+
+    static void get_item_resources(ItemType item, pVAO& vao, Material& material);
+};
+
 class Paperman : public EntityRenderer {
    public:
     glm::mat4 get_model();
-    PapermanMatraial material;
+    Material material;
+    bool isSlim = false;
 
     float headYaw = 0;
     float headPitch = 0;
 
     HandAction hand = HandAction::None;
     LegAction leg = LegAction::Standing;
-    Item handItem = Item::None;
+    ItemType handItem = ItemType::None;
 
     void step(float time);
     void render();
 
-    static PapermanMatraial get_material_preset(const std::string& key);
     void update(EntityInstruction& instruction);
     void set_leg_action(LegAction action);
     void set_hand_action(HandAction action);
@@ -108,7 +116,7 @@ class Paperman : public EntityRenderer {
     glm::mat4 get_rleg_model();
     glm::mat4 get_item_model();
 
-    void get_item_resources(Item item, pVAO& vao, Material& material);
+    void get_item_resources(ItemType item, pVAO& vao, Material& material);
 };
 
 std::shared_ptr<EntityRenderer> get_entity_renderer(

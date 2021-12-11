@@ -3,8 +3,10 @@
 #include "VAO.h"
 
 namespace EmbbedAssets {
+
 extern std::unordered_map<std::string, std::string> texturePath;
 extern std::unordered_map<std::string, std::vector<std::string>> skyboxPath;
+extern std::vector<std::string> materialPresets;
 
 pVAO load_quad_vao();
 pVAO load_box_vao();

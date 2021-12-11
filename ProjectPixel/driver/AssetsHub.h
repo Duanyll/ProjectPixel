@@ -4,6 +4,7 @@
 #include "VAO.h"
 #include "Texture.h"
 #include "ShaderProgram.h"
+#include "../game/Instructions.h"
 
 namespace AssetsHub {
 void load_all();
@@ -13,6 +14,8 @@ pTexture get_texture_2d(const std::string& key);
 void register_texture_2d(const std::string& key, pTexture texture);
 pCubeTexture get_skybox(const std::string& key = "default");
 void register_skybox(const std::string& key, pCubeTexture texture);
+
+Material get_material(const std::string& key);
 
 extern std::unordered_map<int, pShaderProgram> shaderStore;
 template <typename T>

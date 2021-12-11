@@ -38,13 +38,22 @@ Tile BoxStackTerrain::get_tile(glm::vec3 point) {
 Material BoxStackTerrain::create_material() {
     auto diffuseMatrix = std::make_shared<TextureMatrix>(16, 16, 4, 4);
     auto specularMatrix = std::make_shared<TextureMatrix>(16, 16, 4, 4);
-    diffuseMatrix->load({AssetsHub::get_texture_2d("terrain-stone-diffuse"),
-                         AssetsHub::get_texture_2d("terrain-planks-diffuse")});
-    specularMatrix->load(
-        {AssetsHub::get_texture_2d("terrain-stone-specular"),
-         AssetsHub::get_texture_2d("terrain-planks-specular")});
-    return {diffuseMatrix, specularMatrix,
-            AssetsHub::get_texture_2d("no-emission"), 32};
+    auto emissionMatrix = std::make_shared<TextureMatrix>(16, 16, 4, 4);
+
+    std::vector<Material> tiles{AssetsHub::get_material("stone"),
+                                AssetsHub::get_material("planks")};
+
+    std::vector<pTexture> diffuse, specular, emission;
+    for (auto& i : tiles) {
+        diffuse.push_back(i.diffuse);
+        specular.push_back(i.specular);
+        emission.push_back(i.emission);
+    }
+
+    diffuseMatrix->load(diffuse);
+    specularMatrix->load(specular);
+    emissionMatrix->load(emission);
+    return {diffuseMatrix, specularMatrix, emissionMatrix, 32};
 }
 
 pVAO BoxStackTerrain::create_vao(Material material) {
@@ -102,7 +111,8 @@ pVAO BoxStackTerrain::create_vao(Material material) {
     }
     auto vao = std::make_shared<VAO>();
     vao->load_interleave_vbo(reinterpret_cast<float*>(res.data()),
-                             res.size() * sizeof(EntityShader::Vertex), {3, 3, 2});
+                             res.size() * sizeof(EntityShader::Vertex),
+                             {3, 3, 2});
     return vao;
 }
 
@@ -297,7 +307,7 @@ BoxClipping ITerrain::clip_box(TileBoundingBox& box) {
     return result;
 }
 
-bool ITerrain::test_connectivity(glm::vec3 a, glm::vec3 b) { 
+bool ITerrain::test_connectivity(glm::vec3 a, glm::vec3 b) {
     auto dir = b - a;
     auto dis = glm::length(dir);
     if (dis < 0.01) {

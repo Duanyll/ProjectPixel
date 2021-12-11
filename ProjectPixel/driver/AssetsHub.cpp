@@ -8,6 +8,7 @@ std::unordered_map<int, pShaderProgram> AssetsHub::shaderStore;
 std::unordered_map<std::string, pVAO> vaoStore;
 std::unordered_map<std::string, pTexture> texture2dStore;
 std::unordered_map<std::string, pCubeTexture> skyboxStore;
+std::unordered_map<std::string, Material> materialStore;
 
 void AssetsHub::load_all() {
     using namespace EmbbedAssets;
@@ -31,6 +32,32 @@ void AssetsHub::load_all() {
     for (const auto& i : skyboxPath) {
         skyboxStore[i.first] = std::make_shared<CubeTexture>(i.second);
     }
+
+    for (const auto& key : materialPresets) {
+        auto diffuseKey = key;
+        auto specularKey = key + "-specular";
+        auto emissionKey = key + "-emission";
+
+        auto diffuse = texture2dStore[diffuseKey];
+
+        pTexture specular;
+        auto specIt = texture2dStore.find(specularKey);
+        if (specIt != texture2dStore.end()) {
+            specular = specIt->second;
+        } else {
+            specular = texture2dStore["no-specular"];
+        }
+
+        pTexture emission;
+        auto emisIt = texture2dStore.find(emissionKey);
+        if (emisIt != texture2dStore.end()) {
+            emission = emisIt->second;
+        } else {
+            emission = texture2dStore["no-emission"];
+        }
+
+        materialStore[key] = {diffuse, specular, emission, 32};
+    }
 }
 
 pVAO AssetsHub::get_vao(const std::string& key) { return vaoStore[key]; }
@@ -40,9 +67,7 @@ void AssetsHub::register_vao(const std::string& key, pVAO vao) {
 }
 
 pTexture AssetsHub::get_texture_2d(const std::string& key) {
-    auto& res = texture2dStore[key];
-    assert(res);
-    return res;
+    return texture2dStore.at(key);
 }
 
 void AssetsHub::register_texture_2d(const std::string& key, pTexture texture) {
@@ -50,9 +75,13 @@ void AssetsHub::register_texture_2d(const std::string& key, pTexture texture) {
 }
 
 pCubeTexture AssetsHub::get_skybox(const std::string& key) {
-    return skyboxStore[key];
+    return skyboxStore.at(key);
 }
 
 void AssetsHub::register_skybox(const std::string& key, pCubeTexture texture) {
     skyboxStore[key] = texture;
+}
+
+Material AssetsHub::get_material(const std::string& key) {
+    return materialStore.at(key);
 }

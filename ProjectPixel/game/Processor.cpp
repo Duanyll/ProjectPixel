@@ -47,23 +47,14 @@ void LevelProcessor::handle_user_input(float duration) {
     auto player = std::dynamic_pointer_cast<Player>(level.entities["player1"]);
     if (player && player->hp > 0) {
         glm::vec3 controlSpeed{o["speed-x"], 0, o["speed-z"]};
-        if (flags.contains("aim")) {
-            player->walk(duration, controlSpeed, Player::moveSpeed * 0.6,
-                         Player::maxAcceleration);
-        } else if (flags.contains("run")) {
-            player->walk(duration, controlSpeed, Player::moveSpeed * 1.5,
-                         Player::maxAcceleration);
-        } else {
-            player->walk(duration, controlSpeed, Player::moveSpeed,
-                         Player::maxAcceleration);
-        }
+        player->isAiming = flags.contains("aim");
+        player->isRunning = flags.contains("run");
+        player->walk(duration, controlSpeed);
 
-        if (flags.contains("aim")) {
-            player->isAiming = true;
+        if (player->isAiming) {
             auto rotation = o["rotation"];
             player->turn(duration, rotation, Player::maxRotationSpeed);
         } else {
-            player->isAiming = false;
             player->turn(duration,
                          horizonal_angle(player->get_front(), controlSpeed),
                          Player::maxRotationSpeed);
@@ -77,11 +68,11 @@ void LevelProcessor::handle_user_input(float duration) {
             if (i == "jump") {
                 player->jump();
             } else if (i == "slot-1") {
-                player->weapon = Item::DiamondSword;
+                player->weapon = ItemType::DiamondSword;
             } else if (i == "slot-2") {
-                player->weapon = Item::DiamondAxe;
+                player->weapon = ItemType::DiamondAxe;
             } else if (i == "slot-3") {
-                player->weapon = Item::Bow;
+                player->weapon = ItemType::Bow;
             }
         }
     }

@@ -22,8 +22,8 @@ void GameHUD::render() {
 }
 
 void GameHUD::print_hp_bar() {
-    auto back = AssetsHub::get_texture_2d(doFlashHP ? "ui-heart-flashing"
-                                                    : "ui-heart-empty");
+    auto back = AssetsHub::get_texture_2d(doFlashHP ? "heart-flashing"
+                                                    : "heart-empty");
     const int xbase = 25;
     const int ybase = 25;
     const int size = 45;
@@ -38,8 +38,8 @@ void GameHUD::print_hp_bar() {
         curx += size + padding;
     }
 
-    auto full = AssetsHub::get_texture_2d("ui-heart-full");
-    auto half = AssetsHub::get_texture_2d("ui-heart-half");
+    auto full = AssetsHub::get_texture_2d("heart-full");
+    auto half = AssetsHub::get_texture_2d("heart-half");
     curx = xbase;
     cury = ybase;
     int remain = playerHP;

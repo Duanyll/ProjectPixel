@@ -69,7 +69,7 @@ void Paperman::step(float time) {
     handReal.step_to(time, handBase.value);
     lieBase.step(time);
 
-    if (handItem == Item::Bow && hand == HandAction::Attacking) {
+    if (handItem == ItemType::Bow && hand == HandAction::Attacking) {
         pullBowTime += time;
     }
 }
@@ -77,10 +77,10 @@ void Paperman::step(float time) {
 void Paperman::render() {
     auto headVAO = AssetsHub::get_vao("paperman-head");
     auto bodyVAO = AssetsHub::get_vao("paperman-body");
-    auto larmVAO = AssetsHub::get_vao(material.is_slim ? "paperman-larm-slim"
-                                                       : "paperman-larm");
-    auto rarmVAO = AssetsHub::get_vao(material.is_slim ? "paperman-rarm-slim"
-                                                       : "paperman-rarm");
+    auto larmVAO =
+        AssetsHub::get_vao(isSlim ? "paperman-larm-slim" : "paperman-larm");
+    auto rarmVAO =
+        AssetsHub::get_vao(isSlim ? "paperman-rarm-slim" : "paperman-rarm");
     auto llegVAO = AssetsHub::get_vao("paperman-lleg");
     auto rlegVAO = AssetsHub::get_vao("paperman-rleg");
 
@@ -109,7 +109,7 @@ void Paperman::render() {
     shader->configure(material, baseModel * get_rleg_model());
     rlegVAO->draw();
 
-    if (handItem != Item::None) {
+    if (handItem != ItemType::None) {
         pVAO itemVAO;
         Material itemMaterial;
         get_item_resources(handItem, itemVAO, itemMaterial);
@@ -118,33 +118,12 @@ void Paperman::render() {
     }
 }
 
-PapermanMatraial Paperman::get_material_preset(const std::string& key) {
-    if (key == "player") {
-        return {AssetsHub::get_texture_2d("paperman-player-diffuse"),
-                AssetsHub::get_texture_2d("paperman-player-specular"),
-                AssetsHub::get_texture_2d("paperman-player-emission"), 64,
-                false};
-    } else if (key == "zombie") {
-        return {AssetsHub::get_texture_2d("paperman-zombie-diffuse"),
-                AssetsHub::get_texture_2d("paperman-zombie-specular"),
-                AssetsHub::get_texture_2d("no-emission"), 32, false};
-    } else if (key == "skeleton") {
-        return {AssetsHub::get_texture_2d("paperman-skeleton-diffuse"),
-                AssetsHub::get_texture_2d("paperman-skeleton-specular"),
-                AssetsHub::get_texture_2d("paperman-skeleton-emission"), 64,
-                false};
-    }
-    return {AssetsHub::get_texture_2d("paperman-default"),
-            AssetsHub::get_texture_2d("no-specular"),
-            AssetsHub::get_texture_2d("no-emission"), 32, false};
-}
-
 void Paperman::update(EntityInstruction& i) {
     EntityRenderer::update(i);
 
     set_leg_action((LegAction)i.state[0]);
     set_hand_action((HandAction)i.state[1]);
-    handItem = (Item)i.state[2];
+    handItem = (ItemType)i.state[2];
 }
 
 void Paperman::set_leg_action(LegAction action) {
@@ -235,7 +214,7 @@ glm::mat4 Paperman::get_larm_model() {
     glm::mat4 base;
     base = glm::scale(base, {0.05, 0.05, 0.05});
     base = glm::translate(base, {6, 22, 0});
-    if (handItem == Item::Bow &&
+    if (handItem == ItemType::Bow &&
         (hand == HandAction::Attacking || hand == HandAction::Holding)) {
         base = glm::translate(base, {0, 0, 3.5});
         base = glm::rotate(base, glm::radians(-22.5f), {0, 1, 0});
@@ -258,7 +237,7 @@ glm::mat4 Paperman::get_rarm_model() {
     glm::mat4 base;
     base = glm::scale(base, {0.05, 0.05, 0.05});
     base = glm::translate(base, {-6, 22, 0});
-    if (handItem == Item::Bow &&
+    if (handItem == ItemType::Bow &&
         (hand == HandAction::Attacking || hand == HandAction::Holding)) {
         base = glm::rotate(base, glm::radians(30.0f), {0, 1, 0});
         base = glm::rotate(base, glm::radians(-80.0f), {1, 0, 0});
@@ -268,7 +247,7 @@ glm::mat4 Paperman::get_rarm_model() {
 }
 
 glm::mat4 Paperman::get_lleg_model() {
-    glm::mat4 base; 
+    glm::mat4 base;
     base = glm::scale(base, {0.05, 0.05, 0.05});
     base = glm::translate(base, {0, 12, 0});
     base = glm::rotate(base, glm::radians(legReal.value), {1, 0, 0});
@@ -290,7 +269,7 @@ glm::mat4 Paperman::get_item_model() {
         base = glm::scale(base, {0.8, 0.8, 0.8});
         base = glm::rotate(base, glm::radians(-90.0f), {1, 0, 0});
         base = glm::translate(base, {0, 0, -1});
-    } else if (handItem == Item::Bow &&
+    } else if (handItem == ItemType::Bow &&
                (hand == HandAction::Attacking || hand == HandAction::Holding)) {
         base = glm::translate(base, {0, 0.4, 0.5});
         base = glm::rotate(base, glm::radians(-45.0f), {1, 0, 0});
@@ -319,42 +298,28 @@ glm::mat4 Paperman::get_item_model() {
     return base;
 }
 
-void Paperman::get_item_resources(Item item, pVAO& vao, Material& material) {
-    std::string resid;
-    switch (item) {
-        case Item::None:
-            break;
-        case Item::DiamondSword:
-            vao = AssetsHub::get_vao("item-diamond-sword");
-            material = {
-                AssetsHub::get_texture_2d("item-diamond-sword"),
-                AssetsHub::get_texture_2d("item-diamond-sword-specular"),
-                AssetsHub::get_texture_2d("no-emission"), 32};
-            break;
-        case Item::DiamondAxe:
-            vao = AssetsHub::get_vao("item-diamond-axe");
-            material = {AssetsHub::get_texture_2d("item-diamond-axe"),
-                        AssetsHub::get_texture_2d("item-diamond-axe-specular"),
-                        AssetsHub::get_texture_2d("no-emission"), 32};
-            break;
-        case Item::Bow:
-            if (pullBowTime == 0) {
-                resid = "item-bow";
-            } else if (pullBowTime <= 0.3) {
-                resid = "item-bow1";
-            } else if (pullBowTime <= 0.6) {
-                resid = "item-bow2";
-            } else {
-                resid = "item-bow3";
-            }
-            vao = AssetsHub::get_vao(resid);
-            material = {AssetsHub::get_texture_2d(resid),
-                        AssetsHub::get_texture_2d("no-specular"),
-                        AssetsHub::get_texture_2d("no-emission"), 32};
-            break;
-        default:
-            break;
+std::unordered_map<ItemType, std::string> itemKey{
+    {ItemType::DiamondSword, "diamond-sword"},
+    {ItemType::DiamondAxe, "diamond-axe"},
+    {ItemType::Bow, "bow"},
+    {ItemType::LifePotion, "life-potion"}};
+
+void Paperman::get_item_resources(ItemType item, pVAO& vao,
+                                  Material& material) {
+    std::string resid = itemKey.at(item);
+    if (item == ItemType::Bow) {
+        if (pullBowTime == 0) {
+            resid = "bow";
+        } else if (pullBowTime <= 0.3) {
+            resid = "bow1";
+        } else if (pullBowTime <= 0.6) {
+            resid = "bow2";
+        } else {
+            resid = "bow3";
+        }
     }
+    vao = AssetsHub::get_vao(resid);
+    material = AssetsHub::get_material(resid);
 }
 
 std::shared_ptr<EntityRenderer> get_entity_renderer(
@@ -362,15 +327,15 @@ std::shared_ptr<EntityRenderer> get_entity_renderer(
     std::shared_ptr<EntityRenderer> e;
     if (instruction.type == "player") {
         auto paperman = std::make_shared<Paperman>();
-        paperman->material = Paperman::get_material_preset("player");
+        paperman->material = AssetsHub::get_material("player");
         e = paperman;
     } else if (instruction.type == "zombie") {
         auto paperman = std::make_shared<Paperman>();
-        paperman->material = Paperman::get_material_preset("zombie");
+        paperman->material = AssetsHub::get_material("zombie");
         e = paperman;
     } else if (instruction.type == "skeleton") {
         auto paperman = std::make_shared<Paperman>();
-        paperman->material = Paperman::get_material_preset("skeleton");
+        paperman->material = AssetsHub::get_material("skeleton");
         e = paperman;
     } else if (instruction.type == "arrow") {
         e = std::make_shared<ArrowRenderer>();
@@ -428,11 +393,8 @@ glm::mat4 ArrowRenderer::get_model() {
 
 void ArrowRenderer::render() {
     auto shader = AssetsHub::get_shader<EntityShader>();
-    auto vao = AssetsHub::get_vao("item-arrow");
-    shader->configure({AssetsHub::get_texture_2d("item-arrow"),
-                       AssetsHub::get_texture_2d("item-arrow-specular"),
-                       AssetsHub::get_texture_2d("no-emission"), 32},
-                      get_model());
+    auto vao = AssetsHub::get_vao("arrow");
+    shader->configure(AssetsHub::get_material("arrow"), get_model());
     vao->draw();
 }
 
@@ -444,4 +406,9 @@ void ArrowRenderer::update(EntityInstruction& i) {
         auto hSpeed = glm::length(glm::vec3(speed.x, 0, speed.z));
         pitch = std::atan2(vSpeed, hSpeed);
     }
+}
+
+void ItemRenderer::get_item_resources(ItemType item, pVAO& vao,
+                                      Material& material) {
+    std::string resid;
 }

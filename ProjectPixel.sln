@@ -5,22 +5,42 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectPixel", "ProjectPixel\ProjectPixel.vcxproj", "{ED746082-1485-437E-B629-7D05870023D6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelLauncher", "PixelLauncher\PixelLauncher.csproj", "{8678A35B-0796-458B-A3D7-DF137E19C67B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ED746082-1485-437E-B629-7D05870023D6}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{ED746082-1485-437E-B629-7D05870023D6}.Debug|Any CPU.Build.0 = Debug|x64
 		{ED746082-1485-437E-B629-7D05870023D6}.Debug|x64.ActiveCfg = Debug|x64
 		{ED746082-1485-437E-B629-7D05870023D6}.Debug|x64.Build.0 = Debug|x64
 		{ED746082-1485-437E-B629-7D05870023D6}.Debug|x86.ActiveCfg = Debug|Win32
 		{ED746082-1485-437E-B629-7D05870023D6}.Debug|x86.Build.0 = Debug|Win32
+		{ED746082-1485-437E-B629-7D05870023D6}.Release|Any CPU.ActiveCfg = Release|x64
+		{ED746082-1485-437E-B629-7D05870023D6}.Release|Any CPU.Build.0 = Release|x64
 		{ED746082-1485-437E-B629-7D05870023D6}.Release|x64.ActiveCfg = Release|x64
 		{ED746082-1485-437E-B629-7D05870023D6}.Release|x64.Build.0 = Release|x64
 		{ED746082-1485-437E-B629-7D05870023D6}.Release|x86.ActiveCfg = Release|Win32
 		{ED746082-1485-437E-B629-7D05870023D6}.Release|x86.Build.0 = Release|Win32
+		{8678A35B-0796-458B-A3D7-DF137E19C67B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8678A35B-0796-458B-A3D7-DF137E19C67B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8678A35B-0796-458B-A3D7-DF137E19C67B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8678A35B-0796-458B-A3D7-DF137E19C67B}.Debug|x64.Build.0 = Debug|Any CPU
+		{8678A35B-0796-458B-A3D7-DF137E19C67B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8678A35B-0796-458B-A3D7-DF137E19C67B}.Debug|x86.Build.0 = Debug|Any CPU
+		{8678A35B-0796-458B-A3D7-DF137E19C67B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8678A35B-0796-458B-A3D7-DF137E19C67B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8678A35B-0796-458B-A3D7-DF137E19C67B}.Release|x64.ActiveCfg = Release|Any CPU
+		{8678A35B-0796-458B-A3D7-DF137E19C67B}.Release|x64.Build.0 = Release|Any CPU
+		{8678A35B-0796-458B-A3D7-DF137E19C67B}.Release|x86.ActiveCfg = Release|Any CPU
+		{8678A35B-0796-458B-A3D7-DF137E19C67B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

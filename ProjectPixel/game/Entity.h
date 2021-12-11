@@ -67,10 +67,13 @@ class Player : public MobEntity {
 
     bool isAiming = false;
     bool isSweeping = false;
+    bool isRunning = false;
+
     int ticksAttackHold = 0;
     int ticksToAttack = 0;
+    int ticksToRegenerate = 0;
 
-    Item weapon = Item::DiamondSword;
+    ItemType weapon = ItemType::DiamondSword;
 
     inline const static float moveSpeed = 2.5;
     inline const static float maxAcceleration = 20.0f;
@@ -79,6 +82,9 @@ class Player : public MobEntity {
     void tick(float time);
     void attack();
     void sweep();
+    void walk(float time, glm::vec3 direction);
+
+    bool hurt(int hits, HurtType type);
 
     void handle_attack_input(bool hold);
 

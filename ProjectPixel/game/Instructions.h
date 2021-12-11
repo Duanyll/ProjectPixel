@@ -3,12 +3,7 @@
 #include "pch.h"
 #include "../utils/Utils.h"
 
-enum class LegAction : char {
-    Standing,
-    Walking,
-    Running,
-    Lying
-};
+enum class LegAction : char { Standing, Walking, Running, Lying };
 enum class HandAction : char {
     None,
     ZombieHanging,
@@ -17,7 +12,7 @@ enum class HandAction : char {
     ZombieAttacking,
     Sweeping
 };
-enum class Item : char { None, DiamondSword, DiamondAxe, Bow };
+enum class ItemType : char { None, DiamondSword, DiamondAxe, Bow, LifePotion };
 
 struct EntityInstruction {
     std::string id, type;

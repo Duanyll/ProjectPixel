@@ -166,11 +166,23 @@ void MobEntity::jump() {
 void Player::tick(float time) {
     MobEntity::tick(time);
     if (ticksToAttack > 0) ticksToAttack--;
+    if (ticksToRegenerate > 0) {
+        ticksToRegenerate--;
+    } else {
+        if (hp > 30) {
+            ticksToRegenerate = 100;
+        } else {
+            ticksToRegenerate = 60;
+        }
+        if (hp < 48) {
+            hp += 2;
+        }
+    }
 }
 
 void Player::attack() {
     if (ticksToAttack == 0) {
-        if (weapon == Item::DiamondAxe) {
+        if (weapon == ItemType::DiamondAxe) {
             ticksToAttack = 7;
         } else {
             ticksToAttack = 4;
@@ -178,11 +190,12 @@ void Player::attack() {
         auto targets = level.entityRegistry.query_square_range(pos, 3);
         std::shared_ptr<MobEntity> target;
         float minAngle = 20.0f;
+        if (isRunning) minAngle *= 1.5;
         for (auto& i : targets) {
             if (i->id == id) continue;
             auto e = std::dynamic_pointer_cast<MobEntity>(i);
             if (e) {
-                if (glm::length(e->pos - pos) > 2.5) continue;
+                if (glm::length(e->pos - pos) > 2.2) continue;
                 auto cur = abs(horizonal_angle(get_front(), e->pos - pos));
                 if (cur < minAngle) {
                     minAngle = cur;
@@ -203,9 +216,9 @@ void Player::attack() {
         }
         if (target) {
             float baseHurt, baseHitback = 5;
-            if (weapon == Item::DiamondSword) {
+            if (weapon == ItemType::DiamondSword) {
                 baseHurt = 5;
-            } else if (weapon == Item::DiamondAxe) {
+            } else if (weapon == ItemType::DiamondAxe) {
                 baseHurt = 10;
             } else {
                 baseHurt = 2;
@@ -215,7 +228,7 @@ void Player::attack() {
                 baseHitback *= 0.8;
             }
             if (speed.y < 0) {
-                baseHurt *= 1.2;
+                baseHurt *= 1.5;
                 baseHitback *= 1.2;
             }
             if (target->hurt(baseHurt, HurtType::Melee)) {
@@ -244,14 +257,33 @@ void Player::sweep() {
     }
 }
 
+void Player::walk(float time, glm::vec3 direction) { 
+    auto spd = moveSpeed;
+    if (isAiming) {
+        spd *= 0.8;
+    } else if (isRunning) {
+        spd *= 1.5;
+    }
+    MobEntity::walk(time, direction, spd, maxAcceleration);
+}
+
+bool Player::hurt(int hits, HurtType type) { 
+    if (isAiming) {
+        hits = hits * 3 / 4;
+    } else if (isRunning) {
+        hits = hits * 4 / 3;
+    }
+    return MobEntity::hurt(hits, type);
+}
+
 void Player::handle_attack_input(bool hold) {
     if (hold) {
-        if (weapon != Item::Bow) {
+        if (weapon != ItemType::Bow) {
             if (ticksAttackHold == 0) {
                 attack();
-            } else if (weapon == Item::DiamondSword && ticksAttackHold > 2 &&
+            } else if (weapon == ItemType::DiamondSword && ticksAttackHold > 2 &&
                        ticksAttackHold < 20 &&
-                       abs(rotationSpeed) >= 0.5 * Player::maxRotationSpeed) {
+                       abs(rotationSpeed) >= 0.3 * Player::maxRotationSpeed) {
                 isSweeping = true;
                 sweep();
             } else {
@@ -260,7 +292,7 @@ void Player::handle_attack_input(bool hold) {
         }
         ticksAttackHold++;
     } else {
-        if (weapon == Item::Bow) {
+        if (weapon == ItemType::Bow) {
             if (ticksAttackHold > 3) {
                 float arrowSpeed = std::clamp(ticksAttackHold, 3, 12) * 1.25;
                 auto arrow =
@@ -279,7 +311,7 @@ EntityInstruction Player::get_instruction() {
     if (isSweeping) {
         i.state[1] = (char)HandAction::Sweeping;
     } else if (ticksToAttack > 0 ||
-               (weapon == Item::Bow && ticksAttackHold > 0)) {
+               (weapon == ItemType::Bow && ticksAttackHold > 0)) {
         i.state[1] = (char)HandAction::Attacking;
     } else if (isAiming) {
         i.state[1] = (char)HandAction::Holding;
@@ -355,7 +387,7 @@ EntityInstruction Zombie::get_instruction() {
     } else {
         i.state[1] = (char)HandAction::ZombieHanging;
     }
-    i.state[2] = (char)Item::DiamondAxe;
+    i.state[2] = (char)ItemType::DiamondAxe;
     if (hp <= 0) {
         i.state[0] = (char)LegAction::Lying;
     } else if (glm::length(speed) > 1) {
@@ -504,7 +536,7 @@ EntityInstruction Skeleton::get_instruction() {
     } else {
         i.state[1] = (char)HandAction::None;
     }
-    i.state[2] = (char)Item::Bow;
+    i.state[2] = (char)ItemType::Bow;
     if (hp <= 0) {
         i.state[0] = (char)LegAction::Lying;
     } else if (clipping & BoxClipping::NegY) {
