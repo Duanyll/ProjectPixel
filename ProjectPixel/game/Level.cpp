@@ -17,7 +17,7 @@ Level::Level(LevelConfig& config) : config(config), entityRegistry(4, config.xSi
     terrain = config.get_terrain();
     auto player = add_entity<Player>("player1");
     player->pos = config.playerSpawnPos;
-    player->inventory[ItemType::LifePotion] = 3;
+    player->inventory[ItemType::Arrow] = 16;
 
     for (auto& pos : config.mobs["zombie"]) {
         auto zombie = add_entity<Zombie>();

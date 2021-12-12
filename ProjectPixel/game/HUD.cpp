@@ -14,6 +14,7 @@ void GameHUD::update(SceneInstruction& i) {
 
     weapon = i.playerWeapon;
     lifePotionCount = i.playerLifePotion;
+    arrowCount = i.playerArrow;
 }
 
 void GameHUD::render() {
@@ -76,4 +77,13 @@ void GameHUD::print_inventory() {
             AssetsHub::get_texture_2d(AssetsHub::get_item_resid(weapon)),
             sw - 175, 25, 150, 150);
     }
+
+    UI::print_image2d(AssetsHub::get_texture_2d("arrow"), sw - 300, 25, 45, 45);
+    glm::vec3 arrowColor;
+    if (arrowCount > 3) {
+        arrowColor = {1, 1, 1};
+    } else {
+        arrowColor = {1, 0, 0};
+    }
+    UI::print_text(std::to_string(arrowCount), sw - 250, 30, 0.8, arrowColor);
 }

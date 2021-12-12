@@ -223,9 +223,9 @@ void Player::attack() {
         if (target) {
             float baseHurt, baseHitback = 5;
             if (weapon == ItemType::DiamondSword) {
-                baseHurt = 5;
+                baseHurt = 4;
             } else if (weapon == ItemType::DiamondAxe) {
-                baseHurt = 10;
+                baseHurt = 7;
             } else {
                 baseHurt = 2;
             }
@@ -303,7 +303,7 @@ void Player::handle_heal_input(bool hold) {
 }
 
 void Player::handle_attack_input(bool hold) {
-    if (!isHealing && hold) {
+    if (!isHealing && hold && (weapon != ItemType::Bow || inventory[ItemType::Arrow] > 0)) {
         if (weapon != ItemType::Bow) {
             if (ticksAttackHold == 0) {
                 attack();
@@ -319,11 +319,13 @@ void Player::handle_attack_input(bool hold) {
         ticksAttackHold++;
     } else {
         if (weapon == ItemType::Bow) {
-            if (ticksAttackHold > 3) {
+            if (ticksAttackHold > 3 && inventory[ItemType::Arrow] > 0) {
                 float arrowSpeed = std::clamp(ticksAttackHold, 3, 12) * 1.25;
                 auto arrow = level.add_entity<Arrow>();
                 arrow->pos = pos + glm::vec3{0, 1, 0} + get_front() * 0.5f;
                 arrow->speed = get_front() * arrowSpeed + glm::vec3{0, 2, 0};
+                arrow->canPickUp = true;
+                inventory[ItemType::Arrow] -= 1;
             }
         }
         ticksAttackHold = 0;
@@ -501,6 +503,17 @@ void Arrow::tick(float time) {
             destroyFlag = true;
             return;
         }
+    } else if (canPickUp) {
+        auto it = level.entities.find("player1");
+        if (it != level.entities.end()) {
+            auto player = std::dynamic_pointer_cast<Player>(it->second);
+            auto dis = glm::length(player->pos - pos);
+            if (dis < 1) {
+                player->inventory[ItemType::Arrow] += 1;
+                destroyFlag = true;
+                return;
+            }
+        }
     }
 }
 
@@ -571,6 +584,15 @@ void Skeleton::on_die() {
     std::uniform_int_distribution<int> chance(1, 5);
     if (chance(level.random) > 2) {
         auto item = level.add_entity<Item>(ItemType::LifePotion);
+        item->pos = pos;
+        std::uniform_real_distribution<float> angle(-180, 180);
+        item->speed = angle_to_front(angle(level.random)) + glm::vec3{0, 2, 0};
+    }
+
+    std::uniform_int_distribution<int> arrowDis(2, 5);
+    int arrowCount = arrowDis(level.random);
+    for (int i = 1; i <= arrowCount; i++) {
+        auto item = level.add_entity<Item>(ItemType::Arrow);
         item->pos = pos;
         std::uniform_real_distribution<float> angle(-180, 180);
         item->speed = angle_to_front(angle(level.random)) + glm::vec3{0, 2, 0};

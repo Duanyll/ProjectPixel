@@ -99,6 +99,7 @@ void LevelProcessor::emit_instructions(TimeStamp time) {
                 ins->playerHP = player->hp;
                 ins->playerWeapon = player->weapon;
                 ins->playerLifePotion = player->inventory[ItemType::LifePotion];
+                ins->playerArrow = player->inventory[ItemType::Arrow];
             }
         }
     }

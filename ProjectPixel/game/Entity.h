@@ -161,6 +161,7 @@ class Arrow : public Entity {
     inline std::string get_type() { return "arrow"; }
 
     int ticksToDecay = 600;
+    bool canPickUp = false;
 
     void step_motion(float time);
     void tick(float time);

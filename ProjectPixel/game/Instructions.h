@@ -37,4 +37,5 @@ struct SceneInstruction {
     int playerHP = 0;
     ItemType playerWeapon = ItemType::None;
     int playerLifePotion = 0;
+    int playerArrow = 0;
 };

@@ -14,6 +14,7 @@ class GameHUD {
 
     ItemType weapon = ItemType::None;
     int lifePotionCount = 0;
+    int arrowCount = 0;
 
    protected:
     void print_hp_bar();
