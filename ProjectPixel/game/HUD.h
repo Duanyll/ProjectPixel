@@ -12,6 +12,10 @@ class GameHUD {
     bool doFlashHP = false;
     int playerHP;
 
-    protected:
+    ItemType weapon = ItemType::None;
+    int lifePotionCount = 0;
+
+   protected:
     void print_hp_bar();
+    void print_inventory();
 };

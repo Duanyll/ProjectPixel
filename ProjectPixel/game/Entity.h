@@ -25,6 +25,9 @@ class Entity {
 
     inline virtual void tick(float time) {}
 
+    void apply_gravity(float time, float g);
+    void apply_friction(float time, float acc);
+
     virtual EntityInstruction get_instruction();
 };
 
@@ -55,11 +58,14 @@ class MobEntity : public Entity {
     virtual void hitback(glm::vec3 source, float strength);
     virtual bool hurt(int hits, HurtType type);
     virtual void jump();
+
+    inline virtual void on_die(){};
 };
 
 class Player : public MobEntity {
    public:
-    inline Player(Level& level, const std::string& id) : MobEntity(level, id, 50) {}
+    inline Player(Level& level, const std::string& id)
+        : MobEntity(level, id, 50) {}
 
     inline std::string get_type() { return "player"; }
     inline glm::vec3 get_bounding_box_size() { return {0.5, 1.6, 0.5}; }
@@ -74,6 +80,7 @@ class Player : public MobEntity {
     int ticksToRegenerate = 0;
 
     ItemType weapon = ItemType::DiamondSword;
+    std::unordered_map<ItemType, int> inventory;
 
     inline const static float moveSpeed = 2.5;
     inline const static float maxAcceleration = 20.0f;
@@ -110,6 +117,8 @@ class Zombie : public MobEntity {
 
     void tick(float time);
 
+    void on_die();
+
     EntityInstruction get_instruction();
 };
 
@@ -136,6 +145,8 @@ class Skeleton : public MobEntity {
 
     void tick(float time);
 
+    void on_die();
+
     EntityInstruction get_instruction();
 };
 
@@ -150,4 +161,23 @@ class Arrow : public Entity {
 
     void step_motion(float time);
     void tick(float time);
+};
+
+class Item : public Entity {
+   public:
+    inline Item(Level& level, ItemType type,
+                const std::string& id = generate_unique_id("item"))
+        : Entity(level, id), type(type) {
+        rotationSpeed = 180;
+    }
+    inline std::string get_type() { return "item"; }
+
+    ItemType type;
+
+    int ticksToDecay = 600;
+
+    void step_motion(float time);
+    void tick(float time);
+
+    EntityInstruction get_instruction();
 };

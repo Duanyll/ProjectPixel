@@ -63,18 +63,6 @@ class AccelerateAdapter {
     void step_to(float time, float target);
 };
 
-class ItemRenderer : public EntityRenderer {
-   public:
-    glm::mat4 get_model();
-
-    void render();
-    void update(EntityInstruction& i);
-
-    ItemType type;
-
-    static void get_item_resources(ItemType item, pVAO& vao, Material& material);
-};
-
 class Paperman : public EntityRenderer {
    public:
     glm::mat4 get_model();
@@ -131,4 +119,14 @@ class ArrowRenderer : public EntityRenderer {
 
    private:
     float pitch = 0;
+};
+
+class ItemRenderer : public EntityRenderer {
+   public:
+    glm::mat4 get_model();
+
+    void render();
+    void update(EntityInstruction& i);
+
+    ItemType type;
 };

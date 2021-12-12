@@ -6,6 +6,8 @@
 #include "ShaderProgram.h"
 #include "../game/Instructions.h"
 
+enum class ItemType : char;
+
 namespace AssetsHub {
 void load_all();
 pVAO get_vao(const std::string& key);
@@ -14,6 +16,8 @@ pTexture get_texture_2d(const std::string& key);
 void register_texture_2d(const std::string& key, pTexture texture);
 pCubeTexture get_skybox(const std::string& key = "default");
 void register_skybox(const std::string& key, pCubeTexture texture);
+
+std::string get_item_resid(ItemType type);
 
 Material get_material(const std::string& key);
 

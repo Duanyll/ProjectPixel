@@ -94,7 +94,10 @@ void LevelProcessor::emit_instructions(TimeStamp time) {
         } else {
             ins->entities.push_back(i.second->get_instruction());
             if (i.first == "player1") {
-                ins->playerHP = std::static_pointer_cast<Player>(i.second)->hp;
+                auto player = std::static_pointer_cast<Player>(i.second);
+                ins->playerHP = player->hp;
+                ins->playerWeapon = player->weapon;
+                ins->playerLifePotion = player->inventory[ItemType::LifePotion];
             }
         }
     }

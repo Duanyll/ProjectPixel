@@ -298,15 +298,9 @@ glm::mat4 Paperman::get_item_model() {
     return base;
 }
 
-std::unordered_map<ItemType, std::string> itemKey{
-    {ItemType::DiamondSword, "diamond-sword"},
-    {ItemType::DiamondAxe, "diamond-axe"},
-    {ItemType::Bow, "bow"},
-    {ItemType::LifePotion, "life-potion"}};
-
 void Paperman::get_item_resources(ItemType item, pVAO& vao,
                                   Material& material) {
-    std::string resid = itemKey.at(item);
+    std::string resid = AssetsHub::get_item_resid(item);
     if (item == ItemType::Bow) {
         if (pullBowTime == 0) {
             resid = "bow";
@@ -339,6 +333,8 @@ std::shared_ptr<EntityRenderer> get_entity_renderer(
         e = paperman;
     } else if (instruction.type == "arrow") {
         e = std::make_shared<ArrowRenderer>();
+    } else if (instruction.type == "item") {
+        e = std::make_shared<ItemRenderer>();
     }
 
     e->update(instruction);
@@ -408,7 +404,25 @@ void ArrowRenderer::update(EntityInstruction& i) {
     }
 }
 
-void ItemRenderer::get_item_resources(ItemType item, pVAO& vao,
-                                      Material& material) {
-    std::string resid;
+glm::mat4 ItemRenderer::get_model() {
+    glm::mat4 base;
+    base = glm::scale(base, {0.6, 0.6, 0.6});
+    base = glm::translate(base, {-0.5, 0, 0});
+    base = glm::rotate(base, glm::radians(90.0f), {1, 0, 0});
+    base = glm::translate(base, {0, 0, -1});
+    return EntityRenderer::get_model() * base;
+}
+
+void ItemRenderer::render() {
+    std::string resid = AssetsHub::get_item_resid(type);
+    auto shader = AssetsHub::get_shader<EntityShader>();
+    auto vao = AssetsHub::get_vao(resid);
+    shader->configure(AssetsHub::get_material(resid), get_model());
+    vao->draw();
+}
+
+void ItemRenderer::update(EntityInstruction& i) {
+    EntityRenderer::update(i);
+    rotationSpeed = 180;
+    type = (ItemType)i.state[0];
 }

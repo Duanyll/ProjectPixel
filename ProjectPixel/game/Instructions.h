@@ -12,7 +12,14 @@ enum class HandAction : char {
     ZombieAttacking,
     Sweeping
 };
-enum class ItemType : char { None, DiamondSword, DiamondAxe, Bow, LifePotion };
+enum class ItemType : char {
+    None,
+    DiamondSword,
+    DiamondAxe,
+    Bow,
+    LifePotion,
+    Arrow
+};
 
 struct EntityInstruction {
     std::string id, type;
@@ -28,4 +35,6 @@ struct SceneInstruction {
     std::vector<std::string> deletedEntities;
 
     int playerHP = 0;
+    ItemType playerWeapon = ItemType::None;
+    int playerLifePotion = 0;
 };

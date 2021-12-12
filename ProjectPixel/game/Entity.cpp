@@ -7,6 +7,21 @@ glm::vec3 Entity::get_front() {
     return {sin(-glm::radians(facing)), 0, cos(glm::radians(facing))};
 }
 
+void Entity::apply_gravity(float time, float g) { speed.y -= g * time; }
+
+void Entity::apply_friction(float time, float acc) {
+    if (clipping & BoxClipping::NegY) {
+        glm::vec3 groundSpeed{speed.x, 0, speed.z};
+        if (glm::length(groundSpeed) > acc * time) {
+            groundSpeed -= glm::normalize(groundSpeed) * acc * time;
+        } else {
+            groundSpeed = {0, 0, 0};
+        }
+        speed.x = groundSpeed.x;
+        speed.z = groundSpeed.z;
+    }
+}
+
 EntityInstruction Entity::get_instruction() {
     return {id, get_type(), {}, pos, speed, facing, rotationSpeed};
 }
@@ -44,18 +59,8 @@ const float DEFAULT_FRICTION = 0.5f * GRAVITY;
 
 void MobEntity::tick(float time) {
     Entity::tick(time);
-    speed.y -= GRAVITY * time;
-    if (clipping & BoxClipping::NegY) {
-        glm::vec3 groundSpeed{speed.x, 0, speed.z};
-        if (glm::length(groundSpeed) > DEFAULT_FRICTION * time) {
-            groundSpeed -=
-                glm::normalize(groundSpeed) * DEFAULT_FRICTION * time;
-        } else {
-            groundSpeed = {0, 0, 0};
-        }
-        speed.x = groundSpeed.x;
-        speed.z = groundSpeed.z;
-    }
+    apply_gravity(time, GRAVITY);
+    apply_friction(time, DEFAULT_FRICTION);
 
     auto nearby = level.entityRegistry.query_square_range(pos, 1);
     for (auto& i : nearby) {
@@ -130,6 +135,7 @@ bool MobEntity::hurt(int hits, HurtType type) {
     if (hp <= 0) {
         ticksToRemove = 20;
         hp = 0;
+        on_die();
     }
 
     return true;
@@ -169,12 +175,12 @@ void Player::tick(float time) {
     if (ticksToRegenerate > 0) {
         ticksToRegenerate--;
     } else {
-        if (hp > 30) {
-            ticksToRegenerate = 100;
-        } else {
+        if (hp < 20) {
             ticksToRegenerate = 60;
+        } else {
+            ticksToRegenerate = 100;
         }
-        if (hp < 48) {
+        if (hp < 28) {
             hp += 2;
         }
     }
@@ -257,7 +263,7 @@ void Player::sweep() {
     }
 }
 
-void Player::walk(float time, glm::vec3 direction) { 
+void Player::walk(float time, glm::vec3 direction) {
     auto spd = moveSpeed;
     if (isAiming) {
         spd *= 0.8;
@@ -267,7 +273,7 @@ void Player::walk(float time, glm::vec3 direction) {
     MobEntity::walk(time, direction, spd, maxAcceleration);
 }
 
-bool Player::hurt(int hits, HurtType type) { 
+bool Player::hurt(int hits, HurtType type) {
     if (isAiming) {
         hits = hits * 3 / 4;
     } else if (isRunning) {
@@ -281,8 +287,8 @@ void Player::handle_attack_input(bool hold) {
         if (weapon != ItemType::Bow) {
             if (ticksAttackHold == 0) {
                 attack();
-            } else if (weapon == ItemType::DiamondSword && ticksAttackHold > 2 &&
-                       ticksAttackHold < 20 &&
+            } else if (weapon == ItemType::DiamondSword &&
+                       ticksAttackHold > 2 && ticksAttackHold < 20 &&
                        abs(rotationSpeed) >= 0.3 * Player::maxRotationSpeed) {
                 isSweeping = true;
                 sweep();
@@ -295,8 +301,7 @@ void Player::handle_attack_input(bool hold) {
         if (weapon == ItemType::Bow) {
             if (ticksAttackHold > 3) {
                 float arrowSpeed = std::clamp(ticksAttackHold, 3, 12) * 1.25;
-                auto arrow =
-                    level.add_entity<Arrow>(generate_unique_id("arrow"));
+                auto arrow = level.add_entity<Arrow>();
                 arrow->pos = pos + glm::vec3{0, 1, 0} + get_front() * 0.5f;
                 arrow->speed = get_front() * arrowSpeed + glm::vec3{0, 2, 0};
             }
@@ -377,6 +382,16 @@ void Zombie::tick(float time) {
             walk(time, {0, 0, 0}, moveSpeed, maxAcceleration);
             turn(time, 0, maxRotationSpeed);
         }
+    }
+}
+
+void Zombie::on_die() {
+    std::uniform_int_distribution<int> chance(1, 5);
+    if (chance(level.random) > 3) {
+        auto item = level.add_entity<Item>(ItemType::LifePotion);
+        item->pos = pos;
+        std::uniform_real_distribution<float> angle(-180, 180);
+        item->speed = angle_to_front(angle(level.random)) + glm::vec3{0, 2, 0};
     }
 }
 
@@ -508,8 +523,7 @@ void Skeleton::tick(float time) {
                 if (ticksAttackHold > 3) {
                     float arrowSpeed =
                         std::clamp(ticksAttackHold, 3, 12) * 1.25;
-                    auto arrow =
-                        level.add_entity<Arrow>(generate_unique_id("arrow"));
+                    auto arrow = level.add_entity<Arrow>();
                     arrow->pos = pos + glm::vec3{0, 1, 0} + get_front() * 0.5f;
                     arrow->speed =
                         glm::normalize(player->pos - pos) * arrowSpeed +
@@ -524,6 +538,16 @@ void Skeleton::tick(float time) {
             walk(time, {0, 0, 0}, moveSpeed, maxAcceleration);
             turn(time, 0, maxRotationSpeed);
         }
+    }
+}
+
+void Skeleton::on_die() {
+    std::uniform_int_distribution<int> chance(1, 5);
+    if (chance(level.random) > 2) {
+        auto item = level.add_entity<Item>(ItemType::LifePotion);
+        item->pos = pos;
+        std::uniform_real_distribution<float> angle(-180, 180);
+        item->speed = angle_to_front(angle(level.random)) + glm::vec3{0, 2, 0};
     }
 }
 
@@ -556,5 +580,56 @@ EntityInstruction Skeleton::get_instruction() {
             i.state[0] = (char)LegAction::Standing;
         }
     }
+    return i;
+}
+
+void Item::step_motion(float time) {
+    facing += rotationSpeed * time;
+    if (facing > 180) {
+        facing -= 360;
+    }
+    if (facing <= -180) {
+        facing += 360;
+    }
+
+    auto posDelta = speed * time;
+    float dis = -1;
+    if (glm::length(posDelta) > 1e-4 &&
+        level.terrain->test_line_intersection(pos, posDelta, dis)) {
+        pos += glm::normalize(posDelta) * dis;
+    } else {
+        pos += posDelta;
+    }
+    clipping = level.terrain->clip_point(pos);
+    clip_speed();
+}
+
+void Item::tick(float time) {
+    if (ticksToDecay > 0) {
+        ticksToDecay--;
+    } else {
+        destroyFlag = true;
+    }
+
+    apply_gravity(time, GRAVITY);
+    apply_friction(time, DEFAULT_FRICTION);
+
+    auto it = level.entities.find("player1");
+    if (it != level.entities.end()) {
+        auto player = std::dynamic_pointer_cast<Player>(it->second);
+        auto dis = glm::length(player->pos - pos);
+        if (dis < 0.5) {
+            player->inventory[type] += 1;
+            destroyFlag = true;
+            return;
+        } else if (dis < 1.5) {
+            speed += glm::normalize(player->pos - pos) * 2.0f;
+        }
+    }
+}
+
+EntityInstruction Item::get_instruction() {
+    auto i = Entity::get_instruction();
+    i.state[0] = (char)type;
     return i;
 }

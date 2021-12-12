@@ -34,8 +34,9 @@ std::unordered_map<std::string, std::string> EmbbedAssets::texturePath{
     {"heart-half", "assets/ui/heart-half.png"},
     {"heart-full", "assets/ui/heart-full.png"},
 };
-std::vector<std::string> itemVAOToLoad{
-    "diamond-sword", "diamond-axe", "bow", "bow1", "bow2", "bow3", "arrow"};
+std::vector<std::string> itemVAOToLoad{"diamond-sword", "diamond-axe", "bow",
+                                       "bow1",          "bow2",        "bow3",
+                                       "arrow",         "life-potion"};
 std::unordered_map<std::string, std::vector<std::string>>
     EmbbedAssets::skyboxPath{
         {"default",
@@ -43,8 +44,9 @@ std::unordered_map<std::string, std::vector<std::string>>
           "assets/skybox/top.jpg", "assets/skybox/bottom.jpg",
           "assets/skybox/front.jpg", "assets/skybox/back.jpg"}}};
 std::vector<std::string> EmbbedAssets::materialPresets{
-    "player",      "zombie", "skeleton", "stone", "planks", "diamond-sword",
-    "diamond-axe", "bow",    "bow1",     "bow2",  "bow3",   "arrow"};
+    "player",        "zombie",      "skeleton",   "stone", "planks",
+    "diamond-sword", "diamond-axe", "bow",        "bow1",  "bow2",
+    "bow3",          "arrow",       "life-potion"};
 
 pVAO EmbbedAssets::load_quad_vao() {
     auto res = std::make_shared<VAO>();

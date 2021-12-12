@@ -75,10 +75,9 @@ class Level {
     Level(LevelConfig& config);
 
     template <typename TEntity, typename... TParams>
-    std::shared_ptr<TEntity> add_entity(const std::string& id,
-                                        TParams... params) {
-        auto e = std::make_shared<TEntity>(*this, id, params...);
-        entities[id] = e;
+    std::shared_ptr<TEntity> add_entity(TParams... params) {
+        auto e = std::make_shared<TEntity>(*this, params...);
+        entities[e->id] = e;
         return e;
     }
 };

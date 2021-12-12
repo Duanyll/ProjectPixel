@@ -3,6 +3,7 @@
 
 #include "Uniform.h"
 #include "EmbbedAssets.h"
+#include "../game/Instructions.h"
 
 std::unordered_map<int, pShaderProgram> AssetsHub::shaderStore;
 std::unordered_map<std::string, pVAO> vaoStore;
@@ -81,6 +82,14 @@ pCubeTexture AssetsHub::get_skybox(const std::string& key) {
 void AssetsHub::register_skybox(const std::string& key, pCubeTexture texture) {
     skyboxStore[key] = texture;
 }
+
+std::unordered_map<ItemType, std::string> itemKey{
+    {ItemType::DiamondSword, "diamond-sword"},
+    {ItemType::DiamondAxe, "diamond-axe"},
+    {ItemType::Bow, "bow"},
+    {ItemType::LifePotion, "life-potion"},
+    {ItemType::Arrow, "arrow"}};
+std::string AssetsHub::get_item_resid(ItemType type) { return itemKey.at(type); }
 
 Material AssetsHub::get_material(const std::string& key) {
     return materialStore.at(key);
