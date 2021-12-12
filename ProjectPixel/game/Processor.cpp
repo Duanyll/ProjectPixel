@@ -60,6 +60,7 @@ void LevelProcessor::handle_user_input(float duration) {
                          Player::maxRotationSpeed);
         }
 
+        player->handle_heal_input(flags.contains("heal"));
         player->handle_attack_input(flags.contains("attack"));
 
         while (!events.empty()) {

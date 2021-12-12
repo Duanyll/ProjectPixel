@@ -46,6 +46,13 @@ void Game::apply_to_window() {
             processor.input.clear_flag("run");
         }
     });
+    Window::register_command("heal", [this](float isDown) {
+        if (isDown != 0) {
+            processor.input.set_flag("heal");
+        } else {
+            processor.input.clear_flag("heal");
+        }
+    });
     Window::register_command("mouse", [this](float _) {
         auto it = entities.find("player1");
         if (it != entities.end()) {

@@ -265,7 +265,9 @@ void Player::sweep() {
 
 void Player::walk(float time, glm::vec3 direction) {
     auto spd = moveSpeed;
-    if (isAiming) {
+    if (isHealing) {
+        spd *= 0.6;
+    } else if (isAiming) {
         spd *= 0.8;
     } else if (isRunning) {
         spd *= 1.5;
@@ -274,7 +276,9 @@ void Player::walk(float time, glm::vec3 direction) {
 }
 
 bool Player::hurt(int hits, HurtType type) {
-    if (isAiming) {
+    if (isHealing) {
+        hits = hits * 3 / 2;
+    } else if (isAiming) {
         hits = hits * 3 / 4;
     } else if (isRunning) {
         hits = hits * 4 / 3;
@@ -282,8 +286,24 @@ bool Player::hurt(int hits, HurtType type) {
     return MobEntity::hurt(hits, type);
 }
 
+void Player::handle_heal_input(bool hold) {
+    if (hold && inventory[ItemType::LifePotion] > 0 && hp < 50) {
+        ticksHealHold++;
+        if (ticksHealHold < 20) {
+            isHealing = true;
+        } else if (ticksHealHold == 20) {
+            hp = std::min(hp + 10, 50);
+            inventory[ItemType::LifePotion] -= 1;
+            isHealing = false;
+        }
+    } else {
+        isHealing = false;
+        ticksHealHold = 0;
+    }
+}
+
 void Player::handle_attack_input(bool hold) {
-    if (hold) {
+    if (!isHealing && hold) {
         if (weapon != ItemType::Bow) {
             if (ticksAttackHold == 0) {
                 attack();
@@ -313,7 +333,9 @@ void Player::handle_attack_input(bool hold) {
 
 EntityInstruction Player::get_instruction() {
     auto i = Entity::get_instruction();
-    if (isSweeping) {
+    if (isHealing) {
+        i.state[1] = (char)HandAction::Holding;
+    } else if (isSweeping) {
         i.state[1] = (char)HandAction::Sweeping;
     } else if (ticksToAttack > 0 ||
                (weapon == ItemType::Bow && ticksAttackHold > 0)) {
@@ -323,7 +345,11 @@ EntityInstruction Player::get_instruction() {
     } else {
         i.state[1] = (char)HandAction::None;
     }
-    i.state[2] = (char)weapon;
+    if (isHealing) {
+        i.state[2] = (char)ItemType::LifePotion;
+    } else {
+        i.state[2] = (char)weapon;
+    }
     if (hp <= 0) {
         i.state[0] = (char)LegAction::Lying;
     } else if (clipping & BoxClipping::NegY) {

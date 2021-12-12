@@ -277,7 +277,13 @@ glm::mat4 Paperman::get_item_model() {
         base = glm::translate(base, {0, 0, 1});
         base = glm::rotate(base, glm::radians(180.0f), {0, 1, 0});
         base = glm::rotate(base, glm::radians(90.0f), {0, 0, 1});
-    } else {
+    } else if (handItem == ItemType::LifePotion) {
+        base = glm::translate(base, {0, 0.75, 0.25});
+        base = glm::scale(base, {0.6, 0.6, 0.6});
+        base = glm::translate(base, {-0.5, 0, 0});
+        base = glm::rotate(base, glm::radians(90.0f), {1, 0, 0});
+        base = glm::translate(base, {0, 0, -1});
+    } else{
         base = glm::translate(base, {-0.3, 1.2, 0});
         base = base * get_base_rarm();
         base = glm::translate(base, {0, -0.4, 0});

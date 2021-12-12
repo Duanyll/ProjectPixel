@@ -71,11 +71,13 @@ class Player : public MobEntity {
     inline glm::vec3 get_bounding_box_size() { return {0.5, 1.6, 0.5}; }
     inline glm::vec3 get_head_pos() { return pos + glm::vec3(0, 1.5, 0); }
 
+    bool isHealing = false;
     bool isAiming = false;
     bool isSweeping = false;
     bool isRunning = false;
 
     int ticksAttackHold = 0;
+    int ticksHealHold = 0;
     int ticksToAttack = 0;
     int ticksToRegenerate = 0;
 
@@ -93,6 +95,7 @@ class Player : public MobEntity {
 
     bool hurt(int hits, HurtType type);
 
+    void handle_heal_input(bool heal);
     void handle_attack_input(bool hold);
 
     EntityInstruction get_instruction();
