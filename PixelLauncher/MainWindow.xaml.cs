@@ -20,9 +20,16 @@ namespace PixelLauncher
     /// </summary>
     public partial class MainWindow : Window
     {
+        LauncherViewModel viewModel;
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = viewModel = new LauncherViewModel();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            viewModel.LoadLevelsCommand.Execute(this);
         }
     }
 }

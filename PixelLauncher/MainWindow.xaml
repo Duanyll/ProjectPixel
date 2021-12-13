@@ -6,19 +6,93 @@
         xmlns:local="clr-namespace:PixelLauncher"
         mc:Ignorable="d"
         Title="ProjectPixel Launcher" Height="450" Width="800"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+        d:DataContext="{d:DesignInstance Type=local:LauncherViewModel}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
         TextOptions.TextFormattingMode="Ideal" 
         TextOptions.TextRenderingMode="Auto"        
         Background="{DynamicResource MaterialDesignPaper}"
-        FontFamily="{DynamicResource MaterialDesignFont}">
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        Loaded="Window_Loaded">
     <Grid>
-        <StackPanel>
-            <materialDesign:Card Padding="32" Margin="16">
-                <TextBlock Style="{DynamicResource MaterialDesignHeadline6TextBlock}">Project Pixel</TextBlock>
-            </materialDesign:Card>
-        </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <materialDesign:Card Grid.Row="0" Grid.ColumnSpan="2"   
+            Padding="16" Margin="16" VerticalContentAlignment="Center">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="50"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" Style="{DynamicResource MaterialDesignHeadline6TextBlock}">Project Pixel</TextBlock>
+                <materialDesign:PopupBox Grid.Column="1" StaysOpen="True">
+                    <Grid Width="300" Margin="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"></RowDefinition>
+                            <RowDefinition Height="1*"></RowDefinition>
+                            <RowDefinition Height="1*"></RowDefinition>
+                            <RowDefinition Height="1*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="启动器选项" Style="{StaticResource MaterialDesignHeadline6TextBlock}"></TextBlock>
+                        <TextBox Grid.Row="1" Text="{Binding GameExecutablePath}" 
+                                 materialDesign:HintAssist.HelperText="游戏主程序" 
+                                 materialDesign:HintAssist.IsFloating="True" Margin="8"></TextBox>
+                        <Button Grid.Column="1" Grid.Row="1"
+                            Content="{materialDesign:PackIcon File}" Command="{Binding BrowseGameExecultableCommand}"/>
+                        <TextBox Grid.Row="2" Text="{Binding GameWorkingDirectory}" 
+                                 materialDesign:HintAssist.HelperText="游戏主目录" 
+                                 materialDesign:HintAssist.IsFloating="True" Margin="8"></TextBox>
+                        <Button Grid.Column="1" Grid.Row="2"
+                            Content="{materialDesign:PackIcon Folder}" Command="{Binding BrowseWorkingDirectoryCommand}"/>
+                        <Button Grid.Row="3" Grid.Column="1" Style="{StaticResource MaterialDesignFlatButton}" Content="保存" Command="{Binding SaveSettingsCommand}"></Button>
+                    </Grid>
+                </materialDesign:PopupBox>
+            </Grid>
+        </materialDesign:Card>
+        <ListView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Levels}" SelectionMode="Single"
+                  SelectedItem="{Binding SelectedLevel}" Margin="15">
+            <ListView.ItemTemplate>
+                <DataTemplate DataType="{x:Type local:Level}">
+                    <TextBlock Text="{Binding DisplayName}"></TextBlock>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <TextBlock Grid.Row="1" Grid.Column="1" Visibility="{Binding LevelDetailVisibility}" Margin="15" LineHeight="18">
+            <Run Text="{Binding SelectedLevel.DisplayName}" FontSize="36" FontWeight="Bold"></Run>
+            <LineBreak></LineBreak>
+            <Run Text="{Binding SelectedLevel.Path}"></Run>
+            <LineBreak></LineBreak>
+            <Run Text="地图类型: " FontWeight="Bold"></Run>
+            <Run Text="{Binding SelectedLevel.Config.terrainType}"></Run>
+            <LineBreak></LineBreak>
+            <Run Text="地图尺寸: " FontWeight="Bold"></Run>
+            <Run Text="{Binding SelectedLevel.Config.xSize}"></Run>
+            <Run Text=" × "></Run>
+            <Run Text="{Binding SelectedLevel.Config.zSize}"></Run>
+            <LineBreak></LineBreak>
+            <Run Text="目标: " FontWeight="Bold"></Run>
+            <Run Text="{Binding SelectedLevel.Config.goal}"></Run>
+            <LineBreak></LineBreak>
+            <Run Text="{Binding SelectedLevel.Config.description}"></Run>
+        </TextBlock>
+        <Button Grid.Row="1" Grid.Column="1"
+            Command="{Binding LaunchGameCommand}"
+            x:Name="btnStartGame"
+            Style="{StaticResource MaterialDesignFloatingActionAccentButton}"
+            HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="15">
+            <materialDesign:PackIcon Kind="GamepadSquare" />
+        </Button>
     </Grid>
 </Window>

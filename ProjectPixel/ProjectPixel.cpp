@@ -10,7 +10,16 @@
 #include "game/Level.h"
 #include "game/Game.h"
 
-int main() {
+int main(int argc, char** argv) {
+    if (argc < 2) {
+        std::cout << "Please specify a level json file." << std::endl;
+        return 1;
+    }
+    std::ifstream levelFile(argv[1]);
+    json configJson;
+    levelFile >> configJson;
+    auto config = configJson.get<LevelConfig>();
+
     Window::init_glfw();
     Window::create(1920, 1080, "ProjectPixel");
     {
@@ -37,11 +46,6 @@ int main() {
 
     AssetsHub::load_all();
     UI::init();
-
-    std::ifstream levelFile("levels/default.json");
-    json configJson;
-    levelFile >> configJson;
-    auto config = configJson.get<LevelConfig>();
     auto game = std::make_unique<Game>(config);
     game->apply_to_window();
 

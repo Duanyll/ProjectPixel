@@ -1,23 +1,23 @@
 {
   "version": 1,
-  "displayName": "Testing Arena",
-  "description": "包含模拟地形的测试用场景，难度适中。",
+  "displayName": "Superflat",
+  "description": "没有任何障碍物！接受弓箭的洗礼吧！",
   "xSize": 32,
   "ySize": 8,
   "zSize": 32,
   "terrainType": "boxStack",
-  "terrainPath": "default-terrain.txt",
+  "terrainPath": "superflat-terrain.txt",
   "playerSpawnPos": {
-    "x": 5,
+    "x": 16,
     "y": 0,
-    "z": 10
+    "z": 16
   },
   "mobs": {
     "zombie": [
       { "x": 16, "y": 0, "z": 10 },
       { "x": 19, "y": 0, "z": 27 },
       { "x": 25, "y": 0, "z": 27 },
-      { "x": 22, "y": 1, "z": 8 },
+      { "x": 22, "y": 0, "z": 8 },
       { "x": 25, "y": 0, "z": 9 },
       { "x": 11, "y": 0, "z": 18 },
       { "x": 29, "y": 0, "z": 21 }
@@ -30,6 +30,6 @@
     ]
   },
   "goal": "clear",
-  "destinationPos": { "x": 19.5, "y": 5, "z": 17.5 },
-  "destinationRange": 1
+  "destinationPos": { "x": 0, "y": 0, "z": 0 },
+  "destinationRange": 0
 }
