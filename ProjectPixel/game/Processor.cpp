@@ -8,6 +8,7 @@ LevelProcessor::LevelProcessor(LevelConfig& config)
 
 void LevelProcessor::start() {
     lastTime = std::chrono::steady_clock::now();
+    level.goal->on_game_start();
     WorkerThread::start();
 }
 
@@ -44,7 +45,7 @@ void LevelProcessor::handle_user_input(float duration) {
     std::queue<std::string> events;
     std::unordered_set<std::string> flags;
     input.poll(o, events, flags);
-    auto player = std::dynamic_pointer_cast<Player>(level.entities["player1"]);
+    const auto player = level.player;
     if (player && player->hp > 0) {
         glm::vec3 controlSpeed{o["speed-x"], 0, o["speed-z"]};
         player->isAiming = flags.contains("aim");
@@ -90,26 +91,36 @@ void LevelProcessor::emit_instructions(TimeStamp time) {
     ins->creationTime = time;
     ins->entities.reserve(level.entities.size());
     for (auto& i : level.entities) {
-        if (i.second->destroyFlag) {
+        if (i.first != "player1" && i.second->destroyFlag) {
             ins->deletedEntities.push_back(i.second->id);
         } else {
             ins->entities.push_back(i.second->get_instruction());
-            if (i.first == "player1") {
-                auto player = std::static_pointer_cast<Player>(i.second);
-                ins->playerHP = player->hp;
-                ins->playerWeapon = player->weapon;
-                ins->playerLifePotion = player->inventory[ItemType::LifePotion];
-                ins->playerArrow = player->inventory[ItemType::Arrow];
-            }
         }
     }
+
+    const auto player = level.player;
+    ins->playerHP = player->hp;
+    ins->playerWeapon = player->weapon;
+    ins->playerLifePotion = player->inventory[ItemType::LifePotion];
+    ins->playerArrow = player->inventory[ItemType::Arrow];
+
+    ins->goalDisplay = level.goal->get_goal_display();
+
     for (auto& i : ins->deletedEntities) {
-        if (i == "player1") {
-            shouldStop = true;
-            input.isEnabled = false;
-            return;
-        }
         level.entities.erase(i);
     }
+
+    bool isWin = false;
+    if (level.goal->should_game_stop(isWin)) {
+        shouldStop = true;
+        input.isEnabled = false;
+
+        if (isWin) {
+            ins->messages.push_back("Victory!");
+        } else {
+            ins->messages.push_back("Game over.");
+        }
+    }
+
     output.update(ins);
 }

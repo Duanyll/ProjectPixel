@@ -303,7 +303,8 @@ void Player::handle_heal_input(bool hold) {
 }
 
 void Player::handle_attack_input(bool hold) {
-    if (!isHealing && hold && (weapon != ItemType::Bow || inventory[ItemType::Arrow] > 0)) {
+    if (!isHealing && hold &&
+        (weapon != ItemType::Bow || inventory[ItemType::Arrow] > 0)) {
         if (weapon != ItemType::Bow) {
             if (ticksAttackHold == 0) {
                 attack();
@@ -378,42 +379,40 @@ void Zombie::tick(float time) {
     MobEntity::tick(time);
     if (hp <= 0) return;
     if (ticksToAttack > 0) ticksToAttack--;
-    auto it = level.entities.find("player1");
-    if (it != level.entities.end()) {
-        auto player = std::dynamic_pointer_cast<Player>(it->second);
-        auto dis = glm::length(player->pos - pos);
-        if (dis > 0.5 && dis < 8 &&
-            level.terrain->test_connectivity(get_head_pos(),
-                                             player->get_head_pos())) {
-            walk(time, player->pos - pos, moveSpeed, maxAcceleration);
-            turn(time, horizonal_angle(get_front(), player->pos - pos),
-                 maxRotationSpeed);
-            if (player->pos.y > pos.y + 0.5 && (clipping & BoxClipping::NegY) &&
-                (clipping & (BoxClipping::PosX | BoxClipping::PosZ |
-                             BoxClipping::NegX | BoxClipping::NegZ))) {
-                jump();
-            }
-
-            if (ticksToAttack == 25) {
-                if (dis < 1.5) {
-                    if (player->hurt(5, HurtType::Melee)) {
-                        player->hitback(pos, 4);
-                    }
-                } else {
-                    ticksToAttack = 15;
-                }
-            }
-            if (dis < 1.8 && ticksToAttack == 0) {
-                ticksToAttack = 30;
-            }
-        } else {
-            walk(time, {0, 0, 0}, moveSpeed, maxAcceleration);
-            turn(time, 0, maxRotationSpeed);
+    const auto player = level.player;
+    auto dis = glm::length(player->pos - pos);
+    if (dis > 0.5 && dis < 8 &&
+        level.terrain->test_connectivity(get_head_pos(),
+                                         player->get_head_pos())) {
+        walk(time, player->pos - pos, moveSpeed, maxAcceleration);
+        turn(time, horizonal_angle(get_front(), player->pos - pos),
+             maxRotationSpeed);
+        if (player->pos.y > pos.y + 0.5 && (clipping & BoxClipping::NegY) &&
+            (clipping & (BoxClipping::PosX | BoxClipping::PosZ |
+                         BoxClipping::NegX | BoxClipping::NegZ))) {
+            jump();
         }
+
+        if (ticksToAttack == 25) {
+            if (dis < 1.5) {
+                if (player->hurt(5, HurtType::Melee)) {
+                    player->hitback(pos, 4);
+                }
+            } else {
+                ticksToAttack = 15;
+            }
+        }
+        if (dis < 1.8 && ticksToAttack == 0) {
+            ticksToAttack = 30;
+        }
+    } else {
+        walk(time, {0, 0, 0}, moveSpeed, maxAcceleration);
+        turn(time, 0, maxRotationSpeed);
     }
 }
 
 void Zombie::on_die() {
+    MobEntity::on_die();
     std::uniform_int_distribution<int> chance(1, 5);
     if (chance(level.random) > 3) {
         auto item = level.add_entity<Item>(ItemType::LifePotion);
@@ -504,15 +503,12 @@ void Arrow::tick(float time) {
             return;
         }
     } else if (canPickUp) {
-        auto it = level.entities.find("player1");
-        if (it != level.entities.end()) {
-            auto player = std::dynamic_pointer_cast<Player>(it->second);
-            auto dis = glm::length(player->pos - pos);
-            if (dis < 1) {
-                player->inventory[ItemType::Arrow] += 1;
-                destroyFlag = true;
-                return;
-            }
+        const auto player = level.player;
+        auto dis = glm::length(player->pos - pos);
+        if (dis < 1) {
+            player->inventory[ItemType::Arrow] += 1;
+            destroyFlag = true;
+            return;
         }
     }
 }
@@ -522,65 +518,61 @@ void Skeleton::tick(float time) {
     if (hp <= 0) return;
     if (ticksToChangeMovement > 0) ticksToChangeMovement--;
     if (ticksToShoot > 0) ticksToShoot--;
-    auto it = level.entities.find("player1");
-    if (it != level.entities.end()) {
-        auto player = std::dynamic_pointer_cast<Player>(it->second);
-        auto dis = glm::length(player->pos - pos);
-        if (dis > 0.5 && dis < 12) {
-            auto spd = moveSpeed;
-            if (isAiming) {
-                spd *= 0.8;
-            }
-            if (dis < 4) {
-                walk(time, pos - player->pos, spd, maxAcceleration);
-            } else if (dis > 8) {
-                walk(time, player->pos - pos, spd, maxAcceleration);
-            } else {
-                if (ticksToChangeMovement == 0) {
-                    std::uniform_real_distribution<float> angle(-180, 180);
-                    randomMovement = angle_to_front(angle(level.random));
-                    std::uniform_int_distribution<int> ticks(5, 20);
-                    ticksToChangeMovement = ticks(level.random);
-                }
-                walk(time, randomMovement, spd, maxAcceleration);
-            }
-            turn(time, horizonal_angle(get_front(), player->pos - pos),
-                 maxRotationSpeed);
-            if (player->pos.y > pos.y + 0.5 && (clipping & BoxClipping::NegY) &&
-                (clipping & (BoxClipping::PosX | BoxClipping::PosZ |
-                             BoxClipping::NegX | BoxClipping::NegZ))) {
-                jump();
-            }
-
-            bool canSee = level.terrain->test_connectivity(
-                get_head_pos(), player->get_head_pos());
-            if (canSee && ticksAttackHold < 15 && dis > 2 &&
-                ticksToShoot == 0) {
-                isAiming = true;
-                ticksAttackHold++;
-            } else {
-                if (ticksAttackHold > 3) {
-                    float arrowSpeed =
-                        std::clamp(ticksAttackHold, 3, 12) * 1.25;
-                    auto arrow = level.add_entity<Arrow>();
-                    arrow->pos = pos + glm::vec3{0, 1, 0} + get_front() * 0.5f;
-                    arrow->speed =
-                        glm::normalize(player->pos - pos) * arrowSpeed +
-                        glm::vec3{0, 2, 0};
-                    arrow->ticksToDecay = 150;
-                    ticksToShoot = 20;
-                }
-                ticksAttackHold = 0;
-                isAiming = false;
-            }
-        } else {
-            walk(time, {0, 0, 0}, moveSpeed, maxAcceleration);
-            turn(time, 0, maxRotationSpeed);
+    const auto player = level.player;
+    auto dis = glm::length(player->pos - pos);
+    if (dis > 0.5 && dis < 12) {
+        auto spd = moveSpeed;
+        if (isAiming) {
+            spd *= 0.8;
         }
+        if (dis < 4) {
+            walk(time, pos - player->pos, spd, maxAcceleration);
+        } else if (dis > 8) {
+            walk(time, player->pos - pos, spd, maxAcceleration);
+        } else {
+            if (ticksToChangeMovement == 0) {
+                std::uniform_real_distribution<float> angle(-180, 180);
+                randomMovement = angle_to_front(angle(level.random));
+                std::uniform_int_distribution<int> ticks(5, 20);
+                ticksToChangeMovement = ticks(level.random);
+            }
+            walk(time, randomMovement, spd, maxAcceleration);
+        }
+        turn(time, horizonal_angle(get_front(), player->pos - pos),
+             maxRotationSpeed);
+        if (player->pos.y > pos.y + 0.5 && (clipping & BoxClipping::NegY) &&
+            (clipping & (BoxClipping::PosX | BoxClipping::PosZ |
+                         BoxClipping::NegX | BoxClipping::NegZ))) {
+            jump();
+        }
+
+        bool canSee = level.terrain->test_connectivity(get_head_pos(),
+                                                       player->get_head_pos());
+        if (canSee && ticksAttackHold < 15 && dis > 2 && ticksToShoot == 0) {
+            isAiming = true;
+            ticksAttackHold++;
+        } else {
+            if (ticksAttackHold > 3) {
+                float arrowSpeed = std::clamp(ticksAttackHold, 3, 12) * 1.25;
+                auto arrow = level.add_entity<Arrow>();
+                arrow->pos = pos + glm::vec3{0, 1, 0} + get_front() * 0.5f;
+                arrow->speed = glm::normalize(player->pos - pos) * arrowSpeed +
+                               glm::vec3{0, 2, 0};
+                arrow->ticksToDecay = 150;
+                ticksToShoot = 20;
+            }
+            ticksAttackHold = 0;
+            isAiming = false;
+        }
+    } else {
+        walk(time, {0, 0, 0}, moveSpeed, maxAcceleration);
+        turn(time, 0, maxRotationSpeed);
     }
 }
 
 void Skeleton::on_die() {
+    MobEntity::on_die();
+
     std::uniform_int_distribution<int> chance(1, 5);
     if (chance(level.random) > 2) {
         auto item = level.add_entity<Item>(ItemType::LifePotion);
@@ -662,17 +654,14 @@ void Item::tick(float time) {
     apply_gravity(time, GRAVITY);
     apply_friction(time, DEFAULT_FRICTION);
 
-    auto it = level.entities.find("player1");
-    if (it != level.entities.end()) {
-        auto player = std::dynamic_pointer_cast<Player>(it->second);
-        auto dis = glm::length(player->pos - pos);
-        if (dis < 0.5) {
-            player->inventory[type] += 1;
-            destroyFlag = true;
-            return;
-        } else if (dis < 1.5) {
-            speed += glm::normalize(player->pos - pos) * 2.0f;
-        }
+    const auto player = level.player;
+    auto dis = glm::length(player->pos - pos);
+    if (dis < 0.5) {
+        player->inventory[type] += 1;
+        destroyFlag = true;
+        return;
+    } else if (dis < 1.5) {
+        speed += glm::normalize(player->pos - pos) * 2.0f;
     }
 }
 

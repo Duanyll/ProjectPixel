@@ -42,13 +42,13 @@ int main() {
     json configJson;
     levelFile >> configJson;
     auto config = configJson.get<LevelConfig>();
-    Game game(config);
-    game.apply_to_window();
+    auto game = std::make_unique<Game>(config);
+    game->apply_to_window();
 
     auto screen = std::make_shared<FrameBufferTexture>(1920, 1080, false);
     FullScreenQuad quad(screen);
 
-    game.start();
+    game->start();
     FrameTimer::begin_frame_stats();
     while (!glfwWindowShouldClose(Window::handle)) {
         Window::process_keys();
@@ -56,7 +56,7 @@ int main() {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        screen->draw_inside([&]() -> void { game.render(); });
+        screen->draw_inside([&]() -> void { game->render(); });
 
         glViewport(0, 0, Window::width, Window::height);
         quad.render();
@@ -68,7 +68,7 @@ int main() {
 
         FrameTimer::tick_frame();
     }
-    game.stop();
+    game->stop();
 
     Window::stop_glfw();
 }

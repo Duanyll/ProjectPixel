@@ -15,6 +15,10 @@ class LevelConfig {
     std::unordered_map<std::string, std::vector<glm::vec3>> mobs;
 
     pTerrain get_terrain();
+
+    std::string goal;
+    glm::vec3 destinationPos;
+    float destinationRange;
 };
 
 template <typename T>
@@ -62,12 +66,17 @@ class LocationBuffer {
 };
 
 class Entity;
+class Player;
+class Goal;
 class Level {
    public:
     pTerrain terrain;
     std::unordered_map<std::string, std::shared_ptr<Entity>> entities;
     LocationBuffer<Entity> entityRegistry;
+    std::shared_ptr<Player> player;
     LevelConfig& config;
+
+    std::shared_ptr<Goal> goal;
 
     std::mt19937 random{
         std::chrono::steady_clock::now().time_since_epoch().count()};
@@ -80,6 +89,43 @@ class Level {
         entities[e->id] = e;
         return e;
     }
+};
+
+class Goal {
+   public:
+    Level& level;
+    inline Goal(Level& level) : level(level) {}
+    virtual bool should_game_stop(bool& isWin) = 0;
+    virtual std::string get_goal_display() = 0;
+
+    virtual void on_game_start() = 0;
+    virtual void on_mob_die(std::string type) = 0;
+};
+
+class SpeedRunGoal : public Goal {
+   public:
+    inline SpeedRunGoal(Level& level) : Goal(level) {}
+    bool should_game_stop(bool& isWin);
+    std::string get_goal_display();
+
+    void on_game_start();
+    void on_mob_die(std::string type);
+   protected:
+    TimeStamp startTime;
+};
+
+class ClearGoal : public Goal {
+   public:
+    inline ClearGoal(Level& level) : Goal(level) {}
+    bool should_game_stop(bool& isWin);
+    std::string get_goal_display();
+
+    void on_game_start();
+    void on_mob_die(std::string type);
+
+   protected:
+    int remainEnemies = 0;
+    TimeStamp startTime;
 };
 
 namespace glm {
@@ -104,4 +150,5 @@ inline void from_json(const json& j, glm::vec3& P) {
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LevelConfig, version, xSize, ySize, zSize,
                                    terrainType, terrainPath, playerSpawnPos,
-                                   mobs);
+                                   mobs, goal, destinationPos,
+                                   destinationRange);

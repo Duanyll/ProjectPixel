@@ -59,7 +59,7 @@ class MobEntity : public Entity {
     virtual bool hurt(int hits, HurtType type);
     virtual void jump();
 
-    inline virtual void on_die(){};
+    inline virtual void on_die() { level.goal->on_mob_die(get_type()); };
 };
 
 class Player : public MobEntity {

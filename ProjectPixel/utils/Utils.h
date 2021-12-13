@@ -60,3 +60,22 @@ inline std::string generate_unique_id(const std::string& prefix = "id") {
     static int counter = 0;
     return std::format("{}-{}", prefix, ++counter);
 }
+
+template <class... Durations, class DurationIn>
+std::tuple<Durations...> break_down_durations(DurationIn d) {
+    std::tuple<Durations...> retval;
+    using discard = int[];
+    (void)discard{0, (void(((std::get<Durations>(retval) =
+                                 std::chrono::duration_cast<Durations>(d)),
+                            (d -= std::chrono::duration_cast<DurationIn>(
+                                 std::get<Durations>(retval))))),
+                      0)...};
+    return retval;
+}
+
+inline std::string duration_to_msms(TimeDuration d) {
+    auto [m, s, ms] =
+        break_down_durations<std::chrono::minutes, std::chrono::seconds,
+                             std::chrono::milliseconds>(d);
+    return std::format("{:0>2}:{:0>2}:{:0>3}", m.count(), s.count(), ms.count());
+}

@@ -4,7 +4,7 @@
 #include "../utils/FrameTimer.h"
 #include "../utils/Window.h"
 #include "../utils/Geomentry.h"
-#include "Uniform.h"
+#include "../driver/Uniform.h"
 
 glm::mat4 Camera::get_view() { return glm::lookAt(pos, pos + front, up); }
 

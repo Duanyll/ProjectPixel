@@ -154,6 +154,10 @@ void Game::update() {
             entities.erase(i);
         }
         hud.update(*ins);
+
+        for (auto& i : ins->messages) {
+            UI::log_info(i);
+        }
     }
     TimeStamp now = std::chrono::steady_clock::now();
     float delta = to_float_duration(now - updateTime);

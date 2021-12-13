@@ -26,5 +26,8 @@
       { "x": 28, "y": 0, "z": 4 },
       { "x": 30, "y": 0, "z": 20 }
     ]
-  }
+  },
+  "goal": "clear",
+  "destinationPos": { "x": 19.5, "y": 5, "z": 17.5 },
+  "destinationRange": 1
 }

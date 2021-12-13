@@ -38,4 +38,7 @@ struct SceneInstruction {
     ItemType playerWeapon = ItemType::None;
     int playerLifePotion = 0;
     int playerArrow = 0;
+
+    std::string goalDisplay;
+    std::vector<std::string> messages;
 };

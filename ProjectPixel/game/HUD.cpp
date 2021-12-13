@@ -15,13 +15,14 @@ void GameHUD::update(SceneInstruction& i) {
     weapon = i.playerWeapon;
     lifePotionCount = i.playerLifePotion;
     arrowCount = i.playerArrow;
+    goalDisplay = i.goalDisplay;
 }
 
 void GameHUD::render() {
     int sw = Window::width;
     int sh = Window::height;
 
-    UI::print_text(std::to_string(playerHP), 25, sh - 75);
+    UI::print_text(goalDisplay, 25, sh - 75);
     print_hp_bar();
     print_inventory();
 }

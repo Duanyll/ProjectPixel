@@ -3,8 +3,9 @@
 #include "pch.h"
 #include "../driver/AssetsHub.h"
 #include "Instructions.h"
+#include "Objects.h"
 
-class GameHUD {
+class GameHUD : public RenderObject {
    public:
     void update(SceneInstruction& i);
     void render();
@@ -15,6 +16,7 @@ class GameHUD {
     ItemType weapon = ItemType::None;
     int lifePotionCount = 0;
     int arrowCount = 0;
+    std::string goalDisplay;
 
    protected:
     void print_hp_bar();
