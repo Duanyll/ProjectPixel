@@ -18,6 +18,7 @@ void LevelProcessor::work() {
     lastTime = calcTime;
 
     step_motion(duration);
+    try_spawn_mobs();
     tick_entities(duration);
     handle_user_input(duration);
     clip_speed();
@@ -31,6 +32,50 @@ void LevelProcessor::step_motion(float duration) {
     for (auto& e : level.entities) {
         e.second->step_motion(duration);
         level.entityRegistry.add(e.second);
+    }
+}
+
+void LevelProcessor::try_spawn_mobs() {
+    if (!config.enableMobSpawning) return;
+    std::uniform_int_distribution spawnChance(1, 25);
+    if (spawnChance(level.random) > 24) {
+        int mobCount = 0;
+        for (auto& e : level.entities) {
+            if (std::dynamic_pointer_cast<MobEntity>(e.second)) {
+                mobCount++;
+            }
+        }
+
+        if (mobCount < config.maxEnemies) {
+            std::uniform_real_distribution<float> xCoord(
+                0.0f, level.terrain->get_xsize());
+            std::uniform_real_distribution<float> zCoord(
+                0.0f, level.terrain->get_zsize());
+            glm::vec3 center{xCoord(level.random), 0, zCoord(level.random)};
+            if (!level.terrain->can_mob_spawn_on(center)) return;
+            center.y = level.terrain->get_surface_height(center);
+            if (glm::length(level.player->pos - center) < 8) return;
+
+            std::uniform_real_distribution<float> dir(-180, 180);
+            std::uniform_real_distribution<float> dis(1, 3);
+            std::uniform_int_distribution spawnTries(2, 5);
+            int count = spawnTries(level.random);
+            for (int i = 0; i < count; i++) {
+                auto pos = center + angle_to_front(dir(level.random)) *
+                                        dis(level.random);
+                if (!level.terrain->can_mob_spawn_on(pos)) continue;
+
+                std::uniform_int_distribution spawnType(1, 4);
+                std::shared_ptr<MobEntity> mob;
+                if (spawnType(level.random) > 3) {
+                    mob = level.add_entity<Skeleton>();
+                } else {
+                    mob = level.add_entity<Zombie>();
+                }
+                mob->pos = pos;
+                mob->facing = dir(level.random);
+            }
+        }
     }
 }
 

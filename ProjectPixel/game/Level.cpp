@@ -34,6 +34,8 @@ Level::Level(LevelConfig& config)
         goal = std::make_shared<ClearGoal>(*this);
     } else if (config.goal == "speedRun") {
         goal = std::make_shared<SpeedRunGoal>(*this);
+    } else if (config.goal == "arcade") {
+        goal = std::make_shared<ArcadeGoal>(*this);
     }
 }
 
@@ -94,3 +96,37 @@ void ClearGoal::on_mob_die(std::string type) {
         remainEnemies--;
     }
 }
+
+bool ArcadeGoal::should_game_stop(bool& isWin) {
+    if (level.player->hp <= 0) {
+        isWin = false;
+        return true;
+    }
+    return false;
+}
+
+std::string ArcadeGoal::get_goal_display() { return std::format("{:0>6}", score); }
+
+void ArcadeGoal::on_mob_die(std::string type) { 
+    if (type == "zombie") {
+        score += 500;
+    } else if (type == "skeleton") {
+        score += 1000;
+    }
+}
+
+void ArcadeGoal::on_mob_hurt(std::string sender, std::string target,
+                             HurtType type, int hits) {
+    if (target == "player1") return;
+    float multiplier = 10;
+    if (sender != "player1") {
+        multiplier *= 3;
+    } else if (type == HurtType::Arrow) {
+        multiplier *= 1.5;
+    } else if (type == HurtType::Sweep) {
+        multiplier *= 1.5;
+    }
+    score += hits * multiplier;
+}
+
+void ArcadeGoal::on_intercept_arrow() { score += 500; }

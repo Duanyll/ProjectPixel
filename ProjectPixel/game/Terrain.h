@@ -22,6 +22,8 @@ class ITerrain {
     virtual BoxClipping clip_box(TileBoundingBox& box);
     virtual bool test_connectivity(glm::vec3 a, glm::vec3 b);
 
+    virtual float get_surface_height(glm::vec3 point) = 0;
+    virtual bool can_mob_spawn_on(glm::vec3 point) = 0;
     virtual Tile get_tile(glm::vec3 point) = 0;
     virtual Material create_material() = 0;
     virtual pVAO create_vao(Material material) = 0;
@@ -54,6 +56,9 @@ class BoxStackTerrain : public ITerrain {
     Tile get_tile(glm::vec3 point);
     Material create_material();
     pVAO create_vao(Material material);
+
+    float get_surface_height(glm::vec3 point);
+    bool can_mob_spawn_on(glm::vec3 point);
 
     inline int get_xsize() { return xSize; }
     inline int get_ysize() { return 32; }

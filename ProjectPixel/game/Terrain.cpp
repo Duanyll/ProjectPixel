@@ -116,6 +116,23 @@ pVAO BoxStackTerrain::create_vao(Material material) {
     return vao;
 }
 
+float BoxStackTerrain::get_surface_height(glm::vec3 point) {
+    int x = floor(point.x);
+    int y = floor(point.y);
+    int z = floor(point.z);
+    if (x < 0 || x >= xSize || z < 0 || z >= zSize) return 0.0f;
+    int height = heightMap[z * xSize + x];
+    return height;
+}
+
+bool BoxStackTerrain::can_mob_spawn_on(glm::vec3 point) {
+    int x = floor(point.x);
+    int y = floor(point.y);
+    int z = floor(point.z);
+    if (x < 0 || x >= xSize || z < 0 || z >= zSize) return false;
+    return get_surface_height(point) <= 1;
+}
+
 TerrainRenderer::TerrainRenderer(pTerrain terrain) {
     material = terrain->create_material();
     vao = terrain->create_vao(material);

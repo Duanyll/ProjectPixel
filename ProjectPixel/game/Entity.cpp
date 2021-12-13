@@ -126,11 +126,12 @@ void MobEntity::hitback(glm::vec3 source, float strength) {
              glm::vec3(0, 2, 0);
 }
 
-bool MobEntity::hurt(int hits, HurtType type) {
+bool MobEntity::hurt(int hits, HurtType type, std::string sender) {
     if (hp <= 0) return false;
     if (ticksToHurt > 0) return false;
     ticksToHurt = 5;
 
+    level.goal->on_mob_hurt(sender, id, type, hits);
     hp -= hits;
     if (hp <= 0) {
         ticksToRemove = 20;
@@ -171,6 +172,7 @@ void MobEntity::jump() {
 
 void Player::tick(float time) {
     MobEntity::tick(time);
+    if (hp <= 0) return;
     if (ticksToAttack > 0) ticksToAttack--;
     if (ticksToRegenerate > 0) {
         ticksToRegenerate--;
@@ -237,7 +239,7 @@ void Player::attack() {
                 baseHurt *= 1.5;
                 baseHitback *= 1.2;
             }
-            if (target->hurt(baseHurt, HurtType::Melee)) {
+            if (target->hurt(baseHurt, HurtType::Melee, id)) {
                 target->hitback(pos, baseHitback);
             }
         }
@@ -255,7 +257,7 @@ void Player::sweep() {
             if (glm::length(e->pos - pos) > 2.8) continue;
             auto cur = abs(horizonal_angle(get_front(), e->pos - pos));
             if (cur < minAngle) {
-                if (e->hurt(3, HurtType::Melee)) {
+                if (e->hurt(3, HurtType::Sweep, id)) {
                     e->hitback(pos, 5.5);
                 }
             }
@@ -275,7 +277,7 @@ void Player::walk(float time, glm::vec3 direction) {
     MobEntity::walk(time, direction, spd, maxAcceleration);
 }
 
-bool Player::hurt(int hits, HurtType type) {
+bool Player::hurt(int hits, HurtType type, std::string sender) {
     if (isHealing) {
         hits = hits * 3 / 2;
     } else if (isAiming) {
@@ -283,7 +285,7 @@ bool Player::hurt(int hits, HurtType type) {
     } else if (isRunning) {
         hits = hits * 4 / 3;
     }
-    return MobEntity::hurt(hits, type);
+    return MobEntity::hurt(hits, type, sender);
 }
 
 void Player::handle_heal_input(bool hold) {
@@ -326,6 +328,7 @@ void Player::handle_attack_input(bool hold) {
                 arrow->pos = pos + glm::vec3{0, 1, 0} + get_front() * 0.5f;
                 arrow->speed = get_front() * arrowSpeed + glm::vec3{0, 2, 0};
                 arrow->canPickUp = true;
+                arrow->sender = id;
                 inventory[ItemType::Arrow] -= 1;
             }
         }
@@ -395,7 +398,7 @@ void Zombie::tick(float time) {
 
         if (ticksToAttack == 25) {
             if (dis < 1.5) {
-                if (player->hurt(5, HurtType::Melee)) {
+                if (player->hurt(5, HurtType::Melee, id)) {
                     player->hitback(pos, 4);
                 }
             } else {
@@ -497,7 +500,7 @@ void Arrow::tick(float time) {
         }
 
         if (target) {
-            target->hurt(3 + 0.2 * glm::length(speed), HurtType::Arrow);
+            target->hurt(3 + 0.2 * glm::length(speed), HurtType::Arrow, sender);
             target->hitback(target->pos - speed, 0.4 * glm::length(speed));
             destroyFlag = true;
             return;
@@ -559,6 +562,7 @@ void Skeleton::tick(float time) {
                 arrow->speed = glm::normalize(player->pos - pos) * arrowSpeed +
                                glm::vec3{0, 2, 0};
                 arrow->ticksToDecay = 150;
+                arrow->sender = id;
                 ticksToShoot = 20;
             }
             ticksAttackHold = 0;

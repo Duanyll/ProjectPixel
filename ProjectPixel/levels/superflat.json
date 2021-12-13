@@ -31,5 +31,7 @@
   },
   "goal": "clear",
   "destinationPos": { "x": 0, "y": 0, "z": 0 },
-  "destinationRange": 0
+  "destinationRange": 0,
+  "enableMobSpawning": false,
+  "maxEnemies": 20
 }

@@ -33,7 +33,7 @@ class Entity {
 
 typedef std::shared_ptr<Entity> pEntity;
 
-enum class HurtType { Melee, Arrow };
+enum class HurtType { Melee, Sweep, Arrow };
 
 class MobEntity : public Entity {
    public:
@@ -56,7 +56,7 @@ class MobEntity : public Entity {
     int hp = 20;
 
     virtual void hitback(glm::vec3 source, float strength);
-    virtual bool hurt(int hits, HurtType type);
+    virtual bool hurt(int hits, HurtType type, std::string sender);
     virtual void jump();
 
     inline virtual void on_die() { level.goal->on_mob_die(get_type()); };
@@ -93,7 +93,7 @@ class Player : public MobEntity {
     void sweep();
     void walk(float time, glm::vec3 direction);
 
-    bool hurt(int hits, HurtType type);
+    bool hurt(int hits, HurtType type, std::string sender);
 
     void handle_heal_input(bool heal);
     void handle_attack_input(bool hold);
@@ -162,6 +162,7 @@ class Arrow : public Entity {
 
     int ticksToDecay = 600;
     bool canPickUp = false;
+    std::string sender = "";
 
     void step_motion(float time);
     void tick(float time);

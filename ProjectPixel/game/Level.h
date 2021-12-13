@@ -19,6 +19,9 @@ class LevelConfig {
     std::string goal;
     glm::vec3 destinationPos;
     float destinationRange;
+
+    bool enableMobSpawning;
+    int maxEnemies;
 };
 
 template <typename T>
@@ -91,6 +94,7 @@ class Level {
     }
 };
 
+enum class HurtType;
 class Goal {
    public:
     Level& level;
@@ -98,8 +102,11 @@ class Goal {
     virtual bool should_game_stop(bool& isWin) = 0;
     virtual std::string get_goal_display() = 0;
 
-    virtual void on_game_start() = 0;
-    virtual void on_mob_die(std::string type) = 0;
+    inline virtual void on_game_start() {}
+    inline virtual void on_mob_die(std::string type) {}
+    inline virtual void on_mob_hurt(std::string sender, std::string target,
+                                    HurtType type, int hits) {}
+    inline virtual void on_intercept_arrow() {}
 };
 
 class SpeedRunGoal : public Goal {
@@ -110,6 +117,7 @@ class SpeedRunGoal : public Goal {
 
     void on_game_start();
     void on_mob_die(std::string type);
+
    protected:
     TimeStamp startTime;
 };
@@ -126,6 +134,21 @@ class ClearGoal : public Goal {
    protected:
     int remainEnemies = 0;
     TimeStamp startTime;
+};
+
+class ArcadeGoal : public Goal {
+   public:
+    inline ArcadeGoal(Level& level) : Goal(level) {}
+    bool should_game_stop(bool& isWin);
+    std::string get_goal_display();
+
+    void on_mob_die(std::string type);
+    void on_mob_hurt(std::string sender, std::string target, HurtType type,
+                     int hits);
+    void on_intercept_arrow();
+
+   protected:
+    int score = 0;
 };
 
 namespace glm {
@@ -150,5 +173,5 @@ inline void from_json(const json& j, glm::vec3& P) {
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LevelConfig, version, xSize, ySize, zSize,
                                    terrainType, terrainPath, playerSpawnPos,
-                                   mobs, goal, destinationPos,
-                                   destinationRange);
+                                   mobs, goal, destinationPos, destinationRange,
+                                   enableMobSpawning, maxEnemies);

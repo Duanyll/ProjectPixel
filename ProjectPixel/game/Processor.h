@@ -29,6 +29,7 @@ class LevelProcessor : public WorkerThread {
     TimeStamp lastTime;
 
     void step_motion(float duration);
+    void try_spawn_mobs();
     void tick_entities(float duration);
     void handle_user_input(float duration);
     void clip_speed();
