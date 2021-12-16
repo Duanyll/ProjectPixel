@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "displayName": "Superflat Arcade",
+  "description": "超平坦街机模式",
+  "xSize": 32,
+  "ySize": 8,
+  "zSize": 32,
+  "terrainType": "boxStack",
+  "terrainPath": "superflat-terrain.txt",
+  "playerSpawnPos": {
+    "x": 16,
+    "y": 0,
+    "z": 16
+  },
+  "mobs": {},
+  "goal": "arcade",
+  "destinationPos": { "x": 0, "y": 0, "z": 0 },
+  "destinationRange": 1,
+  "enableMobSpawning": true,
+  "maxEnemies": 15
+}

@@ -17,6 +17,7 @@ class GameHUD : public RenderObject {
     int lifePotionCount = 0;
     int arrowCount = 0;
     std::string goalDisplay;
+    std::string centerTitle;
 
    protected:
     void print_hp_bar();

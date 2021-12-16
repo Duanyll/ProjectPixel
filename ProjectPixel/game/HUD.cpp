@@ -16,6 +16,7 @@ void GameHUD::update(SceneInstruction& i) {
     lifePotionCount = i.playerLifePotion;
     arrowCount = i.playerArrow;
     goalDisplay = i.goalDisplay;
+    centerTitle = i.centerTitle;
 }
 
 void GameHUD::render() {
@@ -23,6 +24,10 @@ void GameHUD::render() {
     int sh = Window::height;
 
     UI::print_text(goalDisplay, 25, sh - 75);
+    if (!centerTitle.empty()) {
+        int width = UI::get_text_width(centerTitle, 3.0f);
+        UI::print_text(centerTitle, (sw - width) / 2, sh / 2, 3.0f);
+    }
     print_hp_bar();
     print_inventory();
 }

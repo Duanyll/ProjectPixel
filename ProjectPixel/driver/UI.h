@@ -8,7 +8,7 @@ class TextPrinter {
     TextPrinter(const std::string& font_path);
     void print(const std::string& text, GLfloat x, GLfloat y, GLfloat scale,
                glm::vec3 color);
-
+    float get_text_width(const std::string& text, float scale = 1.0f);
    private:
     glm::mat4 projection;
 
@@ -33,6 +33,8 @@ void log_info(const std::string& str);
 void log_error(const std::string& str);
 void print_text(const std::string& text, GLfloat x, GLfloat y, GLfloat scale = 1.0f,
                 glm::vec3 color = glm::vec3(1.0, 1.0, 1.0));
-void print_image2d(pTexture texture, GLfloat x, GLfloat y, GLfloat w, GLfloat h);
+float get_text_width(const std::string& text, float scale = 1.0f);
+void print_image2d(pTexture texture, GLfloat x, GLfloat y, GLfloat w,
+                   GLfloat h);
 void print_logs();
 }  // namespace logger

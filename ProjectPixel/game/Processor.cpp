@@ -68,11 +68,10 @@ void LevelProcessor::try_spawn_mobs() {
                 std::uniform_int_distribution spawnType(1, 4);
                 std::shared_ptr<MobEntity> mob;
                 if (spawnType(level.random) > 3) {
-                    mob = level.add_entity<Skeleton>();
+                    mob = level.add_entity<Skeleton>(pos);
                 } else {
-                    mob = level.add_entity<Zombie>();
+                    mob = level.add_entity<Zombie>(pos);
                 }
-                mob->pos = pos;
                 mob->facing = dir(level.random);
             }
         }
@@ -155,15 +154,17 @@ void LevelProcessor::emit_instructions(TimeStamp time) {
         level.entities.erase(i);
     }
 
-    bool isWin = false;
-    if (level.goal->should_game_stop(isWin)) {
-        shouldStop = true;
+    isGameEnd = level.goal->should_game_stop(isWin);
+    if (isGameEnd) {
         input.isEnabled = false;
-
+        ticksToStop++;
+        if (ticksToStop >= 50) {
+            shouldStop = true;
+        }
         if (isWin) {
-            ins->messages.push_back("Victory!");
+            ins->centerTitle = "Level Passed!";
         } else {
-            ins->messages.push_back("Game over.");
+            ins->centerTitle = "Game Over.";
         }
     }
 

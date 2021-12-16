@@ -39,6 +39,7 @@ struct SceneInstruction {
     int playerLifePotion = 0;
     int playerArrow = 0;
 
+    std::string centerTitle;
     std::string goalDisplay;
     std::vector<std::string> messages;
 };

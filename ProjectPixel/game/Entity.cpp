@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "Entity.h"
 
-Entity::Entity(Level& level, const std::string& id) : level(level), id(id) {}
+Entity::Entity(Level& level, const std::string& id, glm::vec3 pos)
+    : level(level), id(id), pos(pos) {}
 
 glm::vec3 Entity::get_front() {
     return {sin(-glm::radians(facing)), 0, cos(glm::radians(facing))};
@@ -50,6 +51,11 @@ void MobEntity::step_motion(float time) {
         box.a += posDelta;
     }
     clipping = level.terrain->clip_box(box);
+    while (clipping == BoxClipping::Full &&
+           box.a.y < level.terrain->get_ysize()) {
+        box.a.y += 1;
+        clipping = level.terrain->clip_box(box);
+    }
     pos = {box.a.x + box.s.x / 2, box.a.y, box.a.z + box.s.z / 2};
     clip_speed();
 }
@@ -235,7 +241,7 @@ void Player::attack() {
                 baseHurt *= 0.8;
                 baseHitback *= 0.8;
             }
-            if (speed.y < 0) {
+            if (speed.y < 0 || isRunning) {
                 baseHurt *= 1.5;
                 baseHitback *= 1.2;
             }
@@ -324,9 +330,9 @@ void Player::handle_attack_input(bool hold) {
         if (weapon == ItemType::Bow) {
             if (ticksAttackHold > 3 && inventory[ItemType::Arrow] > 0) {
                 float arrowSpeed = std::clamp(ticksAttackHold, 3, 12) * 1.25;
-                auto arrow = level.add_entity<Arrow>();
-                arrow->pos = pos + glm::vec3{0, 1, 0} + get_front() * 0.5f;
-                arrow->speed = get_front() * arrowSpeed + glm::vec3{0, 2, 0};
+                auto arrow = level.add_entity<Arrow>(
+                    pos + glm::vec3{0, 1, 0} + get_front() * 0.5f,
+                    get_front() * arrowSpeed + glm::vec3{0, 2, 0});
                 arrow->canPickUp = true;
                 arrow->sender = id;
                 inventory[ItemType::Arrow] -= 1;
@@ -418,10 +424,7 @@ void Zombie::on_die() {
     MobEntity::on_die();
     std::uniform_int_distribution<int> chance(1, 5);
     if (chance(level.random) > 3) {
-        auto item = level.add_entity<Item>(ItemType::LifePotion);
-        item->pos = pos;
-        std::uniform_real_distribution<float> angle(-180, 180);
-        item->speed = angle_to_front(angle(level.random)) + glm::vec3{0, 2, 0};
+        level.add_entity<Item>(ItemType::LifePotion, pos);
     }
 }
 
@@ -557,10 +560,10 @@ void Skeleton::tick(float time) {
         } else {
             if (ticksAttackHold > 3) {
                 float arrowSpeed = std::clamp(ticksAttackHold, 3, 12) * 1.25;
-                auto arrow = level.add_entity<Arrow>();
-                arrow->pos = pos + glm::vec3{0, 1, 0} + get_front() * 0.5f;
-                arrow->speed = glm::normalize(player->pos - pos) * arrowSpeed +
-                               glm::vec3{0, 2, 0};
+                auto arrow = level.add_entity<Arrow>(
+                    pos + glm::vec3{0, 1, 0} + get_front() * 0.5f,
+                    glm::normalize(player->pos - pos) * arrowSpeed +
+                        glm::vec3{0, 2, 0});
                 arrow->ticksToDecay = 150;
                 arrow->sender = id;
                 ticksToShoot = 20;
@@ -579,19 +582,13 @@ void Skeleton::on_die() {
 
     std::uniform_int_distribution<int> chance(1, 5);
     if (chance(level.random) > 2) {
-        auto item = level.add_entity<Item>(ItemType::LifePotion);
-        item->pos = pos;
-        std::uniform_real_distribution<float> angle(-180, 180);
-        item->speed = angle_to_front(angle(level.random)) + glm::vec3{0, 2, 0};
+        level.add_entity<Item>(ItemType::LifePotion, pos);
     }
 
     std::uniform_int_distribution<int> arrowDis(2, 5);
     int arrowCount = arrowDis(level.random);
     for (int i = 1; i <= arrowCount; i++) {
-        auto item = level.add_entity<Item>(ItemType::Arrow);
-        item->pos = pos;
-        std::uniform_real_distribution<float> angle(-180, 180);
-        item->speed = angle_to_front(angle(level.random)) + glm::vec3{0, 2, 0};
+        level.add_entity<Item>(ItemType::Arrow, pos);
     }
 }
 

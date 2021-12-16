@@ -8,7 +8,7 @@
 class Entity {
    public:
     Level& level;
-    Entity(Level& level, const std::string& id);
+    Entity(Level& level, const std::string& id, glm::vec3 pos);
 
     bool destroyFlag = false;
 
@@ -37,8 +37,8 @@ enum class HurtType { Melee, Sweep, Arrow };
 
 class MobEntity : public Entity {
    public:
-    inline MobEntity(Level& level, const std::string& id, int hp)
-        : Entity(level, id), hp(hp) {}
+    inline MobEntity(Level& level, const std::string& id, glm::vec3 pos, int hp)
+        : Entity(level, id, pos), hp(hp) {}
 
     virtual glm::vec3 get_bounding_box_size() = 0;
     virtual TileBoundingBox get_bounding_box();
@@ -64,8 +64,8 @@ class MobEntity : public Entity {
 
 class Player : public MobEntity {
    public:
-    inline Player(Level& level, const std::string& id)
-        : MobEntity(level, id, 50) {}
+    inline Player(Level& level, const std::string& id, glm::vec3 pos)
+        : MobEntity(level, id, pos, 50) {}
 
     inline std::string get_type() { return "player"; }
     inline glm::vec3 get_bounding_box_size() { return {0.5, 1.6, 0.5}; }
@@ -105,9 +105,9 @@ typedef std::shared_ptr<Player> pPlayer;
 
 class Zombie : public MobEntity {
    public:
-    inline Zombie(Level& level,
+    inline Zombie(Level& level, glm::vec3 pos,
                   const std::string& id = generate_unique_id("zombie"))
-        : MobEntity(level, id, 20) {}
+        : MobEntity(level, id, pos, 20) {}
     inline std::string get_type() { return "zombie"; }
     inline glm::vec3 get_bounding_box_size() { return {0.5, 1.6, 0.5}; }
     inline glm::vec3 get_head_pos() { return pos + glm::vec3(0, 1.5, 0); }
@@ -127,9 +127,9 @@ class Zombie : public MobEntity {
 
 class Skeleton : public MobEntity {
    public:
-    inline Skeleton(Level& level,
+    inline Skeleton(Level& level, glm::vec3 pos,
                     const std::string& id = generate_unique_id("skeleton"))
-        : MobEntity(level, id, 20) {}
+        : MobEntity(level, id, pos, 20) {}
     inline std::string get_type() { return "skeleton"; }
     inline glm::vec3 get_bounding_box_size() { return {0.5, 1.6, 0.5}; }
     inline glm::vec3 get_head_pos() { return pos + glm::vec3(0, 1.5, 0); }
@@ -155,9 +155,11 @@ class Skeleton : public MobEntity {
 
 class Arrow : public Entity {
    public:
-    inline Arrow(Level& level,
+    inline Arrow(Level& level, glm::vec3 pos, glm::vec3 speed,
                  const std::string& id = generate_unique_id("arrow"))
-        : Entity(level, id) {}
+        : Entity(level, id, pos) {
+        this->speed = speed;
+    }
     inline std::string get_type() { return "arrow"; }
 
     int ticksToDecay = 600;
@@ -170,10 +172,12 @@ class Arrow : public Entity {
 
 class Item : public Entity {
    public:
-    inline Item(Level& level, ItemType type,
+    inline Item(Level& level, ItemType type, glm::vec3 pos,
                 const std::string& id = generate_unique_id("item"))
-        : Entity(level, id), type(type) {
+        : Entity(level, id, pos), type(type) {
         rotationSpeed = 180;
+        std::uniform_real_distribution<float> angle(-180, 180);
+        speed = angle_to_front(angle(level.random)) + glm::vec3{0, 2, 0};
     }
     inline std::string get_type() { return "item"; }
 

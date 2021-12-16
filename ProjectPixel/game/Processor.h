@@ -28,6 +28,10 @@ class LevelProcessor : public WorkerThread {
     TickTimer timer;
     TimeStamp lastTime;
 
+    bool isGameEnd = false;
+    bool isWin = false;
+    int ticksToStop = 0;
+
     void step_motion(float duration);
     void try_spawn_mobs();
     void tick_entities(float duration);

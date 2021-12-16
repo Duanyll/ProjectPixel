@@ -1,511 +1,553 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Entity" Collapsed="true">
-    <Position X="5.25" Y="7.5" Width="1.5" />
+    <Position X="5.25" Y="9.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>EARAABAEAABAAAAAAlAAQIAAAAEAAQAAAABIAgAAAgA=</HashCode>
       <FileName>game\Entity.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MobEntity" Collapsed="true">
-    <Position X="7.5" Y="8.75" Width="1.5" />
+    <Position X="7.5" Y="10.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ABRCAAAAAAggAAICAAQAAAABAAAAAAIBACDABAAAAAA=</HashCode>
       <FileName>game\Entity.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Player" Collapsed="true">
-    <Position X="9.75" Y="10.25" Width="1.5" />
+    <Position X="9.75" Y="12.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AABBAAAAUEgAAABACAAAQAAACBAAAgCLACGAAwgABEI=</HashCode>
       <FileName>game\Entity.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Zombie" Collapsed="true">
-    <Position X="5.25" Y="10.25" Width="1.5" />
+    <Position X="5.25" Y="12.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AABBAAAAEAgAAAAAAAAAQAABABAAAAAJAAAAAgAAAAA=</HashCode>
       <FileName>game\Entity.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Skeleton" Collapsed="true">
-    <Position X="7.5" Y="10.25" Width="1.5" />
+    <Position X="7.5" Y="12.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AEBBAAAAEEgAAQAAAAAAQEADABAAAgABAAAABoAAAAA=</HashCode>
       <FileName>game\Entity.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Arrow" Collapsed="true">
-    <Position X="0.75" Y="8.75" Width="1.5" />
+    <Position X="0.75" Y="10.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAxAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAkAAAAAAAA=</HashCode>
       <FileName>game\Entity.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Item" Collapsed="true">
-    <Position X="3" Y="8.75" Width="1.5" />
+    <Position X="3" Y="10.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AARAAAAAAAAAAAAAAAAAQAAEAAABAAAAAAEAAgAAAAA=</HashCode>
       <FileName>game\Entity.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Game" Collapsed="true">
-    <Position X="20.5" Y="0.5" Width="1.5" />
+    <Position X="23.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQiAAgAAgCAAAAgQAEAAAAAAAggAQAAAAAAAAAUAAQ=</HashCode>
       <FileName>game\Game.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GameHUD" Collapsed="true">
-    <Position X="14.5" Y="4.75" Width="1.5" />
+    <Position X="1" Y="6.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAgAAAAAAiAACAAAAAAAAAAAAAAcEQA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAgAAgAAAiAACAAAAAAAAAAAAAAcEQA=</HashCode>
       <FileName>game\HUD.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="LevelConfig" Collapsed="true">
-    <Position X="18.75" Y="1.5" Width="1.5" />
+  <Class Name="LevelConfig">
+    <Position X="15.5" Y="5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AEQIACAAAAAAAAAAACAAAAAAAAgAAAAEAAAQAAAAABA=</HashCode>
+      <HashCode>AEQIACEAAAAAAAAABCAAAEAAAAgAAAEEAAAQAAAAABA=</HashCode>
       <FileName>game\Level.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="LocationBuffer&lt;T&gt;" Collapsed="true">
-    <Position X="22.25" Y="1.5" Width="1.5" />
+    <Position X="25" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AEAAAAEAEAABAAAAAAAEAAAAAAAAAAAFAggAAAACABA=</HashCode>
       <FileName>game\Level.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Level" Collapsed="true">
-    <Position X="17" Y="1.5" Width="1.5" />
+  <Class Name="Level">
+    <Position X="17.75" Y="5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAgAAAAQABAAQBAABAAAA=</HashCode>
+      <HashCode>AAACAAEAAAAAAAAAAAAAAAAAgAAAAQABAAQBAABAAAA=</HashCode>
       <FileName>game\Level.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="LevelProcessor" Collapsed="true">
-    <Position X="10.5" Y="12.75" Width="1.5" />
+  <Class Name="Goal">
+    <Position X="15" Y="0.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAUCAAQIAAIAAAAgAgAAQgAACAEAABAAAAIAAAAAAAA=</HashCode>
+      <HashCode>IQIAAAQAAAAAAAAACAAAAAAAAAEAAAAAABAAAAAAAAA=</HashCode>
+      <FileName>game\Level.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SpeedRunGoal" Collapsed="true">
+    <Position X="12.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAIAAAAAAAAAAAAACAAggAAAAAAAAAAAABAAAAAAAAA=</HashCode>
+      <FileName>game\Level.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ClearGoal" Collapsed="true">
+    <Position X="15" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAIAAAAAAAAAAAgACABgAAAAAAAAAAAAABAAAAAAAAA=</HashCode>
+      <FileName>game\Level.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ArcadeGoal" Collapsed="true">
+    <Position X="17.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAIAAAQAAAAAAAAASAAIAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>game\Level.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LevelProcessor">
+    <Position X="12.5" Y="14.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAUCAAQIAAIAIAAgAgAAQgAACAEAABAAAAIAAAAAAAA=</HashCode>
       <FileName>game\Processor.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ITerrain" Collapsed="true">
-    <Position X="12.5" Y="0.5" Width="1.5" />
+  <Class Name="ITerrain">
+    <Position X="7.5" Y="13.5" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>AACQYIAAAgEAAAAAAAAAhAkABAACAAAACEAAAAAAADA=</HashCode>
+      <HashCode>AACQYIAAEgEAAAAAAAAAhAkABAACAAAACGAAAAAAADA=</HashCode>
       <FileName>game\Terrain.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="BoxStackTerrain" Collapsed="true">
-    <Position X="12.5" Y="1.75" Width="1.5" />
+    <Position X="8" Y="18.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AACQYAAAAAAAAAAAAAAAhAEAAAIAEAAEAAAAAAAAABA=</HashCode>
+      <HashCode>AACQYAAAEAAAAAAAAAAAhAEAAAIAEAAEACAAAAAAABA=</HashCode>
       <FileName>game\Terrain.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TerrainRenderer" Collapsed="true">
-    <Position X="3.25" Y="4.75" Width="1.5" />
+    <Position X="5.5" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQIAA=</HashCode>
       <FileName>game\Terrain.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Camera" Collapsed="true">
-    <Position X="6.75" Y="11.5" Width="1.5" />
+  <Class Name="Camera">
+    <Position X="1.75" Y="13.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>CAICAAAAABAAAAAAAAEgAIAAAAAAAAAAAAAAAgAAAEA=</HashCode>
       <FileName>utils\Camera.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="FreeCamera" Collapsed="true">
-    <Position X="5.5" Y="12.75" Width="1.5" />
+    <Position X="0.5" Y="17" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AUAAAEAEEQIAAIEAAAEAAAAAAAAAAEAAAgACAAAQCAA=</HashCode>
       <FileName>utils\Camera.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ThirdPersonCamera" Collapsed="true">
-    <Position X="7.75" Y="12.75" Width="1.5" />
+    <Position X="2.75" Y="17" Width="1.75" />
     <TypeIdentifier>
       <HashCode>BAIACACAAAAIAAAAIAAAAAAAAAAAAAAAAAgAAEAAAAA=</HashCode>
       <FileName>utils\Camera.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RenderObject" Collapsed="true">
-    <Position X="7.75" Y="3.5" Width="1.5" />
+    <Position X="7.75" Y="5.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAA=</HashCode>
       <FileName>game\Objects.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="FullScreenQuad" Collapsed="true">
-    <Position X="1" Y="4.75" Width="1.5" />
+    <Position X="3.25" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAgIAAAAAAAAQAAA=</HashCode>
       <FileName>game\Objects.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Skybox" Collapsed="true">
-    <Position X="5.5" Y="4.75" Width="1.5" />
+    <Position X="7.75" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAgAAAAAAAAAQAAA=</HashCode>
       <FileName>game\Objects.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="EntityRenderer" Collapsed="true">
-    <Position X="10" Y="4.75" Width="1.5" />
+    <Position X="12" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAABAAAAAAAAAAAAAAIAAAAIAgAQAAAABAAAAEAAA=</HashCode>
       <FileName>game\Objects.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="LinearAnimation" Collapsed="true">
-    <Position X="20.5" Y="1.5" Width="1.5" />
+    <Position X="23.25" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAgASAAAAAAAAAAAAA=</HashCode>
       <FileName>game\Objects.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="SineAnimation" Collapsed="true">
-    <Position X="18.75" Y="2.5" Width="1.5" />
+    <Position X="21.5" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEAAAgACAAAEAAAABAAAA=</HashCode>
       <FileName>game\Objects.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AccelerateAdapter" Collapsed="true">
-    <Position X="17" Y="0.5" Width="1.5" />
+    <Position X="19.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAQAAAAAAAAAAAAAIAAAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
       <FileName>game\Objects.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Paperman" Collapsed="true">
-    <Position X="7.75" Y="6.25" Width="1.5" />
+    <Position X="10" Y="8.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>BDACAACABBAgAAAgIACKAACCAYAgBgAJAgACAAB0AAA=</HashCode>
       <FileName>game\Objects.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ArrowRenderer" Collapsed="true">
-    <Position X="10" Y="6.25" Width="1.5" />
+    <Position X="12" Y="8.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAIAAAEAAAAAAAAAUAAA=</HashCode>
       <FileName>game\Objects.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ItemRenderer" Collapsed="true">
-    <Position X="12.25" Y="6.25" Width="1.5" />
+    <Position X="13.75" Y="8.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAIABAAAAAAAAAAAUAAA=</HashCode>
       <FileName>game\Objects.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ShaderProgram" Collapsed="true">
-    <Position X="5.25" Y="0.5" Width="1.5" />
+  <Class Name="ShaderProgram">
+    <Position X="5" Y="0.5" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAABAAAAAAEAAAAAQABAAAAAAAAABAAhAAAAAgA=</HashCode>
       <FileName>driver\ShaderProgram.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="QuadShader" Collapsed="true">
-    <Position X="0.75" Y="1.75" Width="1.5" />
+    <Position X="3" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAEAAAAAAAAAAAAAAAAAAQBAAABAAAAAAAAAAAAA=</HashCode>
       <FileName>driver\ShaderProgram.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TextShader" Collapsed="true">
-    <Position X="3" Y="1.75" Width="1.5" />
+    <Position X="0.75" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAACAAAAAAAAAAACAAAAQBAAAAAAAAAAAAAAAAQ=</HashCode>
       <FileName>driver\ShaderProgram.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="SkyboxShader" Collapsed="true">
-    <Position X="5.25" Y="1.75" Width="1.5" />
+    <Position X="5.25" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAgAIAAAAQBAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>driver\ShaderProgram.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="EntityShader" Collapsed="true">
-    <Position X="7.5" Y="1.75" Width="1.5" />
+    <Position X="7.5" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAIAAAAQAAAAAAAAAAQBAAQBAAAAACAAAAAAA=</HashCode>
       <FileName>driver\ShaderProgram.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HUDShader" Collapsed="true">
-    <Position X="9.75" Y="1.75" Width="1.5" />
+    <Position X="9.75" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAIAAAAAAAAAEAAAAAQBAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>driver\ShaderProgram.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Texture" Collapsed="true">
-    <Position X="1.75" Y="10.5" Width="1.5" />
+  <Class Name="Texture">
+    <Position X="13.75" Y="9.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAgAQAQAAAQAAAAAAAAAAAAAIwAAAAAgA=</HashCode>
       <FileName>driver\Texture.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="CubeTexture" Collapsed="true">
-    <Position X="0.5" Y="11.75" Width="1.5" />
+  <Class Name="CubeTexture">
+    <Position X="12.5" Y="12.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAABAAAA=</HashCode>
       <FileName>driver\Texture.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="FrameBufferTexture" Collapsed="true">
-    <Position X="2.75" Y="11.75" Width="1.5" />
+  <Class Name="FrameBufferTexture">
+    <Position X="14.75" Y="12.75" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAACEAAAAQAAAAAAAAAQAAABAAAAAACA=</HashCode>
       <FileName>driver\Texture.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="TextureMatrix" Collapsed="true">
-    <Position X="2.75" Y="13.25" Width="1.5" />
+  <Class Name="TextureMatrix">
+    <Position X="15" Y="16" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAIAEAAAAAAAAAAACQAAAAAAAAAAAABAAAAA=</HashCode>
       <FileName>driver\Texture.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="UBO" Collapsed="true">
-    <Position X="17" Y="3.5" Width="1.5" />
+    <Position X="19.75" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAABAEAQAIAAAAABAAAAAAAAAAAAAAIAAgAAAgAgA=</HashCode>
       <FileName>driver\Uniform.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="VAO" Collapsed="true">
-    <Position X="18.75" Y="3.5" Width="1.5" />
+    <Position X="21.5" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAghAAAAAIAEgAAAIAAAAQAAAAACAAAAAiAACAAgA=</HashCode>
       <FileName>driver\VAO.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TickTimer" Collapsed="true">
-    <Position X="22.25" Y="2.5" Width="1.5" />
+    <Position X="25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAIAAAAAAABAAAAACgAAAAgQAAAAAAAQAAAAAAAAA=</HashCode>
       <FileName>utils\FrameTimer.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TextPrinter" Collapsed="true">
-    <Position X="20.5" Y="2.5" Width="1.5" />
+    <Position X="23.25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ABQAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAg=</HashCode>
       <FileName>driver\UI.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ConcurrenceQueue&lt;T, TContainer&gt;" Collapsed="true">
-    <Position X="18.75" Y="0.5" Width="1.5" />
+    <Position X="21.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAEAABBAAACEgAAAAAACAAoAAAAAIA=</HashCode>
       <FileName>utils\Threading.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="InputForwarder" Collapsed="true">
-    <Position X="22.25" Y="0.5" Width="1.5" />
+    <Position X="25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AIABAAAAAAAAAQAAAAQAAAAAAAAAAAAAiAgQAAAiAAQ=</HashCode>
       <FileName>utils\Threading.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="OutputBuffer&lt;T&gt;" Collapsed="true">
-    <Position X="17" Y="2.5" Width="1.5" />
+    <Position X="19.75" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAEAAAAIAAAAAAAAAAAAAAAAAAACAAAAAAEAAA=</HashCode>
       <FileName>utils\Threading.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="WorkerThread" Collapsed="true">
-    <Position X="10.5" Y="11.5" Width="1.5" />
+  <Class Name="WorkerThread">
+    <Position X="10.5" Y="14.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>EACAAAAIAAAAAABgAAAAQAAAAAAgAAAAAAAABAAAAAA=</HashCode>
       <FileName>utils\Threading.h</FileName>
     </TypeIdentifier>
   </Class>
   <Struct Name="Pixel" Collapsed="true">
-    <Position X="17" Y="5.75" Width="1.5" />
+    <Position X="19.75" Y="5.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoAQABAAAAAAA=</HashCode>
       <FileName>driver\EmbbedAssets.cpp</FileName>
     </TypeIdentifier>
   </Struct>
   <Struct Name="TextLog" Collapsed="true">
-    <Position X="17" Y="6.75" Width="1.5" />
+    <Position X="19.75" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAgACCAAAAAAAAAAAA=</HashCode>
       <FileName>driver\UI.cpp</FileName>
     </TypeIdentifier>
   </Struct>
   <Struct Name="KeyState" Collapsed="true">
-    <Position X="20.5" Y="4.75" Width="1.5" />
+    <Position X="23.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAACAAAAAAAAAAAQEAAAAAAAAAAAAAAA=</HashCode>
       <FileName>utils\Window.cpp</FileName>
     </TypeIdentifier>
   </Struct>
   <Struct Name="EntityInstruction" Collapsed="true">
-    <Position X="18.75" Y="4.75" Width="1.5" />
+    <Position X="21.5" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAABAAAAAAAAAAAAAAAIAAAAABAQAEAABAAAAAAgA=</HashCode>
       <FileName>game\Instructions.h</FileName>
     </TypeIdentifier>
   </Struct>
   <Struct Name="SceneInstruction" Collapsed="true">
-    <Position X="20.5" Y="5.75" Width="1.5" />
+    <Position X="23.25" Y="5.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAIEAAAAIAAAAAAAAAAAAAAAAAAAAQCAAIAAAAAAAQA=</HashCode>
+      <HashCode>AAIEAAAAIAAAAAAAAgAAAAAAAAAAAQCBAIAAAAAAAQA=</HashCode>
       <FileName>game\Instructions.h</FileName>
     </TypeIdentifier>
   </Struct>
   <Struct Name="DirLight" Collapsed="true">
-    <Position X="17" Y="4.75" Width="1.5" />
+    <Position X="19.75" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAEAAAAAAAIAAAAAAAAAIAAAAAgAAAAAAAAABAIAA=</HashCode>
       <FileName>driver\Light.h</FileName>
     </TypeIdentifier>
   </Struct>
   <Struct Name="PointLight" Collapsed="true">
-    <Position X="18.75" Y="5.75" Width="1.5" />
+    <Position X="21.5" Y="5.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAEAAAAAAAIAAAAAAAIAIAAAAAAAgAAAAIACBAAAA=</HashCode>
       <FileName>driver\Light.h</FileName>
     </TypeIdentifier>
   </Struct>
   <Struct Name="SpotLight" Collapsed="true">
-    <Position X="22.25" Y="5.75" Width="1.5" />
+    <Position X="25" Y="5.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAEAAAAAAAIAAAAAAAIAIAgAAAAAAAAAAIACBAMAA=</HashCode>
       <FileName>driver\Light.h</FileName>
     </TypeIdentifier>
   </Struct>
   <Struct Name="Material" Collapsed="true">
-    <Position X="22.25" Y="4.75" Width="1.5" />
+    <Position X="25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAABAAAAAAAAAAAIAAAAAAIAAAAAAAAAAAAAAABAAAA=</HashCode>
       <FileName>driver\Texture.h</FileName>
     </TypeIdentifier>
   </Struct>
   <Struct Name="TileBoundingBox" Collapsed="true">
-    <Position X="18.75" Y="6.75" Width="1.5" />
+    <Position X="21.5" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAgEAAAAAAAAAAAAAAAAAAAAgAIAAAAAAACA=</HashCode>
       <FileName>utils\Geomentry.h</FileName>
     </TypeIdentifier>
   </Struct>
   <Typedef Name="pEntity" Collapsed="true">
-    <Position X="18.75" Y="9.75" Width="1.5" />
+    <Position X="21.5" Y="9.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>game\Entity.h</FileName>
     </TypeIdentifier>
   </Typedef>
   <Typedef Name="pPlayer" Collapsed="true">
-    <Position X="20.5" Y="9.75" Width="1.5" />
+    <Position X="23.25" Y="9.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>game\Entity.h</FileName>
     </TypeIdentifier>
   </Typedef>
   <Typedef Name="pTerrain" Collapsed="true">
-    <Position X="17" Y="10.5" Width="1.5" />
+    <Position X="19.75" Y="10.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>game\Terrain.h</FileName>
     </TypeIdentifier>
   </Typedef>
   <Typedef Name="pShaderProgram" Collapsed="true">
-    <Position X="22.25" Y="9.75" Width="1.5" />
+    <Position X="25" Y="9.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>driver\ShaderProgram.h</FileName>
     </TypeIdentifier>
   </Typedef>
   <Typedef Name="pTexture" Collapsed="true">
-    <Position X="20.5" Y="10.5" Width="1.5" />
+    <Position X="23.25" Y="10.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>driver\Texture.h</FileName>
     </TypeIdentifier>
   </Typedef>
   <Typedef Name="pCubeTexture" Collapsed="true">
-    <Position X="17" Y="9.75" Width="1.5" />
+    <Position X="19.75" Y="9.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>driver\Texture.h</FileName>
     </TypeIdentifier>
   </Typedef>
   <Typedef Name="pUBO" Collapsed="true">
-    <Position X="22.25" Y="10.5" Width="1.5" />
+    <Position X="25" Y="10.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>driver\Uniform.h</FileName>
     </TypeIdentifier>
   </Typedef>
   <Typedef Name="pVAO" Collapsed="true">
-    <Position X="17" Y="11.25" Width="1.5" />
+    <Position X="19.75" Y="11.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>driver\VAO.h</FileName>
     </TypeIdentifier>
   </Typedef>
   <Typedef Name="pTextPrinter" Collapsed="true">
-    <Position X="18.75" Y="10.5" Width="1.5" />
+    <Position X="21.5" Y="10.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>driver\UI.h</FileName>
     </TypeIdentifier>
   </Typedef>
-  <Enum Name="HurtType" Collapsed="true">
-    <Position X="20.5" Y="8" Width="1.5" />
+  <Typedef Name="TimeStamp" Collapsed="true">
+    <Position X="23.25" Y="11.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAgAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>utils\Utils.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="TimeDuration" Collapsed="true">
+    <Position X="21.5" Y="11.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>utils\Utils.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Enum Name="HurtType" Collapsed="true">
+    <Position X="23.25" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAgAAABAAAAAAAgAAAAAAAA=</HashCode>
       <FileName>game\Entity.h</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="LegAction" Collapsed="true">
-    <Position X="18.75" Y="8.75" Width="1.5" />
+    <Position X="21.5" Y="8.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAIAAAAAAAAAAAAAAAAAAAAAQAAIAAAAAAAAAQA=</HashCode>
       <FileName>game\Instructions.h</FileName>
     </TypeIdentifier>
   </Enum>
-  <Enum Name="HandActions" Collapsed="true">
-    <Position X="18.75" Y="8" Width="1.5" />
+  <Enum Name="HandAction" Collapsed="true">
+    <Position X="21.5" Y="8" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAEAAAAAAAAAEAAAAAAAAAAAAAgAAAIAAAAAAAGAAAA=</HashCode>
+      <HashCode>AAEAAAAAQAAAEAAAAAAAAAgAAAAAAAAAAAAAAAEEAAA=</HashCode>
       <FileName>game\Instructions.h</FileName>
     </TypeIdentifier>
   </Enum>
-  <Enum Name="Items" Collapsed="true">
-    <Position X="22.25" Y="8" Width="1.5" />
+  <Enum Name="ItemType" Collapsed="true">
+    <Position X="25" Y="8" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAACAAAAAAAAAAAAAAAACAIIAAAAAAAgAAAEAAAA=</HashCode>
       <FileName>game\Instructions.h</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="Tile" Collapsed="true">
-    <Position X="20.5" Y="8.75" Width="1.5" />
+    <Position X="23.25" Y="8.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAQAAAAAAAAIAAAAAEAAAAAAAAAA=</HashCode>
       <FileName>game\Terrain.h</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="BoxClipping" Collapsed="true">
-    <Position X="17" Y="8" Width="1.5" />
+    <Position X="19.75" Y="8" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAADgAAAAAAAAAAAAwAIAAAAAAAAAAgAAAAEAAAA=</HashCode>
       <FileName>utils\Geomentry.h</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="Window::KeyMode" Collapsed="true">
-    <Position X="17" Y="8.75" Width="1.5" />
+    <Position X="19.75" Y="8.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAgAAAAAgAAAAAAAAAADAAAAAAAAAAAAA=</HashCode>
       <FileName>utils\Window.h</FileName>

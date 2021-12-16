@@ -107,6 +107,15 @@ void TextPrinter::print(const std::string& text, GLfloat x, GLfloat y,
     glEnable(GL_DEPTH_TEST);
 }
 
+float TextPrinter::get_text_width(const std::string& text, float scale) {
+    float res = 0;
+    for (const auto& i : text) {
+        Character ch = Characters[i];
+        res += (ch.Advance >> 6) * scale;
+    }
+    return res;
+}
+
 pTextPrinter printer;
 struct TextLog {
     glm::vec3 color;
@@ -157,6 +166,10 @@ void UI::log_error(const std::string& str) {
 void UI::print_text(const std::string& text, GLfloat x, GLfloat y,
                     GLfloat scale, glm::vec3 color) {
     printer->print(text, x, y, scale, color);
+}
+
+float UI::get_text_width(const std::string& text, float scale) {
+    return printer->get_text_width(text, scale);
 }
 
 void UI::print_image2d(pTexture texture, GLfloat xpos, GLfloat ypos, GLfloat w,

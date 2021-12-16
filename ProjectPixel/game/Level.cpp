@@ -16,18 +16,15 @@ pTerrain LevelConfig::get_terrain() {
 Level::Level(LevelConfig& config)
     : config(config), entityRegistry(4, config.xSize, config.zSize) {
     terrain = config.get_terrain();
-    player = add_entity<Player>("player1");
-    player->pos = config.playerSpawnPos;
+    player = add_entity<Player>("player1", config.playerSpawnPos);
     player->inventory[ItemType::Arrow] = 16;
 
     for (auto& pos : config.mobs["zombie"]) {
-        auto zombie = add_entity<Zombie>();
-        zombie->pos = pos;
+        add_entity<Zombie>(pos);
     }
 
     for (auto& pos : config.mobs["skeleton"]) {
-        auto skeleton = add_entity<Skeleton>();
-        skeleton->pos = pos;
+        add_entity<Skeleton>(pos);
     }
 
     if (config.goal == "clear") {

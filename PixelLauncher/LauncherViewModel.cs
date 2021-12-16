@@ -72,17 +72,17 @@ namespace PixelLauncher
                     game.StartInfo.WorkingDirectory = GameWorkingDirectory;
                     game.StartInfo.Arguments = level.Path;
                     game.StartInfo.CreateNoWindow = true;
-                    uiThread.Invoke(() => isGameRunning = true);
+                    uiThread.Invoke(() => IsGameRunning = true);
                     game.Start();
                     game.WaitForExit();
-                    uiThread.Invoke(() => isGameRunning = false);
+                    uiThread.Invoke(() => IsGameRunning = false);
                 });
             }, () => !isGameRunning && selectedLevel != null);
 
             LoadLevelsCommand = new CommandHandler(() =>
             {
                 SelectedLevel = null;
-                Levels.Clear();
+                Levels.Clear();      
                 var levelFiles = Directory.EnumerateFiles(System.IO.Path.Combine(gameWorkingDirectory, "levels"), "*.json");
                 foreach (var levelFile in levelFiles)
                 {
