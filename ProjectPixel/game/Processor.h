@@ -30,6 +30,7 @@ class LevelProcessor : public WorkerThread {
 
     bool isGameEnd = false;
     bool isWin = false;
+    std::string finalScore;
     int ticksToStop = 0;
 
     void step_motion(float duration);

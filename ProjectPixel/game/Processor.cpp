@@ -89,7 +89,7 @@ void LevelProcessor::handle_user_input(float duration) {
     std::queue<std::string> events;
     std::unordered_set<std::string> flags;
     input.poll(o, events, flags);
-    const auto player = level.player;
+    const auto &player = level.player;
     if (player && player->hp > 0) {
         glm::vec3 controlSpeed{o["speed-x"], 0, o["speed-z"]};
         player->isAiming = flags.contains("aim");
@@ -148,13 +148,13 @@ void LevelProcessor::emit_instructions(TimeStamp time) {
     ins->playerLifePotion = player->inventory[ItemType::LifePotion];
     ins->playerArrow = player->inventory[ItemType::Arrow];
 
-    ins->goalDisplay = level.goal->get_goal_display();
-
     for (auto& i : ins->deletedEntities) {
         level.entities.erase(i);
     }
 
-    isGameEnd = level.goal->should_game_stop(isWin);
+    if (!isGameEnd) {
+        isGameEnd = level.goal->should_game_stop(isWin);
+    }
     if (isGameEnd) {
         input.isEnabled = false;
         ticksToStop++;
@@ -166,6 +166,9 @@ void LevelProcessor::emit_instructions(TimeStamp time) {
         } else {
             ins->centerTitle = "Game Over.";
         }
+        ins->goalDisplay = finalScore;
+    } else {
+        ins->goalDisplay = finalScore = level.goal->get_goal_display();
     }
 
     output.update(ins);

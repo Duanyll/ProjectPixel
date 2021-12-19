@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "displayName": "Speedrun Test",
+  "description": "包含模拟地形的测试用场景，难度适中。",
+  "xSize": 32,
+  "ySize": 8,
+  "zSize": 32,
+  "terrainType": "boxStack",
+  "terrainPath": "default-terrain.txt",
+  "playerSpawnPos": {
+    "x": 5,
+    "y": 0,
+    "z": 10
+  },
+  "mobs": {
+    "zombie": [
+      { "x": 16, "y": 0, "z": 10 },
+      { "x": 19, "y": 0, "z": 27 },
+      { "x": 25, "y": 0, "z": 27 },
+      { "x": 22, "y": 1, "z": 8 }
+    ],
+    "skeleton": [
+      { "x": 22, "y": 0, "z": 22 },
+      { "x": 22, "y": 0, "z": 26 }
+    ]
+  },
+  "goal": "speedRun",
+  "destinationPos": { "x": 19.5, "y": 5, "z": 17.5 },
+  "destinationRange": 1,
+  "enableMobSpawning": false,
+  "maxEnemies": 20
+}

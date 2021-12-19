@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "displayName": "Terrain Display Test",
+  "description": "地形显示测试",
+  "xSize": 32,
+  "ySize": 8,
+  "zSize": 32,
+  "terrainType": "boxStack",
+  "terrainPath": "default-terrain.txt",
+  "playerSpawnPos": {
+    "x": 5,
+    "y": 0,
+    "z": 10
+  },
+  "mobs": {},
+  "goal": "arcade",
+  "destinationPos": { "x": 0, "y": 0, "z": 0 },
+  "destinationRange": 1,
+  "enableMobSpawning": false,
+  "maxEnemies": 15
+}
