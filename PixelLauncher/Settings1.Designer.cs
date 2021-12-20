@@ -25,7 +25,7 @@ namespace PixelLauncher {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("../../../../x64/Debug/ProjectPixel.exe")]
+        [global::System.Configuration.DefaultSettingValueAttribute("ProjectPixel.exe")]
         public string GameExecutablePath {
             get {
                 return ((string)(this["GameExecutablePath"]));
@@ -37,7 +37,7 @@ namespace PixelLauncher {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("../../../../ProjectPixel")]
+        [global::System.Configuration.DefaultSettingValueAttribute(".")]
         public string GameWorkingDirectory {
             get {
                 return ((string)(this["GameWorkingDirectory"]));

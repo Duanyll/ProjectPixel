@@ -59,12 +59,12 @@
   <Class Name="GameHUD" Collapsed="true">
     <Position X="1" Y="6.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAgAAgAAAiAACAAAAAAAAAAAAAAcEQA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAgAAgIAAiAACAAAAAAAAAAAAAAcEQA=</HashCode>
       <FileName>game\HUD.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="LevelConfig">
-    <Position X="15.5" Y="5" Width="2" />
+  <Class Name="LevelConfig" Collapsed="true">
+    <Position X="21.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AEQIACEAAAAAAAAABCAAAEAAAAgAAAEEAAAQAAAAABA=</HashCode>
       <FileName>game\Level.h</FileName>
@@ -77,15 +77,15 @@
       <FileName>game\Level.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Level">
-    <Position X="17.75" Y="5" Width="1.5" />
+  <Class Name="Level" Collapsed="true">
+    <Position X="19.75" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAACAAEAAAAAAAAAAAAAAAAAgAAAAQABAAQBAABAAAA=</HashCode>
       <FileName>game\Level.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Goal">
-    <Position X="15" Y="0.5" Width="1.75" />
+    <Position X="14.75" Y="0.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>IQIAAAQAAAAAAAAACAAAAAAAAAEAAAAAABAAAAAAAAA=</HashCode>
       <FileName>game\Level.h</FileName>
@@ -113,21 +113,21 @@
     </TypeIdentifier>
   </Class>
   <Class Name="LevelProcessor">
-    <Position X="12.5" Y="14.25" Width="1.75" />
+    <Position X="6.5" Y="16.75" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAUCAAQIAAIAIAAgAgAAQgAACAEAABAAAAIAAAAAAAA=</HashCode>
+      <HashCode>CAUCAAQIAAIAIAAgQgACQgAACAEAABAAAAIAAAAAAAA=</HashCode>
       <FileName>game\Processor.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ITerrain">
-    <Position X="7.5" Y="13.5" Width="2.75" />
+    <Position X="9.5" Y="15.5" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AACQYIAAEgEAAAAAAAAAhAkABAACAAAACGAAAAAAADA=</HashCode>
       <FileName>game\Terrain.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="BoxStackTerrain" Collapsed="true">
-    <Position X="8" Y="18.75" Width="1.5" />
+    <Position X="10" Y="20.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AACQYAAAEAAAAAAAAAAAhAEAAAIAEAAEACAAAAAAABA=</HashCode>
       <FileName>game\Terrain.h</FileName>
@@ -183,7 +183,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="EntityRenderer" Collapsed="true">
-    <Position X="12" Y="6.75" Width="1.5" />
+    <Position X="12.25" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAABAAAAAAAAAAAAAAIAAAAIAgAQAAAABAAAAEAAA=</HashCode>
       <FileName>game\Objects.h</FileName>
@@ -218,14 +218,14 @@
     </TypeIdentifier>
   </Class>
   <Class Name="ArrowRenderer" Collapsed="true">
-    <Position X="12" Y="8.25" Width="1.5" />
+    <Position X="12.25" Y="8.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAIAAAEAAAAAAAAAUAAA=</HashCode>
       <FileName>game\Objects.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ItemRenderer" Collapsed="true">
-    <Position X="13.75" Y="8.25" Width="1.5" />
+    <Position X="14.5" Y="8.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAIABAAAAAAAAAAAUAAA=</HashCode>
       <FileName>game\Objects.h</FileName>
@@ -325,7 +325,7 @@
   <Class Name="TextPrinter" Collapsed="true">
     <Position X="23.25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ABQAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAg=</HashCode>
+      <HashCode>ABQAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAIAAg=</HashCode>
       <FileName>driver\UI.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -351,7 +351,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="WorkerThread">
-    <Position X="10.5" Y="14.25" Width="1.5" />
+    <Position X="6.5" Y="13.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>EACAAAAIAAAAAABgAAAAQAAAAAAgAAAAAAAABAAAAAA=</HashCode>
       <FileName>utils\Threading.h</FileName>
@@ -388,7 +388,7 @@
   <Struct Name="SceneInstruction" Collapsed="true">
     <Position X="23.25" Y="5.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAIEAAAAIAAAAAAAAgAAAAAAAAAAAQCBAIAAAAAAAQA=</HashCode>
+      <HashCode>AAIEAAAAIAAAAAAAAgIAAAAAAAAAAQCBAIAAAAAAAQA=</HashCode>
       <FileName>game\Instructions.h</FileName>
     </TypeIdentifier>
   </Struct>

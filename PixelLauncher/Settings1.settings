@@ -3,10 +3,10 @@
   <Profiles />
   <Settings>
     <Setting Name="GameExecutablePath" Type="System.String" Scope="User">
-      <Value Profile="(Default)">../../../../x64/Debug/ProjectPixel.exe</Value>
+      <Value Profile="(Default)">ProjectPixel.exe</Value>
     </Setting>
     <Setting Name="GameWorkingDirectory" Type="System.String" Scope="User">
-      <Value Profile="(Default)">../../../../ProjectPixel</Value>
+      <Value Profile="(Default)">.</Value>
     </Setting>
   </Settings>
 </SettingsFile>

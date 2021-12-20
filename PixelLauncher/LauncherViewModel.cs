@@ -67,23 +67,32 @@ namespace PixelLauncher
                 if (level == null) return;
                 Task.Run(() =>
                 {
-                    var game = new Process();
-                    game.StartInfo.FileName = GameExecutablePath;
-                    game.StartInfo.WorkingDirectory = GameWorkingDirectory;
-                    game.StartInfo.Arguments = level.Path;
-                    game.StartInfo.CreateNoWindow = true;
-                    uiThread.Invoke(() => IsGameRunning = true);
-                    game.Start();
-                    game.WaitForExit();
-                    uiThread.Invoke(() => IsGameRunning = false);
+                    try
+                    {
+                        var game = new Process();
+                        game.StartInfo.FileName = GameExecutablePath;
+                        game.StartInfo.WorkingDirectory = GameWorkingDirectory;
+                        game.StartInfo.Arguments = level.Path;
+                        game.StartInfo.CreateNoWindow = true;
+                        uiThread.Invoke(() => IsGameRunning = true);
+                        game.Start();
+                        game.WaitForExit();
+                        uiThread.Invoke(() => IsGameRunning = false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex.Message);
+                    }
                 });
             }, () => !isGameRunning && selectedLevel != null);
 
             LoadLevelsCommand = new CommandHandler(() =>
             {
                 SelectedLevel = null;
-                Levels.Clear();      
-                var levelFiles = Directory.EnumerateFiles(System.IO.Path.Combine(gameWorkingDirectory, "levels"), "*.json");
+                Levels.Clear();
+                var levelsPath = System.IO.Path.Combine(gameWorkingDirectory, "levels");
+                if (!Directory.Exists(levelsPath)) return;
+                var levelFiles = Directory.EnumerateFiles(levelsPath, "*.json");
                 foreach (var levelFile in levelFiles)
                 {
                     try
