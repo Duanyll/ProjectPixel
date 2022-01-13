@@ -3,6 +3,7 @@
 
 #include "../game/Instructions.h"
 #include "../utils/Geomentry.h"
+#include "../driver/Flags.h"
 
 FullScreenQuad::FullScreenQuad(pTexture texture) : texture(texture) {}
 
@@ -10,15 +11,12 @@ FullScreenQuad::FullScreenQuad(const std::string& str)
     : texture(AssetsHub::get_texture_2d(str)) {}
 
 void FullScreenQuad::render() {
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    DepthTest d(false);
+    Blend b(true);
     auto shader = AssetsHub::get_shader<QuadShader>();
     auto vao = AssetsHub::get_vao("quad");
     shader->configure(texture);
     vao->draw();
-    glDisable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
 }
 
 Skybox::Skybox(pCubeTexture texture) : texture(texture) {}
@@ -26,12 +24,11 @@ Skybox::Skybox(pCubeTexture texture) : texture(texture) {}
 Skybox::Skybox(const std::string& str) : texture(AssetsHub::get_skybox(str)) {}
 
 void Skybox::render() {
-    glDepthFunc(GL_LEQUAL);
+    DepthFunc f(GL_LEQUAL);
     auto shader = AssetsHub::get_shader<SkyboxShader>();
     auto vao = AssetsHub::get_vao("skybox");
     shader->configure(texture);
     vao->draw();
-    glDepthFunc(GL_LESS);
 }
 
 glm::mat4 EntityRenderer::get_model() {

@@ -2,6 +2,7 @@
 #include "UI.h"
 #include "../utils/Window.h"
 #include "Uniform.h"
+#include "Flags.h"
 
 TextPrinter::TextPrinter(const std::string& font_path) {
     // FreeType
@@ -60,9 +61,9 @@ TextPrinter::TextPrinter(const std::string& font_path) {
 
 void TextPrinter::print(const std::string& text, GLfloat x, GLfloat y,
                         GLfloat scale, glm::vec3 color) {
-    glEnable(GL_BLEND);
+    DepthTest d(false);
+    Blend b(true);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDisable(GL_DEPTH_TEST);
 
     auto shader = AssetsHub::get_shader<TextShader>();
     shader->configure(color);
@@ -102,9 +103,6 @@ void TextPrinter::print(const std::string& text, GLfloat x, GLfloat y,
              scale;  // Bitshift by 6 to get value in pixels (2^6 = 64 (divide
                      // amount of 1/64th pixels by 64 to get amount of pixels))
     }
-
-    glDisable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
 }
 
 float TextPrinter::get_text_width(const std::string& text, float scale) {
@@ -174,9 +172,8 @@ float UI::get_text_width(const std::string& text, float scale) {
 
 void UI::print_image2d(pTexture texture, GLfloat xpos, GLfloat ypos, GLfloat w,
                        GLfloat h) {
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDisable(GL_DEPTH_TEST);
+    DepthTest d(false);
+    Blend b(true);
     auto shader = AssetsHub::get_shader<HUDShader>();
     shader->configure(texture);
     // clang-format off
@@ -193,8 +190,6 @@ void UI::print_image2d(pTexture texture, GLfloat xpos, GLfloat ypos, GLfloat w,
     imageVAO->update_vbo(reinterpret_cast<float*>(vertices), 0, sizeof(vertices));
     // Render quad
     imageVAO->draw();
-    glDisable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
 }
 
 void UI::print_logs() {

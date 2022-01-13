@@ -4,6 +4,7 @@
 #include "../utils/Utils.h"
 #include "../utils/Geomentry.h"
 #include "../driver/UI.h"
+#include "../driver/Flags.h"
 
 Game::Game(LevelConfig& config)
     : config(config),
@@ -112,7 +113,7 @@ void Game::start() {
 
 void Game::render() {
     update();
-
+    DepthTest d(true);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     auto it = entities.find("player1");

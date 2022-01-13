@@ -7,6 +7,7 @@
 #include "utils/FrameTimer.h"
 
 #include "driver/UI.h"
+#include "driver/Flags.h"
 #include "game/Level.h"
 #include "game/Game.h"
 
@@ -37,7 +38,7 @@ int main(int argc, char** argv) {
             {GLFW_KEY_C, {"heal", KeyMode::Toggle}},
             {GLFW_KEY_1, {"slot-1", KeyMode::KeyDown}},
             {GLFW_KEY_2, {"slot-2", KeyMode::KeyDown}},
-            {GLFW_KEY_3, {"slot-3", KeyMode::KeyDown}},
+            {GLFW_KEY_3, {"slot-3", KeyMode::KeyDown}},  
         });
     }
     Window::register_command("exit", [](float _) {
@@ -54,6 +55,7 @@ int main(int argc, char** argv) {
 
     game->start();
     FrameTimer::begin_frame_stats();
+    Viewport v(Window::width, Window::height);
     while (!glfwWindowShouldClose(Window::handle)) {
         Window::process_keys();
 
@@ -61,8 +63,6 @@ int main(int argc, char** argv) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         screen->draw_inside([&]() -> void { game->render(); });
-
-        glViewport(0, 0, Window::width, Window::height);
         quad.render();
 
         UI::print_logs();

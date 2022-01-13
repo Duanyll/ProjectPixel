@@ -3,6 +3,8 @@
 
 #include "AssetsHub.h"
 
+#include "Flags.h"
+
 Texture::Texture(const std::string& filePath, bool flipped) {
     stbi_set_flip_vertically_on_load(flipped);
     glGenTextures(1, &id);
@@ -113,9 +115,10 @@ FrameBufferTexture::~FrameBufferTexture() {
 
 void FrameBufferTexture::draw_inside(std::function<void()> draw) {
     glBindFramebuffer(GL_FRAMEBUFFER, bufferId);
-    glViewport(0, 0, width, height);
-
-    draw();
+    {
+        Viewport v(width, height);
+        draw();
+    }
 
     // now bind back to default framebuffer and draw a quad plane with the
     // attached framebuffer color texture
@@ -140,10 +143,10 @@ void TextureMatrix::load(const std::vector<pTexture>& subTextures) {
     auto vao = std::make_shared<VAO>();
     vao->load_interleave_vbo(nullptr, 24 * sizeof(float), {2, 2});
     draw_inside([&]() -> void {
-        glDisable(GL_DEPTH_TEST);
+        DepthTest _(false);
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);s
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         for (int i = 0; i < subTextures.size(); i++) {
             auto p = query_position(i);
@@ -161,7 +164,6 @@ void TextureMatrix::load(const std::vector<pTexture>& subTextures) {
             vao->draw();
         }
         // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        glEnable(GL_DEPTH_TEST);
     });
 }
 

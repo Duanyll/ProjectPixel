@@ -158,6 +158,9 @@
     <ClInclude Include="game\HUD.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="driver\Flags.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />

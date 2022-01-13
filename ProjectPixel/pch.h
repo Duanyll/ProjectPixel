@@ -44,5 +44,6 @@ using json = nlohmann::json;
 #include <thread>
 #include <mutex>
 #include <random>
+#include <stack>
 
 #endif //PCH_H

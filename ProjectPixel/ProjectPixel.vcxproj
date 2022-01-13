@@ -185,6 +185,7 @@
     <ClCompile Include="utils\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="driver\Flags.h" />
     <ClInclude Include="game\Entity.h" />
     <ClInclude Include="game\Game.h" />
     <ClInclude Include="game\HUD.h" />
