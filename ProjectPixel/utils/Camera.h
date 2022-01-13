@@ -15,7 +15,7 @@ class Camera {
     glm::mat4 get_view();
     glm::mat4 get_projection();
 
-    void apply_uniform();
+    void apply();
 
     glm::vec3 up = glm::vec3(0.0, 1.0, 0.0);
    protected:

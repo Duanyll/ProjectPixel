@@ -40,9 +40,12 @@ class FrameBufferTexture : public Texture {
     inline virtual GLenum get_type() const { return GL_TEXTURE_2D; }
 
     GLuint rbo = 0;
-    GLuint bufferId = 0;
+    GLuint fbo = 0;
 
     void draw_inside(std::function<void()> draw);
+
+   protected:
+    inline FrameBufferTexture() {}
 };
 
 class TextureMatrix : public FrameBufferTexture {
@@ -57,3 +60,9 @@ class TextureMatrix : public FrameBufferTexture {
     */
     std::vector<glm::vec2> query_position(int subId);
 };
+
+class DepthMap : public FrameBufferTexture {
+   public:
+    DepthMap(int width, int height);
+};
+typedef std::shared_ptr<DepthMap> pDepthMap;

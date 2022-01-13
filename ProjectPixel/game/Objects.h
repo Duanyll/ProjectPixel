@@ -7,6 +7,7 @@
 class RenderObject {
    public:
     virtual void render() = 0;
+    virtual void render_depth() {}
 };
 
 class FullScreenQuad : public RenderObject {
@@ -78,6 +79,7 @@ class Paperman : public EntityRenderer {
 
     void step(float time);
     void render();
+    void render_depth();
 
     void update(EntityInstruction& instruction);
     void set_leg_action(LegAction action);
@@ -115,6 +117,7 @@ class ArrowRenderer : public EntityRenderer {
     glm::mat4 get_model();
 
     void render();
+    void render_depth();
     void update(EntityInstruction& i);
 
    private:
@@ -126,6 +129,7 @@ class ItemRenderer : public EntityRenderer {
     glm::mat4 get_model();
 
     void render();
+    void render_depth();
     void update(EntityInstruction& i);
 
     ItemType type;

@@ -74,6 +74,7 @@ class TerrainRenderer : public RenderObject {
     TerrainRenderer(pTerrain terrain);
 
     void render();
+    void render_depth();
 
     Material material;
 

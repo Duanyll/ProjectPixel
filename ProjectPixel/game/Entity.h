@@ -59,7 +59,10 @@ class MobEntity : public Entity {
     virtual bool hurt(int hits, HurtType type, std::string sender);
     virtual void jump();
 
-    inline virtual void on_die() { level.goal->on_mob_die(get_type()); };
+    inline virtual void on_die() {
+        level.goal->on_mob_die(get_type());
+        rotationSpeed = 0;
+    };
 };
 
 class Player : public MobEntity {

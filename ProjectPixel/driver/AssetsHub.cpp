@@ -19,6 +19,7 @@ void AssetsHub::load_all() {
     register_shader<SkyboxShader>();
     register_shader<EntityShader>();
     register_shader<HUDShader>();
+    register_shader<DepthShader>();
 
     vaoStore["quad"] = load_quad_vao();
     vaoStore["box"] = load_box_vao();

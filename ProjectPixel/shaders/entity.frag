@@ -16,6 +16,8 @@ struct DirLight {
 
     vec3 diffuse;
     vec3 specular;
+
+    mat4 lightSpace;
 };  
 
 struct PointLight {
@@ -42,6 +44,8 @@ struct SpotLight {
 
     vec3 diffuse;
     vec3 specular;
+
+    mat4 lightSpace;
 };
 
 #define NR_POINT_LIGHTS 4
@@ -54,6 +58,8 @@ uniform Lights {
     SpotLight spotLight;
     vec3 ambientLight;
 };
+uniform sampler2D dirLightDepth;
+uniform sampler2D spotLightDepth;
 
 uniform Camera {
     mat4 projection;
@@ -65,11 +71,33 @@ in VS_OUT {
     vec3 FragPos;
     vec3 Normal;
     vec2 TexCoord;
+    vec3 FragPosDirLight;
+    vec3 FragPosSpotLight;
 };
 
 out vec4 FragColor;
 
+float CalcDirLightShadow() {
+    float currentDepth = FragPosDirLight.z;
+    if (currentDepth >= 1.0) return 1.0;
+    float shadow = 0.0;
+    float eps = 0.003;
+    vec2 texelSize = 1.0 / textureSize(dirLightDepth, 0);
+    for(int x = -1; x <= 1; x++)
+    {
+        for(int y = -1; y <= 1; y++)
+        {
+            float pcfDepth = texture(dirLightDepth, FragPosDirLight.xy + vec2(x, y) * texelSize).r; 
+            shadow += currentDepth - eps > pcfDepth ? 1.0 : 0.0;        
+        }    
+    }   
+    shadow /= 9.0;
+    return 1 - shadow;
+}
+
 vec3 CalcDirLight(DirLight light) {
+    float shadow = CalcDirLightShadow();
+    if (shadow <= 0.0) return vec3(0.0, 0.0, 0.0); 
     vec3 lightDir = normalize(-light.direction);
     // 漫反射着色
     float diff = max(dot(normal, lightDir), 0.0);
@@ -79,7 +107,7 @@ vec3 CalcDirLight(DirLight light) {
     // 合并结果
     vec3 diffuse  = light.diffuse  * diff * diffuseCol;
     vec3 specular = light.specular * spec * specularCol;
-    return (diffuse + specular);
+    return (diffuse + specular) * shadow;
 }
 
 vec3 CalcPointLight(PointLight light) {
@@ -101,7 +129,27 @@ vec3 CalcPointLight(PointLight light) {
     return (diffuse + specular);
 }
 
+float CalcSpotLightShadow() {
+    float currentDepth = FragPosSpotLight.z;
+    if (currentDepth >= 1.0) return 0.0;
+    float shadow = 0.0;
+    float eps = 0.005;
+    vec2 texelSize = 1.0 / textureSize(spotLightDepth, 0);
+    for(int x = -1; x <= 1; x++)
+    {
+        for(int y = -1; y <= 1; y++)
+        {
+            float pcfDepth = texture(spotLightDepth, FragPosSpotLight.xy + vec2(x, y) * texelSize).r; 
+            shadow += currentDepth - eps > pcfDepth ? 1.0 : 0.0;        
+        }    
+    }   
+    shadow /= 9.0;
+    return 1 - shadow;
+}
+
 vec3 CalcSpotLight(SpotLight light) {
+    float shadow = CalcSpotLightShadow();
+    if (shadow <= 0.0) return vec3(0.0, 0.0, 0.0); 
     vec3 lightDir = normalize(light.position - FragPos);
     // 漫反射着色
     float diff = max(dot(normal, lightDir), 0.0);
@@ -120,7 +168,7 @@ vec3 CalcSpotLight(SpotLight light) {
     vec3 specular = light.specular * spec * specularCol;
     diffuse  *= attenuation * intensity;
     specular *= attenuation * intensity;
-    return (diffuse + specular);
+    return (diffuse + specular) * shadow;
 }
 
 void main() {

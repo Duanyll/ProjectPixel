@@ -79,6 +79,7 @@ class EntityShader : public ShaderProgram {
    private:
     GLint diffuse_pos, specular_pos, emission_pos, shininess_pos;
     GLint model_pos, normal_pos;
+    GLint dirLightDepth_pos, spotLightDepth_pos;
 };
 
 class HUDShader : public ShaderProgram {
@@ -90,4 +91,15 @@ class HUDShader : public ShaderProgram {
 
    private:
     GLint img_pos;
+};
+
+class DepthShader : public ShaderProgram {
+   public:
+    DepthShader();
+    void configure(glm::mat4 model);
+
+    const static int storeId = 6;
+
+   private:
+    GLint model_pos;
 };

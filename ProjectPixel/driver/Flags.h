@@ -71,7 +71,31 @@ class DepthFunc {
     }
 
     ~DepthFunc() {
-        bool last = funcStack.top();
+        GLenum last = funcStack.top();
+        funcStack.pop();
+        set_state(last);
+    }
+};
+
+class FrameBuffer {
+    inline static std::stack<GLint> funcStack;
+    inline static GLint currentState = 0;
+    void set_state(GLint newState) {
+        if (currentState != newState) {
+            glBindFramebuffer(GL_FRAMEBUFFER, newState);
+        }
+        currentState = newState;
+    }
+
+   public:
+    NO_COPY_CLASS(FrameBuffer);
+    FrameBuffer(GLint id) {
+        funcStack.push(currentState);
+        set_state(id);
+    }
+
+    ~FrameBuffer() {
+        GLint last = funcStack.top();
         funcStack.pop();
         set_state(last);
     }

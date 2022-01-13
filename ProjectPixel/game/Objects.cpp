@@ -115,6 +115,46 @@ void Paperman::render() {
     }
 }
 
+void Paperman::render_depth() {
+    auto headVAO = AssetsHub::get_vao("paperman-head");
+    auto bodyVAO = AssetsHub::get_vao("paperman-body");
+    auto larmVAO =
+        AssetsHub::get_vao(isSlim ? "paperman-larm-slim" : "paperman-larm");
+    auto rarmVAO =
+        AssetsHub::get_vao(isSlim ? "paperman-rarm-slim" : "paperman-rarm");
+    auto llegVAO = AssetsHub::get_vao("paperman-lleg");
+    auto rlegVAO = AssetsHub::get_vao("paperman-rleg");
+
+    auto baseModel = get_model();
+    auto shader = AssetsHub::get_shader<DepthShader>();
+
+    shader->configure(baseModel * get_head_model());
+    headVAO->draw();
+
+    shader->configure(baseModel * get_body_model());
+    bodyVAO->draw();
+
+    shader->configure(baseModel * get_larm_model());
+    larmVAO->draw();
+
+    shader->configure(baseModel * get_rarm_model());
+    rarmVAO->draw();
+
+    shader->configure(baseModel * get_lleg_model());
+    llegVAO->draw();
+
+    shader->configure(baseModel * get_rleg_model());
+    rlegVAO->draw();
+
+    if (handItem != ItemType::None) {
+        pVAO itemVAO;
+        Material itemMaterial;
+        get_item_resources(handItem, itemVAO, itemMaterial);
+        shader->configure(baseModel * get_item_model());
+        itemVAO->draw();
+    }
+}
+
 void Paperman::update(EntityInstruction& i) {
     EntityRenderer::update(i);
 
@@ -397,6 +437,13 @@ void ArrowRenderer::render() {
     vao->draw();
 }
 
+void ArrowRenderer::render_depth() {
+    auto shader = AssetsHub::get_shader<DepthShader>();
+    auto vao = AssetsHub::get_vao("arrow");
+    shader->configure(get_model());
+    vao->draw();
+}
+
 void ArrowRenderer::update(EntityInstruction& i) {
     EntityRenderer::update(i);
     if (glm::length(speed) != 0) {
@@ -421,6 +468,14 @@ void ItemRenderer::render() {
     auto shader = AssetsHub::get_shader<EntityShader>();
     auto vao = AssetsHub::get_vao(resid);
     shader->configure(AssetsHub::get_material(resid), get_model());
+    vao->draw();
+}
+
+void ItemRenderer::render_depth() {
+    std::string resid = AssetsHub::get_item_resid(type);
+    auto shader = AssetsHub::get_shader<DepthShader>();
+    auto vao = AssetsHub::get_vao(resid);
+    shader->configure(get_model());
     vao->draw();
 }
 

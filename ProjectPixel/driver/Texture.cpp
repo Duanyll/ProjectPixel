@@ -78,8 +78,8 @@ FrameBufferTexture::FrameBufferTexture(int width, int height,
     this->channels = 4;
     // framebuffer configuration
     // -------------------------
-    glGenFramebuffers(1, &bufferId);
-    glBindFramebuffer(GL_FRAMEBUFFER, bufferId);
+    glGenFramebuffers(1, &fbo);
+    FrameBuffer b(fbo);
     // create a color attachment texture
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);
@@ -105,24 +105,17 @@ FrameBufferTexture::FrameBufferTexture(int width, int height,
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!"
                   << std::endl;
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 FrameBufferTexture::~FrameBufferTexture() {
-    glDeleteRenderbuffers(1, &rbo);
-    glDeleteFramebuffers(1, &bufferId);
+    if (rbo != 0) glDeleteRenderbuffers(1, &rbo);
+    if (fbo != 0) glDeleteFramebuffers(1, &fbo);
 }
 
 void FrameBufferTexture::draw_inside(std::function<void()> draw) {
-    glBindFramebuffer(GL_FRAMEBUFFER, bufferId);
-    {
-        Viewport v(width, height);
-        draw();
-    }
-
-    // now bind back to default framebuffer and draw a quad plane with the
-    // attached framebuffer color texture
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    FrameBuffer b(fbo);
+    Viewport v(width, height);
+    draw();
 }
 
 TextureMatrix::TextureMatrix(int subWidth, int subHeight, int column, int row,
@@ -176,4 +169,29 @@ std::vector<glm::vec2> TextureMatrix::query_position(int subId) {
         {float(c + 1) / column, float(r + 1) / row},
         {float(c) / column, float(r + 1) / row},
     };
+}
+
+DepthMap::DepthMap(int width, int height) {
+    this->width = width;
+    this->height = height;
+    channels = 1;
+
+    glGenFramebuffers(1, &fbo);
+    FrameBuffer b(fbo);
+
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0,
+                 GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    GLfloat borderColor[] = {1.0, 1.0, 1.0, 1.0};
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+                           id, 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
 }

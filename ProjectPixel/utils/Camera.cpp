@@ -13,7 +13,7 @@ glm::mat4 Camera::get_projection() {
         glm::radians(fov), (float)Window::width / Window::height, 0.1f, 100.0f);
 }
 
-void Camera::apply_uniform() {
+void Camera::apply() {
     Uniform::set_data("Camera", "view", get_view());
     Uniform::set_data("Camera", "projection", get_projection());
     Uniform::set_data("Camera", "viewPos", pos);

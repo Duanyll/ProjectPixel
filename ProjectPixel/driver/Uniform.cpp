@@ -48,7 +48,8 @@ void Uniform::init_members() {
             uniformBlockMembers[blockName].push_back(pre + i);
         }
     };
-    prefix("Lights", "dirLight.", {"direction", "diffuse", "specular"});
+    prefix("Lights", "dirLight.",
+           {"direction", "diffuse", "specular", "lightSpace"});
     for (int i = 0; i < 4; i++) {
         prefix("Lights", std::format("pointLights[{}].", i),
                {"position", "constant", "linear", "quadratic", "diffuse",
@@ -56,8 +57,9 @@ void Uniform::init_members() {
     }
     prefix("Lights", "spotLight.",
            {"position", "direction", "cutOff", "outerCutOff", "constant",
-            "linear", "quadratic", "diffuse", "specular"});
+            "linear", "quadratic", "diffuse", "specular", "lightSpace"});
     uniformBlockMembers["Screen"] = {"projection2d"};
+    uniformBlockMembers["LightSpace"] = {"view", "projection", "viewPos"};
 }
 
 void Uniform::bind_block(GLuint programId, const std::string& blockName) {

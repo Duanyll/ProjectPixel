@@ -24,9 +24,9 @@ class UBO {
 
     template<>
     void set_data(const std::string& member, bool data) {
-        int to_int = data;
+        GLuint to_int = data;
         glBindBuffer(GL_UNIFORM_BUFFER, id);
-        glBufferSubData(GL_UNIFORM_BUFFER, memberOffsets[member], sizeof(int),
+        glBufferSubData(GL_UNIFORM_BUFFER, memberOffsets[member], sizeof(to_int),
                         &to_int);
     }
 };

@@ -104,9 +104,15 @@ void Game::apply_to_window() {
 }
 
 void Game::start() {
-    dirLight.apply();
-    DirLight::set_ambient({0.3, 0.3, 0.3});
-    PointLight::set_active_count(0);
+    Lights.dirLight.isActive = true;
+    Lights.dirLight.direction = {0.3f, -0.6f, 1.0f};
+    Lights.dirLight.diffuse = {0.6, 0.6, 0.5};
+    Lights.dirLight.init_depth_map();
+    Lights.pointLights[0].diffuse = {0.3, 0.3, 0.3};
+    Lights.pointLights[0].specular = {0.1, 0.1, 0.1};
+    Lights.spotLight.cutOff = 45;
+    Lights.spotLight.outerCutOff = 50;
+    Lights.spotLight.init_depth_map();
     updateTime = std::chrono::steady_clock::now();
     processor.start();
 }
@@ -114,17 +120,48 @@ void Game::start() {
 void Game::render() {
     update();
     DepthTest d(true);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     auto it = entities.find("player1");
     if (it != entities.end()) {
         auto player = it->second;
         camera.set_entity_position(it->second->position);
-        spotLight.position = player->position + glm::vec3{0, 1, 0};
-        spotLight.direction = angle_to_front(player->facing);
+
+        Lights.dirLight.focus = player->position;
+
+        Lights.spotLight.isActive = true;
+        Lights.spotLight.position = player->position + glm::vec3{0, 1, 0};
+        Lights.spotLight.direction = angle_to_front(player->facing);
+
+        Lights.pointLightCount = 1;
+        Lights.pointLights[0].position = player->position + glm::vec3{0, 1.5, 0};
+    } else {
+        Lights.spotLight.isActive = false;
+        Lights.pointLightCount = 0;
     }
-    camera.apply_uniform();
-    spotLight.apply();
+
+    Lights.dirLight.render_depth([&]() -> void {
+        glClear(GL_DEPTH_BUFFER_BIT);
+        for (auto& i : entities) {
+            i.second->render_depth();
+        }
+
+        terrainRenderer.render_depth();
+    });
+
+    Lights.spotLight.render_depth([&]() -> void {
+        glClear(GL_DEPTH_BUFFER_BIT);
+        for (auto& i : entities) {
+            if (i.first == "player1") continue;
+            i.second->render_depth();
+        }
+
+        terrainRenderer.render_depth();
+    });
+
+    camera.apply();
+    Lights.apply();
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (auto& i : entities) {
         i.second->render();

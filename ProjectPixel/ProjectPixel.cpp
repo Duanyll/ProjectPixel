@@ -55,7 +55,6 @@ int main(int argc, char** argv) {
 
     game->start();
     FrameTimer::begin_frame_stats();
-    Viewport v(Window::width, Window::height);
     while (!glfwWindowShouldClose(Window::handle)) {
         Window::process_keys();
 
@@ -63,6 +62,7 @@ int main(int argc, char** argv) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         screen->draw_inside([&]() -> void { game->render(); });
+        Viewport v(Window::width, Window::height);
         quad.render();
 
         UI::print_logs();

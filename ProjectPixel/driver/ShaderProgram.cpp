@@ -2,6 +2,7 @@
 #include "ShaderProgram.h"
 
 #include "Uniform.h"
+#include "Light.h"
 
 #include <fstream>
 #include <sstream>
@@ -185,6 +186,8 @@ EntityShader::EntityShader() {
     shininess_pos = glGetUniformLocation(id, "material.shininess");
     model_pos = glGetUniformLocation(id, "model");
     normal_pos = glGetUniformLocation(id, "normal");
+    dirLightDepth_pos = glGetUniformLocation(id, "dirLightDepth");
+    spotLightDepth_pos = glGetUniformLocation(id, "spotLightDepth");
 }
 
 void EntityShader::configure(const Material& material, glm::mat4 model) {
@@ -192,6 +195,8 @@ void EntityShader::configure(const Material& material, glm::mat4 model) {
     bind_texture(diffuse_pos, 0, material.diffuse);
     bind_texture(specular_pos, 1, material.specular);
     bind_texture(emission_pos, 2, material.emission);
+    bind_texture(dirLightDepth_pos, 3, Lights.dirLight.depthMap);
+    bind_texture(spotLightDepth_pos, 4, Lights.spotLight.depthMap);
     glUniform1f(shininess_pos, material.shininess);
     glUniformMatrix4fv(model_pos, 1, false, glm::value_ptr(model));
     glUniformMatrix3fv(
@@ -209,4 +214,16 @@ HUDShader::HUDShader() {
 void HUDShader::configure(pTexture img) {
     use();
     bind_texture(img_pos, 0, img);
+}
+
+DepthShader::DepthShader() {
+    compile_from_file("shaders/depth.vert", "shaders/depth.frag");
+    use();
+    Uniform::bind_block(id, "LightSpace");
+    model_pos = glGetUniformLocation(id, "model");
+}
+
+void DepthShader::configure(glm::mat4 model) {
+    use();
+    glUniformMatrix4fv(model_pos, 1, false, glm::value_ptr(model));
 }

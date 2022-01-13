@@ -144,6 +144,12 @@ void TerrainRenderer::render() {
     vao->draw();
 }
 
+void TerrainRenderer::render_depth() {
+    auto shader = AssetsHub::get_shader<DepthShader>();
+    shader->configure(glm::mat4());
+    vao->draw();
+}
+
 bool ITerrain::test_point_intersection(glm::vec3 point) {
     std::vector<TileBoundingBox> boxes;
     get_bounding_boxes(point, boxes);
