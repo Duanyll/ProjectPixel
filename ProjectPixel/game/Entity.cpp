@@ -88,6 +88,7 @@ void MobEntity::tick(float time) {
             ticksToRemove--;
         } else {
             destroyFlag = true;
+            level.particles.push_back({ParticleType::Death, pos, {0, 1, 0}});
             return;
         }
     }
@@ -159,6 +160,9 @@ void Entity::clip_speed() {
         speed.y = 0;
     }
     if ((clipping & BoxClipping::NegY) && speed.y < 0) {
+        if (speed.y < -8) {
+            level.particles.push_back({ParticleType::Fall, pos, {0, 0, 0}});
+        }
         speed.y = 0;
     }
     if ((clipping & BoxClipping::PosZ) && speed.z > 0) {
@@ -174,6 +178,11 @@ void MobEntity::jump() {
         speed.y = 6;
         ticksToJump = 5;
     }
+}
+
+void MobEntity::on_die() {
+    level.goal->on_mob_die(get_type());
+    rotationSpeed = 0;
 }
 
 void Player::tick(float time) {
@@ -229,24 +238,28 @@ void Player::attack() {
             }
         }
         if (target) {
-            float baseHurt, baseHitback = 5;
+            float hurtVal, hitbackVal = 5;
             if (weapon == ItemType::DiamondSword) {
-                baseHurt = 4;
+                hurtVal = 4;
             } else if (weapon == ItemType::DiamondAxe) {
-                baseHurt = 7;
+                hurtVal = 7;
             } else {
-                baseHurt = 2;
+                hurtVal = 2;
             }
             if (!isAiming) {
-                baseHurt *= 0.8;
-                baseHitback *= 0.8;
+                hurtVal *= 0.8;
+                hitbackVal *= 0.8;
             }
             if (speed.y < 0 || isRunning) {
-                baseHurt *= 1.5;
-                baseHitback *= 1.2;
+                hurtVal *= 1.5;
+                hitbackVal *= 1.2;
             }
-            if (target->hurt(baseHurt, HurtType::Melee, id)) {
-                target->hitback(pos, baseHitback);
+            if (target->hurt(hurtVal, HurtType::Melee, id)) {
+                if (hurtVal > 6) {
+                    level.particles.push_back(
+                        {ParticleType::Crit, target->pos, target->pos - pos});
+                }
+                target->hitback(pos, hitbackVal);
             }
         }
     }
@@ -264,6 +277,8 @@ void Player::sweep() {
             auto cur = abs(horizonal_angle(get_front(), e->pos - pos));
             if (cur < minAngle) {
                 if (e->hurt(3, HurtType::Sweep, id)) {
+                    level.particles.push_back(
+                        {ParticleType::Crit, e->pos, e->pos - pos});
                     e->hitback(pos, 5.5);
                 }
             }
@@ -300,6 +315,7 @@ void Player::handle_heal_input(bool hold) {
         if (ticksHealHold < 20) {
             isHealing = true;
         } else if (ticksHealHold == 20) {
+            level.particles.push_back({ParticleType::Heal, pos, {0, 1, 0}});
             hp = std::min(hp + 10, 50);
             inventory[ItemType::LifePotion] -= 1;
             isHealing = false;
@@ -503,11 +519,18 @@ void Arrow::tick(float time) {
         }
 
         if (target) {
-            target->hurt(3 + 0.2 * glm::length(speed), HurtType::Arrow, sender);
-            target->hitback(target->pos - speed, 0.4 * glm::length(speed));
+            float hurtVal = 3 + 0.2 * glm::length(speed);
+            if (target->hurt(hurtVal, HurtType::Arrow,
+                             sender)) {
+                if (hurtVal > 6) {
+                    level.particles.push_back(
+                        {ParticleType::Crit, target->pos, speed});
+                }
+                target->hitback(target->pos - speed, 0.4 * glm::length(speed));
+            }
             destroyFlag = true;
-            return;
         }
+        return;
     } else if (canPickUp) {
         const auto player = level.player;
         auto dis = glm::length(player->pos - pos);

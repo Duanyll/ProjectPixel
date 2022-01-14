@@ -4,6 +4,7 @@
 #include "../utils/Utils.h"
 
 enum class LegAction : char { Standing, Walking, Running, Lying };
+
 enum class HandAction : char {
     None,
     ZombieHanging,
@@ -12,6 +13,7 @@ enum class HandAction : char {
     ZombieAttacking,
     Sweeping
 };
+
 enum class ItemType : char {
     None,
     DiamondSword,
@@ -19,6 +21,14 @@ enum class ItemType : char {
     Bow,
     LifePotion,
     Arrow
+};
+
+enum class ParticleType {
+    None,
+    Crit,
+    Fall,
+    Death,
+    Heal
 };
 
 struct EntityInstruction {
@@ -29,10 +39,16 @@ struct EntityInstruction {
     float facing, rotationSpeed;
 };
 
+struct ParticleInstruction {
+    ParticleType type;
+    glm::vec3 pos, dir;
+};
+
 struct SceneInstruction {
     TimeStamp creationTime;
     std::vector<EntityInstruction> entities;
     std::vector<std::string> deletedEntities;
+    std::vector<ParticleInstruction> particles;
 
     int playerHP = 0;
     ItemType playerWeapon = ItemType::None;

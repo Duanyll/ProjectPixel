@@ -75,6 +75,9 @@
     <ClCompile Include="game\HUD.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="game\Particle.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -159,6 +162,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="driver\Flags.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="game\Particle.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,6 +6,7 @@
 #include "Processor.h"
 #include "Objects.h"
 #include "HUD.h"
+#include "Particle.h"
 #include "../driver/AssetsHub.h"
 #include "../utils/Utils.h"
 #include "../utils/Window.h"
@@ -23,11 +24,11 @@ class Game {
     void stop();
 
    protected:
-
     ThirdPersonCamera camera;
     TerrainRenderer terrainRenderer;
     Skybox skybox;
     std::unordered_map<std::string, std::shared_ptr<EntityRenderer>> entities;
+    ParticleManager particles;
     LevelProcessor processor;
 
     TimeStamp updateTime;

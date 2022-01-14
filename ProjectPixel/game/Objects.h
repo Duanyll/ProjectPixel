@@ -7,7 +7,7 @@
 class RenderObject {
    public:
     virtual void render() = 0;
-    virtual void render_depth() {}
+    inline virtual void render_depth() {}
 };
 
 class FullScreenQuad : public RenderObject {

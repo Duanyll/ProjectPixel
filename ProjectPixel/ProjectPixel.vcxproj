@@ -162,6 +162,7 @@
     <ClCompile Include="game\Game.cpp" />
     <ClCompile Include="game\HUD.cpp" />
     <ClCompile Include="game\Level.cpp" />
+    <ClCompile Include="game\Particle.cpp" />
     <ClCompile Include="game\Processor.cpp" />
     <ClCompile Include="game\Terrain.cpp" />
     <ClCompile Include="pch.cpp">
@@ -190,6 +191,7 @@
     <ClInclude Include="game\Game.h" />
     <ClInclude Include="game\HUD.h" />
     <ClInclude Include="game\Level.h" />
+    <ClInclude Include="game\Particle.h" />
     <ClInclude Include="game\pch.h" />
     <ClInclude Include="game\Processor.h" />
     <ClInclude Include="game\Instructions.h" />

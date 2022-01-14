@@ -128,7 +128,7 @@ void Game::render() {
         Lights.dirLight.focus = player->position;
 
         Lights.spotLight.isActive = true;
-        Lights.spotLight.position = player->position + glm::vec3{0, 1, 0};
+        Lights.spotLight.position = player->position + glm::vec3{0, 1.1, 0};
         Lights.spotLight.direction = angle_to_front(player->facing);
 
         Lights.pointLightCount = 1;
@@ -166,9 +166,9 @@ void Game::render() {
     for (auto& i : entities) {
         i.second->render();
     }
-
     terrainRenderer.render();
     skybox.render();
+    particles.render();
 
     hud.render();
 }
@@ -196,6 +196,11 @@ void Game::update() {
         for (auto& i : ins->messages) {
             UI::log_info(i);
         }
+
+        for (auto& i : ins->particles) {
+            particles.add_cluster(i);
+            // UI::log_info(std::format("Particle {} at ({}, {}, {})", (int)i.type, i.pos.x, i.pos.y, i.pos.z));
+        }
     }
     TimeStamp now = std::chrono::steady_clock::now();
     float delta = to_float_duration(now - updateTime);
@@ -203,4 +208,5 @@ void Game::update() {
     for (auto& i : entities) {
         i.second->step(delta);
     }
+    particles.step(delta);
 }

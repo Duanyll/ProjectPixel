@@ -148,6 +148,9 @@ void LevelProcessor::emit_instructions(TimeStamp time) {
     ins->playerLifePotion = player->inventory[ItemType::LifePotion];
     ins->playerArrow = player->inventory[ItemType::Arrow];
 
+    ins->particles = level.particles;
+    level.particles.clear();
+
     for (auto& i : ins->deletedEntities) {
         level.entities.erase(i);
     }

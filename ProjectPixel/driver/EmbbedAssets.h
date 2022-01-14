@@ -13,4 +13,5 @@ pVAO load_box_vao();
 pVAO load_skybox_vao();
 void load_paperman_vaos(std::unordered_map<std::string, pVAO>& data);
 void load_item_vaos(std::unordered_map<std::string, pVAO>& data);
+void load_particle_vaos(std::unordered_map<std::string, pVAO>& data);
 }  // namespace EmbbedAssets

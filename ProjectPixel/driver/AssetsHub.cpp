@@ -20,12 +20,14 @@ void AssetsHub::load_all() {
     register_shader<EntityShader>();
     register_shader<HUDShader>();
     register_shader<DepthShader>();
+    register_shader<ParticleShader>();
 
     vaoStore["quad"] = load_quad_vao();
     vaoStore["box"] = load_box_vao();
     vaoStore["skybox"] = load_skybox_vao();
     load_paperman_vaos(vaoStore);
     load_item_vaos(vaoStore);
+    load_particle_vaos(vaoStore);
 
     for (const auto& i : texturePath) {
         texture2dStore[i.first] = std::make_shared<Texture>(i.second, false);

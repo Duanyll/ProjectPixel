@@ -33,10 +33,25 @@ std::unordered_map<std::string, std::string> EmbbedAssets::texturePath{
     {"heart-flashing", "assets/ui/heart-flashing.png"},
     {"heart-half", "assets/ui/heart-half.png"},
     {"heart-full", "assets/ui/heart-full.png"},
+    {"crit0", "assets/particles/crit0.png"},
+    {"crit1", "assets/particles/crit1.png"},
+    {"crit2", "assets/particles/crit2.png"},
+    {"crit3", "assets/particles/crit3.png"},
+    {"crit4", "assets/particles/crit4.png"},
+    {"heal", "assets/particles/heal.png"},
+    {"fall0", "assets/particles/fall0.png"},
+    {"fall1", "assets/particles/fall1.png"},
+    {"death0", "assets/particles/death0.png"},
+    {"death1", "assets/particles/death1.png"},
+    {"death2", "assets/particles/death2.png"},
+    {"death3", "assets/particles/death3.png"},
 };
 std::vector<std::string> itemVAOToLoad{"diamond-sword", "diamond-axe", "bow",
                                        "bow1",          "bow2",        "bow3",
                                        "arrow",         "life-potion"};
+std::vector<std::string> particleVAOToLoad{
+    "crit0", "crit1", "crit2",  "crit3",  "crit4",  "heal",
+    "fall0", "fall1", "death0", "death1", "death2", "death3"};
 std::unordered_map<std::string, std::vector<std::string>>
     EmbbedAssets::skyboxPath{
         {"default",
@@ -316,8 +331,75 @@ pVAO generate_item_vao(const std::string& texturePath) {
     return vao;
 }
 
+pVAO generate_particle_vao(const std::string& texturePath) {
+    pVAO vao;
+    int width, height, channels;
+    Pixel* data = reinterpret_cast<Pixel*>(
+        stbi_load(texturePath.c_str(), &width, &height, &channels, 4));
+    if (data) {
+        auto pixel = [&](int x, int y) -> Pixel {
+            if (x < 0 || x >= width || y < 0 || y >= height)
+                return {0, 0, 0, 0};
+            return data[x + y * width];
+        };
+        vector<EntityShader::Vertex> res;
+        float p = 1.0f / 16;
+        float o = p * width * 0.5;
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                auto cur = pixel(x, y);
+                if (cur.a == 0) continue;
+                float x0 = p * x;
+                float y0 = p * y;
+                vec3 A{x0 + 0 - o, p - p / 2, y0 + p - o};
+                vec3 B{x0 + p - o, p - p / 2, y0 + p - o};
+                vec3 C{x0 + 0 - o, 0 - p / 2, y0 + p - o};
+                vec3 D{x0 + p - o, 0 - p / 2, y0 + p - o};
+                vec3 E{x0 + 0 - o, p - p / 2, y0 + 0 - o};
+                vec3 F{x0 + p - o, p - p / 2, y0 + 0 - o};
+                vec3 G{x0 + 0 - o, 0 - p / 2, y0 + 0 - o};
+                vec3 H{x0 + p - o, 0 - p / 2, y0 + 0 - o};
+                face(res, E, F, A, B, {0, 1, 0}, {x0, y0}, {x0 + p, y0 + p});
+                face(res, C, D, G, H, {0, -1, 0}, {x0, y0}, {x0 + p, y0 + p});
+                if (pixel(x, y - 1).a == 0) {
+                    face(res, F, E, H, G, {0, 0, -1}, {x0, y0},
+                         {x0 + p, y0 + p});
+                }
+                if (pixel(x, y + 1).a == 0) {
+                    face(res, A, B, C, D, {0, 0, 1}, {x0, y0},
+                         {x0 + p, y0 + p});
+                }
+                if (pixel(x + 1, y).a == 0) {
+                    face(res, B, F, D, H, {1, 0, 0}, {x0, y0},
+                         {x0 + p, y0 + p});
+                }
+                if (pixel(x - 1, y).a == 0) {
+                    face(res, E, A, G, C, {-1, 0, 0}, {x0, y0},
+                         {x0 + p, y0 + p});
+                }
+            }
+        }
+        vao = std::make_shared<VAO>();
+        vao->load_interleave_vbo(reinterpret_cast<const float*>(res.data()),
+                                 res.size() * sizeof(EntityShader::Vertex),
+                                 {3, 3, 2});
+    } else {
+        std::cout << "Cannot create particle vao from " << texturePath
+                  << std::endl;
+    }
+    stbi_image_free(data);
+    return vao;
+}
+
 void EmbbedAssets::load_item_vaos(std::unordered_map<std::string, pVAO>& data) {
     for (auto& i : itemVAOToLoad) {
         data[i] = generate_item_vao(texturePath[i]);
+    }
+}
+
+void EmbbedAssets::load_particle_vaos(
+    std::unordered_map<std::string, pVAO>& data) {
+    for (auto& i : particleVAOToLoad) {
+        data[i] = generate_particle_vao(texturePath[i]);
     }
 }

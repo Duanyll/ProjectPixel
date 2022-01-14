@@ -103,3 +103,17 @@ class DepthShader : public ShaderProgram {
    private:
     GLint model_pos;
 };
+
+class ParticleShader : public ShaderProgram {
+   public:
+    ParticleShader();
+    void configure(pTexture diffuse, pTexture emission, glm::mat4 model,
+                   glm::vec4 color);
+
+    const static int storeId = 7;
+
+   private:
+    GLint diffuse_pos, emission_pos, color_pos;
+    GLint model_pos, normal_pos;
+    GLint dirLightDepth_pos, spotLightDepth_pos;
+};

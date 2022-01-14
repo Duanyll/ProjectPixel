@@ -227,3 +227,32 @@ void DepthShader::configure(glm::mat4 model) {
     use();
     glUniformMatrix4fv(model_pos, 1, false, glm::value_ptr(model));
 }
+
+ParticleShader::ParticleShader() {
+    compile_from_file("shaders/entity.vert", "shaders/particle.frag");
+    use();
+    Uniform::bind_block(id, "Camera");
+    Uniform::bind_block(id, "Lights");
+
+    diffuse_pos = glGetUniformLocation(id, "material.diffuse");
+    emission_pos = glGetUniformLocation(id, "material.emission");
+    color_pos = glGetUniformLocation(id, "material.color");
+    model_pos = glGetUniformLocation(id, "model");
+    normal_pos = glGetUniformLocation(id, "normal");
+    dirLightDepth_pos = glGetUniformLocation(id, "dirLightDepth");
+    spotLightDepth_pos = glGetUniformLocation(id, "spotLightDepth");
+}
+
+void ParticleShader::configure(pTexture diffuse, pTexture emission,
+                               glm::mat4 model, glm::vec4 color) {
+    use();
+    bind_texture(diffuse_pos, 0, diffuse);
+    bind_texture(emission_pos, 1, emission);
+    bind_texture(dirLightDepth_pos, 2, Lights.dirLight.depthMap);
+    bind_texture(spotLightDepth_pos, 3, Lights.spotLight.depthMap);
+    glUniformMatrix4fv(model_pos, 1, false, glm::value_ptr(model));
+    glUniformMatrix3fv(
+        normal_pos, 1, false,
+        glm::value_ptr(glm::mat3(glm::transpose(glm::inverse(model)))));
+    glUniform4fv(color_pos, 1, glm::value_ptr(color));
+}

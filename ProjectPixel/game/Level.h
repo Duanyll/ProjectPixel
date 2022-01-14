@@ -3,6 +3,8 @@
 #include "pch.h"
 #include "Terrain.h"
 
+#include "Instructions.h"
+
 class LevelConfig {
    public:
     int version;
@@ -78,6 +80,7 @@ class Level {
     LocationBuffer<Entity> entityRegistry;
     std::shared_ptr<Player> player;
     LevelConfig& config;
+    std::vector<ParticleInstruction> particles;
 
     std::shared_ptr<Goal> goal;
 
