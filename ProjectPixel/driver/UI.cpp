@@ -134,8 +134,11 @@ pVAO imageVAO;
 void UI::init(const std::string& font_path) {
     printer = std::make_shared<TextPrinter>(font_path);
     reset_projection2d();
-    Window::register_command("frame-resize",
-                             [](float _) { reset_projection2d(); });
+    class UIResizeWatcher : public Window::ResizeWatcher {
+       public:
+        void on_size_changed(int width, int height) { reset_projection2d(); }
+    };
+    Window::add_watcher(std::make_shared<UIResizeWatcher>());
     imageVAO = std::make_shared<VAO>();
     imageVAO->load_interleave_vbo(nullptr, sizeof(float) * 6 * 4, {4});
 }
@@ -187,7 +190,8 @@ void UI::print_image2d(pTexture texture, GLfloat xpos, GLfloat ypos, GLfloat w,
         { xpos + w, ypos + h,   1.0, 0.0 }
     };
     // clang-format on
-    imageVAO->update_vbo(reinterpret_cast<float*>(vertices), 0, sizeof(vertices));
+    imageVAO->update_vbo(reinterpret_cast<float*>(vertices), 0,
+                         sizeof(vertices));
     // Render quad
     imageVAO->draw();
 }

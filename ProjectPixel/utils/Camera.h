@@ -58,6 +58,5 @@ class ThirdPersonCamera : public Camera {
     float backwardDistance = 6.0;
     float liftHeight = 10.0;
 
-    // 返回鼠标射线在世界空间 xoz 平面的坐标
-    glm::vec3 resolve_cursor_pos();
+    glm::vec3 resolve_cursor_dir();
 };

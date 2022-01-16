@@ -15,22 +15,25 @@ BoxStackTerrain::BoxStackTerrain(int xSize, int zSize, const std::string& data)
     assert(heightMap.size() == xSize * zSize);
 }
 
+static bool isBarrierBoundingBoxIgnored = false;
 void BoxStackTerrain::get_bounding_boxes(glm::vec3 point,
                                          std::vector<TileBoundingBox>& res) {
     int x = floor(point.x);
     int y = floor(point.y);
     int z = floor(point.z);
-    if (get_tile({x, y, z}) != Tile::Air) {
-        res.push_back({{x, y, z}, {1, 1, 1}});
-    }
+    auto tile = get_tile({x, y, z});
+    if (tile == Tile::Air ||
+        isBarrierBoundingBoxIgnored && tile == Tile::Barrier)
+        return;
+    res.push_back({{x, y, z}, {1, 1, 1}});
 }
 
 Tile BoxStackTerrain::get_tile(glm::vec3 point) {
     int x = floor(point.x);
     int y = floor(point.y);
     int z = floor(point.z);
-    if (x < 0 || x >= xSize || z < 0 || z >= zSize) return Tile::Stone;
     if (y < 0) return Tile::Stone;
+    if (x < 0 || x >= xSize || z < 0 || z >= zSize) return Tile::Barrier;
     int height = heightMap[z * xSize + x];
     return (y < height) ? Tile::Box : Tile::Air;
 }
@@ -225,7 +228,8 @@ const float CLIPPING_TEST_DELTA = 1e-3;
 bool ITerrain::test_line_intersection(glm::vec3 point, glm::vec3 dir,
                                       float& dis) {
     auto end = point + dir;
-    float remain = glm::length(dir);
+    float total = glm::length(dir);
+    float remain = total;
     if (remain < CLIPPING_TEST_DELTA) {
         if (test_point_intersection(point)) {
             dis = CLIPPING_TEST_DELTA / 2;
@@ -238,7 +242,7 @@ bool ITerrain::test_line_intersection(glm::vec3 point, glm::vec3 dir,
     while (remain > LINE_INTERSECTION_FINAL) {
         float d = -1;
         if (base_line_intersection(point, step, d)) {
-            dis = d;
+            dis = d + total - remain;
             return true;
         }
         remain -= LINE_INTERSECTION_STEP;
@@ -262,7 +266,8 @@ bool ITerrain::test_box_intersection(TileBoundingBox box) {
 bool ITerrain::test_box_movement_intersection(TileBoundingBox box,
                                               glm::vec3 dir, float& dis) {
     auto end = box.a + dir;
-    float remain = glm::length(dir);
+    float total = glm::length(dir);
+    float remain = total;
     if (remain < CLIPPING_TEST_DELTA) {
         if (test_box_intersection(box)) {
             dis = CLIPPING_TEST_DELTA / 2;
@@ -275,7 +280,7 @@ bool ITerrain::test_box_movement_intersection(TileBoundingBox box,
     while (remain > LINE_INTERSECTION_FINAL) {
         float d = -1;
         if (base_box_movement_intersection(box, step, d)) {
-            dis = d;
+            dis = d + total - remain;
             return true;
         }
         remain -= LINE_INTERSECTION_STEP;
@@ -338,6 +343,16 @@ bool ITerrain::test_connectivity(glm::vec3 a, glm::vec3 b) {
     }
     float d = -1;
     return !test_line_intersection(a, dir, d);
+}
+
+glm::vec3 ITerrain::get_cursor_point(glm::vec3 point, glm::vec3 dir) {
+    isBarrierBoundingBoxIgnored = true;
+    float dis = -1;
+    if (!test_line_intersection(point, dir * 30.0f, dis)) {
+        test_line_plane_intersection(point, dir, {0, 1, 0}, {0, 0, 0}, dis);
+    }
+    isBarrierBoundingBoxIgnored = false;
+    return point + dir * dis;
 }
 
 std::vector<TileBoundingBox> ITerrain::get_bounding_boxes_range(

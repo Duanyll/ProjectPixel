@@ -169,7 +169,7 @@ DeathParticle::DeathParticle(glm::vec3 basePos, glm::vec3 baseDir,
 
     std::uniform_real_distribution<float> rotation(-360, 360);
     this->speed = angle_to_front(rotation(random)) * 0.5f;
-    this->pos = basePos + this->speed;
+    this->pos = basePos;
     this->pos.y += 0.2;
     this->rotation = rotation(random);
 

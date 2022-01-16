@@ -78,6 +78,9 @@
     <ClCompile Include="game\Particle.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="utils\Input.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -165,6 +168,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="game\Particle.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\Input.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

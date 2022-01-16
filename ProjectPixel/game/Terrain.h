@@ -6,7 +6,7 @@
 #include "Objects.h"
 #include "../utils/Geomentry.h"
 
-enum class Tile : unsigned char { Air = 0, Stone = 1, Box = 2 };
+enum class Tile : unsigned char { Air, Barrier, Stone, Box};
 
 class ITerrain {
    public:
@@ -21,6 +21,7 @@ class ITerrain {
     virtual BoxClipping clip_point(glm::vec3& point);
     virtual BoxClipping clip_box(TileBoundingBox& box);
     virtual bool test_connectivity(glm::vec3 a, glm::vec3 b);
+    virtual glm::vec3 get_cursor_point(glm::vec3 point, glm::vec3 dir);
 
     virtual float get_surface_height(glm::vec3 point) = 0;
     virtual bool can_mob_spawn_on(glm::vec3 point) = 0;

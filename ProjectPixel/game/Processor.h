@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "../utils/Threading.h"
 #include "../utils/FrameTimer.h"
+#include "../utils/Input.h"
 #include "Level.h"
 #include "Terrain.h"
 #include "Instructions.h"
@@ -12,7 +13,7 @@ class LevelProcessor : public WorkerThread {
    public:
     LevelProcessor(LevelConfig& config);
 
-    InputForwarder input;
+    GamingInput input;
     OutputBuffer<SceneInstruction> output;
 
     inline std::chrono::milliseconds get_cycle_time() {

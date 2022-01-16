@@ -14,27 +14,23 @@ void Window::init_glfw() {
 GLFWwindow* Window::handle = nullptr;
 int Window::width, Window::height;
 
+bool resized;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     Window::width = width;
     Window::height = height;
-    Window::execute_command("frame-resize");
+    resized = true;
 }
 
+double mousex, mousey;
 void cursor_move_callback(GLFWwindow* window, double xpos, double ypos) {
-    Window::execute_command("mouse");
-    Window::execute_command("mouse-x", xpos);
-    Window::execute_command("mouse-y", ypos);
+    mousex = xpos;
+    mousey = ypos;
 }
-void cursor_enter_callback(GLFWwindow* window, int in) {
-    Window::execute_command("mouse-enter");
-}
+void cursor_enter_callback(GLFWwindow* window, int in) {}
+double scrollx, scrolly;
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    Window::execute_command("scroll-x", xoffset);
-    Window::execute_command("scroll-y", yoffset);
-}
-void mouse_button_callback(GLFWwindow* window, int button, int action,
-                           int mods) {
-    Window::execute_command("mouse-button");
+    scrollx = true;
+    scrolly = true;
 }
 
 void Window::create(int width, int height, const std::string& title) {
@@ -60,77 +56,67 @@ void Window::create(int width, int height, const std::string& title) {
     glfwSetCursorEnterCallback(handle, cursor_enter_callback);
     glfwSetScrollCallback(handle, scroll_callback);
     glfwSetFramebufferSizeCallback(handle, framebuffer_size_callback);
-    glfwSetMouseButtonCallback(handle, mouse_button_callback);
-    
+
     // Turn on vsync
     glfwSwapInterval(1);
 }
 
 void Window::stop_glfw() { glfwTerminate(); }
+Window::KeyWatcher::KeyWatcher(int key) : key(key) {}
 
-std::unordered_map<std::string, std::function<void(float)>> commandHandlers;
-
-void Window::register_command(const std::string& commandName,
-                              std::function<void(float)> handler) {
-    commandHandlers[commandName] = handler;
-}
-
-void Window::execute_command(const std::string& commandName, float param) {
-    auto it = commandHandlers.find(commandName);
-    if (it != commandHandlers.end()) {
-        it->second(param);
+void Window::KeyWatcher::tick() {
+    bool current = glfwGetKey(handle, key) == GLFW_PRESS;
+    if (!last && current) {
+        on_key_down();
+    } else if (last && current) {
+        on_key_hold();
+    } else if (last && !current) {
+        on_key_up();
     }
+    last = current;
 }
 
-void Window::remove_command(const std::string& commandName) {
-    commandHandlers.erase(commandName);
-}
+Window::MouseButtonWatcher::MouseButtonWatcher(int button) : button(button) {}
 
-struct KeyState {
-    Window::KeyMode mode;
-    std::string command;
-    bool lastStatus = false;
-};
-std::unordered_map<int, KeyState> keyState;
-
-void Window::bind_keys(
-    const std::unordered_map<int, std::pair<std::string, KeyMode>>&
-        keybindings) {
-    keyState.clear();
-    for (auto& i : keybindings) {
-        keyState[i.first] = {i.second.second, i.second.first, false};
+void Window::MouseButtonWatcher::tick() {
+    bool current = glfwGetMouseButton(handle, button) == GLFW_PRESS;
+    if (!last && current) {
+        on_button_down();
+    } else if (last && current) {
+        on_button_hold();
+    } else if (last && !current) {
+        on_button_up();
     }
+    last = current;
 }
 
-void Window::update_key_mode(int key, KeyMode mode) {
-    keyState[key].mode = mode;
-    keyState[key].lastStatus = false;
+
+void Window::CursorMoveWatcher::tick() {
+    if (mousex != 0 || mousey != 0) on_cursor_move(mousex, mousey);
 }
 
-void Window::rebind_key(int key, std::string& command) {
-    keyState[key].command = command;
+void Window::ScrollWatcher::tick() {
+    if (scrollx != 0 && scrolly != 0) on_scroll(scrollx, scrolly);
 }
 
-void Window::process_keys() {
-    for (auto& i : keyState) {
-        if (glfwGetKey(handle, i.first) == GLFW_PRESS) {
-            if (i.second.mode == KeyMode::Continous) {
-                execute_command(i.second.command, 1);
-            } else if (i.second.mode == KeyMode::KeyDown ||
-                       i.second.mode == KeyMode::Toggle) {
-                if (!i.second.lastStatus) {
-                    execute_command(i.second.command, 1);
-                }
-            }
-            i.second.lastStatus = true;
-        } else {
-            if (i.second.mode == KeyMode::KeyUp ||
-                i.second.mode == KeyMode::Toggle) {
-                if (i.second.lastStatus) {
-                    execute_command(i.second.command, 0);
-                }
-            }
-            i.second.lastStatus = false;
-        }
-    }
+void Window::ResizeWatcher::tick() {
+    if (resized) on_resize(width, height);
+}
+
+std::unordered_set<std::shared_ptr<Window::InputWatcher>> activeKeyWatchers;
+
+void Window::add_watcher(std::shared_ptr<InputWatcher> p) {
+    activeKeyWatchers.insert(p);
+}
+
+void Window::remove_watcher(std::shared_ptr<InputWatcher> p) {
+    activeKeyWatchers.erase(p);
+}
+
+void Window::process_input() {
+    mousex = mousey = 0;
+    scrollx = scrolly = 0;
+    resized = false;
+    glfwPollEvents();
+    for (auto& i : activeKeyWatchers) i->tick();
 }

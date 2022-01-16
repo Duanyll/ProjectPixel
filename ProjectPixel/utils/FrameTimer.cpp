@@ -16,9 +16,6 @@ float fps;
 
 void FrameTimer::begin_frame_stats() {
     lastFrame = std::chrono::steady_clock::now();
-    Window::register_command("framerate", [](float _) {
-        UI::log_info(std::format("Framerate: {:.2f}FPS", get_average_framerate()));
-    });
 }
 
 void FrameTimer::tick_frame() {

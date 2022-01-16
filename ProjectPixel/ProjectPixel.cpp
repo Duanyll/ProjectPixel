@@ -23,27 +23,13 @@ int main(int argc, char** argv) {
 
     Window::init_glfw();
     Window::create(1920, 1080, "ProjectPixel");
-    {
-        using Window::KeyMode;
-        Window::bind_keys({
-            {GLFW_KEY_W, {"move-front", KeyMode::Continous}},
-            {GLFW_KEY_A, {"move-left", KeyMode::Continous}},
-            {GLFW_KEY_S, {"move-back", KeyMode::Continous}},
-            {GLFW_KEY_D, {"move-right", KeyMode::Continous}},
-            {GLFW_KEY_SPACE, {"move-up", KeyMode::KeyDown}},
-            {GLFW_KEY_F3, {"diagnostics", KeyMode::KeyDown}},
-            {GLFW_KEY_F, {"framerate", KeyMode::KeyDown}},
-            {GLFW_KEY_ESCAPE, {"exit", KeyMode::KeyUp}},
-            {GLFW_KEY_LEFT_CONTROL, {"run", KeyMode::Toggle}},
-            {GLFW_KEY_C, {"heal", KeyMode::Toggle}},
-            {GLFW_KEY_1, {"slot-1", KeyMode::KeyDown}},
-            {GLFW_KEY_2, {"slot-2", KeyMode::KeyDown}},
-            {GLFW_KEY_3, {"slot-3", KeyMode::KeyDown}},  
-        });
-    }
-    Window::register_command("exit", [](float _) {
-        glfwSetWindowShouldClose(Window::handle, true);
-    });
+
+    class WindowCloseWatcher : public Window::KeyWatcher {
+       public:
+        void on_key_down() { glfwSetWindowShouldClose(Window::handle, true); }
+        WindowCloseWatcher() : Window::KeyWatcher(GLFW_KEY_ESCAPE) {}
+    };
+    Window::add_watcher(std::make_shared<WindowCloseWatcher>());
 
     AssetsHub::load_all();
     UI::init();
@@ -56,7 +42,7 @@ int main(int argc, char** argv) {
     game->start();
     FrameTimer::begin_frame_stats();
     while (!glfwWindowShouldClose(Window::handle)) {
-        Window::process_keys();
+        Window::process_input();
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -68,8 +54,6 @@ int main(int argc, char** argv) {
         UI::print_logs();
 
         glfwSwapBuffers(Window::handle);
-        glfwPollEvents();
-
         FrameTimer::tick_frame();
     }
     game->stop();

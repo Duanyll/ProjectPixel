@@ -183,6 +183,7 @@
     <ClCompile Include="driver\VAO.cpp" />
     <ClCompile Include="utils\FrameTimer.cpp" />
     <ClCompile Include="driver\UI.cpp" />
+    <ClCompile Include="utils\Input.cpp" />
     <ClCompile Include="utils\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -210,6 +211,7 @@
     <ClInclude Include="utils\Debug.h" />
     <ClInclude Include="utils\FrameTimer.h" />
     <ClInclude Include="utils\Geomentry.h" />
+    <ClInclude Include="utils\Input.h" />
     <ClInclude Include="utils\pch.h" />
     <ClInclude Include="driver\UI.h" />
     <ClInclude Include="utils\Threading.h" />

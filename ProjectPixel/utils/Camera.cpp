@@ -20,7 +20,7 @@ void Camera::apply() {
 }
 
 void FreeCamera::apply_to_window() {
-    glfwSetInputMode(Window::handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    /*glfwSetInputMode(Window::handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     Window::register_command("move-front",
                              [this](float _) { move_pos(Direction::Front); });
     Window::register_command("move-back",
@@ -41,7 +41,7 @@ void FreeCamera::apply_to_window() {
                              [this](float t) { on_cursor_move(lastX, t); });
     Window::register_command(
         "scroll-x", [this](float t) { set_yaw_pitch(yaw + t * 10, pitch); });
-    Window::register_command("scroll-y", [this](float t) { on_scroll(t); });
+    Window::register_command("scroll-y", [this](float t) { on_scroll(t); });*/
 }
 
 void FreeCamera::on_cursor_move(double xpos, double ypos) {
@@ -123,7 +123,7 @@ void ThirdPersonCamera::set_yaw(float yaw) {
     groundFront = {sin(-glm::radians(yaw)), 0, cos(glm::radians(yaw))};
 }
 
-glm::vec3 ThirdPersonCamera::resolve_cursor_pos() {
+glm::vec3 ThirdPersonCamera::resolve_cursor_dir() {
     double cursorScreenX = 0, cursorScreenY = 0;
     glfwGetCursorPos(Window::handle, &cursorScreenX, &cursorScreenY);
     auto cursorClipX = cursorScreenX / Window::width * 2 - 1;
@@ -137,12 +137,5 @@ glm::vec3 ThirdPersonCamera::resolve_cursor_pos() {
                              cursorPosWorld4.y / cursorPosWorld4.w,
                              cursorPosWorld4.z / cursorPosWorld4.w};
     glm::vec3 cursorDirWorld = glm::normalize(cursorPosWorld - pos);
-    float d = -1;
-    if (test_line_plane_intersection(pos, cursorDirWorld, {0, 1, 0}, {0, 0, 0},
-                                     d)) {
-        auto res = pos + d * cursorDirWorld;
-        return {res.x, 0, res.z};
-    } else {
-        return {0, 0, 0};
-    }
+    return cursorDirWorld;
 }

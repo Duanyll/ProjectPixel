@@ -85,6 +85,50 @@ void LevelProcessor::tick_entities(float duration) {
 }
 
 void LevelProcessor::handle_user_input(float duration) {
+    auto state = input.poll_state();
+    const auto& player = level.player;
+    if (!player || player->hp <= 0) return;
+    player->isAiming = input.keys.aim;
+    player->isRunning = input.keys.run;
+    player->walk(duration, state.movementDir);
+
+    float rotation = 0;
+    if (player->isAiming) {
+        float d = -1;
+
+    } else {
+        rotation = horizonal_angle(player->get_front(), state.movementDir);
+    }
+    player->turn(duration,
+                 horizonal_angle(player->get_front(),
+                                 player->isAiming
+                                     ? (level.terrain->get_cursor_point(
+                                            state.cameraPos, state.cursorDir) -
+                                        player->pos)
+                                     : state.movementDir),
+                 Player::maxRotationSpeed);
+
+    player->handle_heal_input(input.keys.heal);
+    player->handle_attack_input(input.keys.attack);
+
+    if (input.keys.jump) {
+        player->jump();
+        input.keys.jump = false;
+    }
+    if (input.keys.slot1) {
+        player->weapon = ItemType::DiamondSword;
+        input.keys.slot1 = false;
+    }
+    if (input.keys.slot2) {
+        player->weapon = ItemType::DiamondAxe;
+        input.keys.slot2 = false;
+    }
+    if (input.keys.slot3) {
+        player->weapon = ItemType::Bow;
+        input.keys.slot3 = false;
+    }
+
+    /*
     std::unordered_map<std::string, float> o;
     std::queue<std::string> events;
     std::unordered_set<std::string> flags;
@@ -122,6 +166,7 @@ void LevelProcessor::handle_user_input(float duration) {
             }
         }
     }
+    */
 }
 
 void LevelProcessor::clip_speed() {
@@ -159,7 +204,6 @@ void LevelProcessor::emit_instructions(TimeStamp time) {
         isGameEnd = level.goal->should_game_stop(isWin);
     }
     if (isGameEnd) {
-        input.isEnabled = false;
         ticksToStop++;
         if (ticksToStop >= 50) {
             shouldStop = true;

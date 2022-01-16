@@ -11,97 +11,7 @@ Game::Game(LevelConfig& config)
       terrainRenderer(config.get_terrain()),
       processor(config) {}
 
-void Game::apply_to_window() {
-    Window::register_command("move-front", [this](float _) {
-        auto vecdir = glm::normalize(camera.groundFront) *
-                      FrameTimer::get_last_frame_time();
-        processor.input.add("speed-x", vecdir.x);
-        processor.input.add("speed-z", vecdir.z);
-    });
-    Window::register_command("move-back", [this](float _) {
-        auto vecdir = glm::normalize(-camera.groundFront) *
-                      FrameTimer::get_last_frame_time();
-        processor.input.add("speed-x", vecdir.x);
-        processor.input.add("speed-z", vecdir.z);
-    });
-    Window::register_command("move-left", [this](float _) {
-        auto vecdir =
-            glm::normalize(-glm::cross(camera.groundFront, camera.up)) *
-            FrameTimer::get_last_frame_time();
-        processor.input.add("speed-x", vecdir.x);
-        processor.input.add("speed-z", vecdir.z);
-    });
-    Window::register_command("move-right", [this](float _) {
-        auto vecdir =
-            glm::normalize(glm::cross(camera.groundFront, camera.up)) *
-            FrameTimer::get_last_frame_time();
-        processor.input.add("speed-x", vecdir.x);
-        processor.input.add("speed-z", vecdir.z);
-    });
-    Window::register_command(
-        "move-up", [this](float _) { processor.input.add_event("jump"); });
-    Window::register_command("run", [this](float isDown) {
-        if (isDown != 0) {
-            processor.input.set_flag("run");
-        } else {
-            processor.input.clear_flag("run");
-        }
-    });
-    Window::register_command("heal", [this](float isDown) {
-        if (isDown != 0) {
-            processor.input.set_flag("heal");
-        } else {
-            processor.input.clear_flag("heal");
-        }
-    });
-    Window::register_command("mouse", [this](float _) {
-        auto it = entities.find("player1");
-        if (it != entities.end()) {
-            auto pos = it->second->position;
-            auto facing = it->second->facing;
-            auto control =
-                camera.resolve_cursor_pos() - glm::vec3(pos.x, 0, pos.z);
-            if (glm::length(control) >= 1) {
-                processor.input.set(
-                    "rotation",
-                    horizonal_angle(angle_to_front(facing), control));
-            }
-        }
-    });
-    Window::register_command("mouse-button", [this](float _) {
-        if (glfwGetMouseButton(Window::handle, GLFW_MOUSE_BUTTON_LEFT) ==
-            GLFW_PRESS) {
-            processor.input.set_flag("attack");
-        } else {
-            processor.input.clear_flag("attack");
-        }
-        if (glfwGetMouseButton(Window::handle, GLFW_MOUSE_BUTTON_RIGHT) ==
-            GLFW_PRESS) {
-            processor.input.set_flag("aim");
-        } else {
-            processor.input.clear_flag("aim");
-        }
-    });
-    Window::register_command("diagnostics", [this](float _) {
-        auto it = entities.find("player1");
-        if (it != entities.end()) {
-            auto pos = it->second->position;
-            UI::log_info(
-                std::format("X{:.2f} Y{:.2f} Z{:.2f}", pos.x, pos.y, pos.z));
-        } else {
-            UI::log_error(std::format("NO PLAYER!"));
-        }
-        auto cursor = camera.resolve_cursor_pos();
-        UI::log_info(std::format("Cursor X{:.2f} Z{:.2f}", cursor.x, cursor.z));
-    });
-    Window::register_command(
-        "slot-1", [this](float _) { processor.input.add_event("slot-1"); });
-    Window::register_command(
-        "slot-2", [this](float _) { processor.input.add_event("slot-2"); });
-    Window::register_command(
-        "slot-3", [this](float _) { processor.input.add_event("slot-3"); });
-    camera.apply_to_window();
-}
+void Game::apply_to_window() { processor.input.active(); }
 
 void Game::start() {
     Lights.dirLight.isActive = true;
@@ -177,6 +87,7 @@ void Game::stop() { processor.stop(); }
 
 void Game::update() {
     if (!processor.isRunning) return;
+    processor.input.collect_state(camera);
     auto ins = processor.output.try_get();
     if (ins) {
         updateTime = ins->creationTime;
