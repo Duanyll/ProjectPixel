@@ -89,16 +89,16 @@ void LevelProcessor::handle_user_input(float duration) {
     const auto& player = level.player;
     if (!player || player->hp <= 0) return;
     player->isAiming = input.keys.aim;
-    player->isRunning = input.keys.run;
+    if (glm::length(state.movementDir) > 0) {
+        if (input.keys.run) player->isRunning = true;
+    } else {
+        player->isRunning = false;
+    }
+    if (glm::length(state.movementDir) == 0) {
+        player->isRunning = false;
+    }
     player->walk(duration, state.movementDir);
 
-    float rotation = 0;
-    if (player->isAiming) {
-        float d = -1;
-
-    } else {
-        rotation = horizonal_angle(player->get_front(), state.movementDir);
-    }
     player->turn(duration,
                  horizonal_angle(player->get_front(),
                                  player->isAiming
@@ -127,46 +127,6 @@ void LevelProcessor::handle_user_input(float duration) {
         player->weapon = ItemType::Bow;
         input.keys.slot3 = false;
     }
-
-    /*
-    std::unordered_map<std::string, float> o;
-    std::queue<std::string> events;
-    std::unordered_set<std::string> flags;
-    input.poll(o, events, flags);
-    const auto &player = level.player;
-    if (player && player->hp > 0) {
-        glm::vec3 controlSpeed{o["speed-x"], 0, o["speed-z"]};
-        player->isAiming = flags.contains("aim");
-        player->isRunning = flags.contains("run");
-        player->walk(duration, controlSpeed);
-
-        if (player->isAiming) {
-            auto rotation = o["rotation"];
-            player->turn(duration, rotation, Player::maxRotationSpeed);
-        } else {
-            player->turn(duration,
-                         horizonal_angle(player->get_front(), controlSpeed),
-                         Player::maxRotationSpeed);
-        }
-
-        player->handle_heal_input(flags.contains("heal"));
-        player->handle_attack_input(flags.contains("attack"));
-
-        while (!events.empty()) {
-            auto i = events.front();
-            events.pop();
-            if (i == "jump") {
-                player->jump();
-            } else if (i == "slot-1") {
-                player->weapon = ItemType::DiamondSword;
-            } else if (i == "slot-2") {
-                player->weapon = ItemType::DiamondAxe;
-            } else if (i == "slot-3") {
-                player->weapon = ItemType::Bow;
-            }
-        }
-    }
-    */
 }
 
 void LevelProcessor::clip_speed() {

@@ -137,13 +137,13 @@ void ShaderProgram::bind_texture(GLint location, int slot, pTexture texture) {
     glBindTexture(texture->get_type(), texture->id);
 }
 
-QuadShader::QuadShader() {
-    compile_from_file("shaders/quad.vert", "shaders/quad.frag");
+BlitShader::BlitShader() {
+    compile_from_file("shaders/quad.vert", "shaders/blit.frag");
     use();
     screenTexture_pos = glGetUniformLocation(id, "screenTexture");
 }
 
-void QuadShader::configure(pTexture texture) {
+void BlitShader::configure(pTexture texture) {
     use();
     bind_texture(screenTexture_pos, 0, texture);
 }
@@ -217,7 +217,7 @@ void HUDShader::configure(pTexture img) {
 }
 
 DepthShader::DepthShader() {
-    compile_from_file("shaders/depth.vert", "shaders/depth.frag");
+    compile_from_file("shaders/depth.vert", "shaders/empty.frag");
     use();
     Uniform::bind_block(id, "LightSpace");
     model_pos = glGetUniformLocation(id, "model");
@@ -254,5 +254,34 @@ void ParticleShader::configure(pTexture diffuse, pTexture emission,
     glUniformMatrix3fv(
         normal_pos, 1, false,
         glm::value_ptr(glm::mat3(glm::transpose(glm::inverse(model)))));
+    glUniform4fv(color_pos, 1, glm::value_ptr(color));
+}
+
+GaussianBlurShader::GaussianBlurShader() {
+    compile_from_file("shaders/quad.vert", "shaders/gaussian-blur.frag");
+    use();
+
+    screenTexture_pos = glGetUniformLocation(id, "screenTexture");
+    resolution_pos = glGetUniformLocation(id, "resolution");
+    direction_pos = glGetUniformLocation(id, "direction");
+}
+
+void GaussianBlurShader::configure(pTexture texture, glm::vec2 resolution,
+                                   glm::vec2 direction) {
+    use();
+    bind_texture(screenTexture_pos, 0, texture);
+    glUniform2fv(resolution_pos, 1, glm::value_ptr(resolution));
+    glUniform2fv(direction_pos, 1, glm::value_ptr(direction));
+}
+
+SingleColorShader::SingleColorShader() {
+    compile_from_file("shaders/quad.vert", "shaders/single-color.frag");
+    use();
+    
+    color_pos = glGetUniformLocation(id, "color");
+}
+
+void SingleColorShader::configure(glm::vec4 color) {
+    use();
     glUniform4fv(color_pos, 1, glm::value_ptr(color));
 }

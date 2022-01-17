@@ -6,6 +6,7 @@ class Texture {
    public:
     NO_COPY_CLASS(Texture)
     Texture(const std::string& filePath, bool flipped = false);
+    Texture(int width, int height, bool isPixelized = true);
     ~Texture();
     GLuint id = 0;
     int width = 0, height = 0, channels = 0;
@@ -46,6 +47,19 @@ class FrameBufferTexture : public Texture {
 
    protected:
     inline FrameBufferTexture() {}
+};
+
+class OutlineFrameBufferTexture : public FrameBufferTexture {
+   public:
+    OutlineFrameBufferTexture(int width, int height, bool isPixelized = true);
+    ~OutlineFrameBufferTexture();
+    
+    void clear_outline();
+    void draw_and_mark_outline(std::function<void()> draw);
+    void draw_outline(glm::vec3 color);
+
+    std::shared_ptr<Texture> texOutline1, texOutline2;
+    GLuint fboOutline1 = 0, fboOutline2 = 0;
 };
 
 class TextureMatrix : public FrameBufferTexture {

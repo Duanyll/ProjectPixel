@@ -14,13 +14,15 @@ std::unordered_map<std::string, Material> materialStore;
 void AssetsHub::load_all() {
     using namespace EmbbedAssets;
     Uniform::init_members();
-    register_shader<QuadShader>();
+    register_shader<BlitShader>();
     register_shader<TextShader>();
     register_shader<SkyboxShader>();
     register_shader<EntityShader>();
     register_shader<HUDShader>();
     register_shader<DepthShader>();
     register_shader<ParticleShader>();
+    register_shader<GaussianBlurShader>();
+    register_shader<SingleColorShader>();
 
     vaoStore["quad"] = load_quad_vao();
     vaoStore["box"] = load_box_vao();

@@ -7,9 +7,10 @@
 #include "../driver/Flags.h"
 
 Game::Game(LevelConfig& config)
-    : config(config),
-      terrainRenderer(config.get_terrain()),
-      processor(config) {}
+    : config(config), terrainRenderer(config.get_terrain()), processor(config) {
+    outlineBuffer = std::make_shared<OutlineFrameBufferTexture>(Window::width,
+                                                                Window::height);
+}
 
 void Game::apply_to_window() { processor.input.active(); }
 
@@ -42,7 +43,8 @@ void Game::render() {
         Lights.spotLight.direction = angle_to_front(player->facing);
 
         Lights.pointLightCount = 1;
-        Lights.pointLights[0].position = player->position + glm::vec3{0, 1.5, 0};
+        Lights.pointLights[0].position =
+            player->position + glm::vec3{0, 1.5, 0};
     } else {
         Lights.spotLight.isActive = false;
         Lights.pointLightCount = 0;
@@ -70,15 +72,26 @@ void Game::render() {
     camera.apply();
     Lights.apply();
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    outlineBuffer->clear_outline();
+    outlineBuffer->draw_inside([&]() -> void {
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    });
+    outlineBuffer->draw_and_mark_outline([&]() -> void {
+        for (auto& i : entities) {
+            i.second->render();
+        }
+    });
 
-    for (auto& i : entities) {
-        i.second->render();
-    }
-    terrainRenderer.render();
-    skybox.render();
-    particles.render();
+    outlineBuffer->draw_inside([&]() -> void {
+        terrainRenderer.render();
+        skybox.render();
+        particles.render();
+    });
+
+    outlineBuffer->draw_outline({1, 0, 0});
+    FullScreenQuad quad(outlineBuffer);
+    quad.render();
 
     hud.render();
 }
@@ -110,7 +123,8 @@ void Game::update() {
 
         for (auto& i : ins->particles) {
             particles.add_cluster(i);
-            // UI::log_info(std::format("Particle {} at ({}, {}, {})", (int)i.type, i.pos.x, i.pos.y, i.pos.z));
+            // UI::log_info(std::format("Particle {} at ({}, {}, {})",
+            // (int)i.type, i.pos.x, i.pos.y, i.pos.z));
         }
     }
     TimeStamp now = std::chrono::steady_clock::now();

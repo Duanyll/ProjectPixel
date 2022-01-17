@@ -43,6 +43,23 @@ Texture::Texture(const std::string& filePath, bool flipped) {
     stbi_image_free(data);
 }
 
+Texture::Texture(int width, int height, bool isPixelized) {
+    this->width = width;
+    this->height = height;
+    this->channels = 4;
+
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                    isPixelized ? GL_NEAREST : GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                    isPixelized ? GL_NEAREST : GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+}
+
 Texture::~Texture() { glDeleteTextures(1, &id); }
 
 CubeTexture::CubeTexture(const std::vector<std::string>& facesPath) {
@@ -71,24 +88,12 @@ CubeTexture::CubeTexture(const std::vector<std::string>& facesPath) {
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
 
-FrameBufferTexture::FrameBufferTexture(int width, int height,
-                                       bool isPixelized) {
-    this->width = width;
-    this->height = height;
-    this->channels = 4;
+FrameBufferTexture::FrameBufferTexture(int width, int height, bool isPixelized)
+    : Texture(width, height, isPixelized) {
     // framebuffer configuration
     // -------------------------
     glGenFramebuffers(1, &fbo);
     FrameBuffer b(fbo);
-    // create a color attachment texture
-    glGenTextures(1, &id);
-    glBindTexture(GL_TEXTURE_2D, id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
-                 GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                    isPixelized ? GL_NEAREST : GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-                    isPixelized ? GL_NEAREST : GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                            id, 0);
     // create a renderbuffer object for depth and stencil attachment (we won't
@@ -132,7 +137,7 @@ void TextureMatrix::load(const std::vector<pTexture>& subTextures) {
                   << std::endl;
     }
 
-    auto shader = AssetsHub::get_shader<QuadShader>();
+    auto shader = AssetsHub::get_shader<BlitShader>();
     auto vao = std::make_shared<VAO>();
     vao->load_interleave_vbo(nullptr, 24 * sizeof(float), {2, 2});
     draw_inside([&]() -> void {
@@ -194,4 +199,97 @@ DepthMap::DepthMap(int width, int height) {
                            id, 0);
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
+}
+
+OutlineFrameBufferTexture::OutlineFrameBufferTexture(int width, int height,
+                                                     bool isPixelized)
+    : FrameBufferTexture(width, height, isPixelized) {
+    {
+        glGenFramebuffers(1, &fboOutline1);
+        FrameBuffer b(fboOutline1);
+        texOutline1 = std::make_shared<Texture>(width, height, false);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                               GL_TEXTURE_2D, texOutline1->id, 0);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+                                  GL_RENDERBUFFER, rbo);
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!"
+                      << std::endl;
+    }
+    {
+        glGenFramebuffers(1, &fboOutline2);
+        FrameBuffer b(fboOutline2);
+        texOutline2 = std::make_shared<Texture>(width, height, false);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                               GL_TEXTURE_2D, texOutline2->id, 0);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+                                  GL_RENDERBUFFER, rbo);
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!"
+                      << std::endl;
+    }
+}
+
+OutlineFrameBufferTexture::~OutlineFrameBufferTexture() {
+    if (fboOutline1 != 0) glDeleteFramebuffers(1, &fboOutline1);
+    if (fboOutline2 != 0) glDeleteFramebuffers(1, &fboOutline2);
+}
+
+void OutlineFrameBufferTexture::clear_outline() {
+    FrameBuffer b(fbo);
+    glStencilMask(0xFF);
+    glClear(GL_STENCIL_BUFFER_BIT);
+}
+
+void OutlineFrameBufferTexture::draw_and_mark_outline(
+    std::function<void()> draw) {
+    FrameBuffer b(fbo);
+    Viewport v(width, height);
+
+    glEnable(GL_STENCIL_TEST);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+    glStencilFunc(GL_ALWAYS, 1, 0xFF);
+    glStencilMask(0xFF);
+
+    draw();
+
+    glDisable(GL_STENCIL_TEST);
+}
+
+void OutlineFrameBufferTexture::draw_outline(glm::vec3 color) {
+    DepthTest d(false);
+    auto quadVAO = AssetsHub::get_vao("quad");
+    glStencilMask(0x00);
+    auto singleColorShader = AssetsHub::get_shader<SingleColorShader>();
+    auto gaussianBlurShader = AssetsHub::get_shader<GaussianBlurShader>();
+    Viewport v(width, height);
+    { 
+        FrameBuffer b(fboOutline1); 
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glEnable(GL_STENCIL_TEST);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+        glStencilFunc(GL_EQUAL, 1, 0xFF);
+        singleColorShader->configure(glm::vec4(color, 1));
+        quadVAO->draw();
+        glDisable(GL_STENCIL_TEST);
+    }
+    {
+        FrameBuffer b(fboOutline2);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        gaussianBlurShader->configure(texOutline1, {width, height}, {0, 5});
+        quadVAO->draw();
+    }
+    {
+        FrameBuffer b(fbo);
+        Blend _(true);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        glEnable(GL_STENCIL_TEST);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+        gaussianBlurShader->configure(texOutline2, {width, height}, {5, 0});
+        quadVAO->draw();
+        glDisable(GL_STENCIL_TEST);
+    }
 }

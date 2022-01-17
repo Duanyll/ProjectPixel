@@ -29,9 +29,9 @@ class ShaderProgram {
 typedef std::shared_ptr<ShaderProgram> pShaderProgram;
 
 // 将一个矩形材质绘制到全屏
-class QuadShader : public ShaderProgram {
+class BlitShader : public ShaderProgram {
    public:
-    QuadShader();
+    BlitShader();
     void configure(pTexture texture);
 
     const static int storeId = 1;
@@ -116,4 +116,27 @@ class ParticleShader : public ShaderProgram {
     GLint diffuse_pos, emission_pos, color_pos;
     GLint model_pos, normal_pos;
     GLint dirLightDepth_pos, spotLightDepth_pos;
+};
+
+class GaussianBlurShader : public ShaderProgram {
+   public:
+    GaussianBlurShader();
+    void configure(pTexture texture, glm::vec2 resolution, glm::vec2 direction);
+
+    const static int storeId = 8;
+
+   private:
+    GLint screenTexture_pos;
+    GLint resolution_pos, direction_pos;
+};
+
+class SingleColorShader : public ShaderProgram {
+   public:
+    SingleColorShader();
+    void configure(glm::vec4 color);
+
+    const static int storeId = 9;
+
+   private:
+    GLint color_pos;
 };

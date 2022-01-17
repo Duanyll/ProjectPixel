@@ -13,7 +13,7 @@ FullScreenQuad::FullScreenQuad(const std::string& str)
 void FullScreenQuad::render() {
     DepthTest d(false);
     Blend b(true);
-    auto shader = AssetsHub::get_shader<QuadShader>();
+    auto shader = AssetsHub::get_shader<BlitShader>();
     auto vao = AssetsHub::get_vao("quad");
     shader->configure(texture);
     vao->draw();

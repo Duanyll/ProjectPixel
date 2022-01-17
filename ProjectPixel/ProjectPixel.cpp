@@ -44,10 +44,11 @@ int main(int argc, char** argv) {
     while (!glfwWindowShouldClose(Window::handle)) {
         Window::process_input();
 
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        screen->draw_inside([&]() -> void { game->render(); });
+        screen->draw_inside([&]() -> void {
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            game->render();
+        });
         Viewport v(Window::width, Window::height);
         quad.render();
 

@@ -35,5 +35,7 @@ class Game {
 
     GameHUD hud;
 
+    std::shared_ptr<OutlineFrameBufferTexture> outlineBuffer;
+
     void update();
 };
