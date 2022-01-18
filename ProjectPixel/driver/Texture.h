@@ -51,7 +51,7 @@ class FrameBufferTexture : public Texture {
 
 class OutlineFrameBufferTexture : public FrameBufferTexture {
    public:
-    OutlineFrameBufferTexture(int width, int height, bool isPixelized = true);
+    OutlineFrameBufferTexture(int width, int height);
     ~OutlineFrameBufferTexture();
     
     void clear_outline();

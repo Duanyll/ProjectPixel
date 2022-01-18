@@ -201,9 +201,8 @@ DepthMap::DepthMap(int width, int height) {
     glReadBuffer(GL_NONE);
 }
 
-OutlineFrameBufferTexture::OutlineFrameBufferTexture(int width, int height,
-                                                     bool isPixelized)
-    : FrameBufferTexture(width, height, isPixelized) {
+OutlineFrameBufferTexture::OutlineFrameBufferTexture(int width, int height)
+    : FrameBufferTexture(width, height, false) {
     {
         glGenFramebuffers(1, &fboOutline1);
         FrameBuffer b(fboOutline1);

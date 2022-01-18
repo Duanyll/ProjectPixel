@@ -99,14 +99,35 @@ void LevelProcessor::handle_user_input(float duration) {
     }
     player->walk(duration, state.movementDir);
 
+    auto cursorPoint =
+        level.terrain->get_cursor_point(state.cameraPos, state.cursorDir);
     player->turn(duration,
                  horizonal_angle(player->get_front(),
-                                 player->isAiming
-                                     ? (level.terrain->get_cursor_point(
-                                            state.cameraPos, state.cursorDir) -
-                                        player->pos)
-                                     : state.movementDir),
+                                 player->isAiming ? (cursorPoint - player->pos)
+                                                  : state.movementDir),
                  Player::maxRotationSpeed);
+    auto cursorEntities =
+        level.entityRegistry.query_square_range(cursorPoint, 2);
+    std::shared_ptr<MobEntity> target;
+    float mind = 1000;
+    for (auto& i : cursorEntities) {
+        if (i->id == "player1") continue;
+        auto e = std::dynamic_pointer_cast<MobEntity>(i);
+        if (!e) continue;
+        float d = -1;
+        if (e->get_bounding_box().test_line_intersection(
+                state.cameraPos, state.cursorDir * 30.0f, d)) {
+            if (d < mind) {
+                mind = d;
+                target = e;
+            }
+        }
+    }
+    if (target) {
+        player->mainTargetId = target->id;
+    } else {
+        player->mainTargetId = "";
+    }
 
     player->handle_heal_input(input.keys.heal);
     player->handle_attack_input(input.keys.attack);
@@ -139,11 +160,14 @@ void LevelProcessor::emit_instructions(TimeStamp time) {
     auto ins = std::make_unique<SceneInstruction>();
     ins->creationTime = time;
     ins->entities.reserve(level.entities.size());
-    for (auto& i : level.entities) {
-        if (i.first != "player1" && i.second->destroyFlag) {
-            ins->deletedEntities.push_back(i.second->id);
+    for (auto& [id, e] : level.entities) {
+        if (id != "player1" && e->destroyFlag) {
+            ins->deletedEntities.push_back(id);
         } else {
-            ins->entities.push_back(i.second->get_instruction());
+            ins->entities.push_back(e->get_instruction());
+            if (id == level.player->mainTargetId) {
+                ins->entities.back().highlight = true;
+            }
         }
     }
 

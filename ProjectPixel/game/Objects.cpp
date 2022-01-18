@@ -48,6 +48,7 @@ void EntityRenderer::update(EntityInstruction& instruction) {
     facing = instruction.facing;
     speed = instruction.speed;
     rotationSpeed = instruction.rotationSpeed;
+    highlight = instruction.highlight;
 }
 
 glm::mat4 Paperman::get_model() {

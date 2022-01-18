@@ -309,6 +309,11 @@ bool Player::hurt(int hits, HurtType type, std::string sender) {
     return MobEntity::hurt(hits, type, sender);
 }
 
+std::shared_ptr<MobEntity> Player::get_main_target() {
+    if (mainTargetId == "") return {};
+    return std::dynamic_pointer_cast<MobEntity>(level.entities[mainTargetId]);
+}
+
 void Player::handle_heal_input(bool hold) {
     if (hold && inventory[ItemType::LifePotion] > 0 && hp < 50) {
         ticksHealHold++;
@@ -345,10 +350,15 @@ void Player::handle_attack_input(bool hold) {
     } else {
         if (weapon == ItemType::Bow) {
             if (ticksAttackHold > 3 && inventory[ItemType::Arrow] > 0) {
+                glm::vec3 direction = get_front();
+                auto mainTarget = get_main_target();
+                if (mainTarget) {
+                    direction = glm::normalize(mainTarget->pos - pos);
+                }
                 float arrowSpeed = std::clamp(ticksAttackHold, 3, 12) * 1.25;
                 auto arrow = level.add_entity<Arrow>(
                     pos + glm::vec3{0, 1, 0} + get_front() * 0.5f,
-                    get_front() * arrowSpeed + glm::vec3{0, 2, 0});
+                    direction * arrowSpeed + glm::vec3{0, 2, 0});
                 arrow->canPickUp = true;
                 arrow->sender = id;
                 inventory[ItemType::Arrow] -= 1;

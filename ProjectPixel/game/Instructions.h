@@ -37,6 +37,7 @@ struct EntityInstruction {
     char state[8] = {0};
     glm::vec3 pos, speed;
     float facing, rotationSpeed;
+    bool highlight = false;
 };
 
 struct ParticleInstruction {

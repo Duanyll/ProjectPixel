@@ -77,6 +77,14 @@ void Game::render() {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     });
+    for (auto& [id, e] : entities) {
+        if (e->highlight) {
+            outlineBuffer->draw_and_mark_outline(
+                [&]() -> void { e->render(); });
+        } else {
+            outlineBuffer->draw_inside([&]() -> void { e->render(); });
+        }
+    }
     outlineBuffer->draw_and_mark_outline([&]() -> void {
         for (auto& i : entities) {
             i.second->render();

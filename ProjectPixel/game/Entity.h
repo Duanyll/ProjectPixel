@@ -83,6 +83,7 @@ class Player : public MobEntity {
 
     ItemType weapon = ItemType::DiamondSword;
     std::unordered_map<ItemType, int> inventory;
+    std::string mainTargetId = "";
 
     inline const static float moveSpeed = 2.5;
     inline const static float maxAcceleration = 20.0f;
@@ -94,6 +95,7 @@ class Player : public MobEntity {
     void walk(float time, glm::vec3 direction);
 
     bool hurt(int hits, HurtType type, std::string sender);
+    std::shared_ptr<MobEntity> get_main_target();
 
     void handle_heal_input(bool heal);
     void handle_attack_input(bool hold);

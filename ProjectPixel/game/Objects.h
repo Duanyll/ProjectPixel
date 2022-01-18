@@ -36,6 +36,8 @@ class EntityRenderer : public RenderObject {
     glm::vec3 speed{0, 0, 0};
     float rotationSpeed = 0;
 
+    bool highlight = false;
+
     virtual void step(float time);
     virtual void update(EntityInstruction& instruction);
 };
